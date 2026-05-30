@@ -56,13 +56,22 @@ Window {
         }
 
         Text {
+            id: dateText
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
-            text: Qt.formatDateTime(new Date(), "dd/MM/yyyy")
             color: "#ffffff"
             font.pixelSize: 12
             opacity: 0.5
+
+            Timer {
+                interval: 60000
+                running: true
+                repeat: true
+                onTriggered: dateText.text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+            }
+
+            Component.onCompleted: text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
         }
 
         NumberAnimation on opacity {
