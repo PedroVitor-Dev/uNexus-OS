@@ -95,29 +95,23 @@ Window {
         id: dock
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 40
         width: dockRow.width + 24
         height: 56
         radius: 16
         color: "#1a1a1a"
         opacity: 0.0
-        anchors.bottomMargin: 40
 
-        NumberAnimation on opacity {
-            from: 0.0
-            to: 0.85
-            duration: 1000
-            delay: 400
-            easing.type: Easing.OutCubic
+        SequentialAnimation on opacity {
             running: true
+            PauseAnimation { duration: 400 }
+            NumberAnimation { from: 0.0; to: 0.85; duration: 1000; easing.type: Easing.OutCubic }
         }
 
-        NumberAnimation on anchors.bottomMargin {
-            from: 40
-            to: 12
-            duration: 1000
-            delay: 400
-            easing.type: Easing.OutCubic
+        SequentialAnimation on anchors.bottomMargin {
             running: true
+            PauseAnimation { duration: 400 }
+            NumberAnimation { from: 40; to: 12; duration: 1000; easing.type: Easing.OutCubic }
         }
 
         Row {
