@@ -350,5 +350,4 @@ Rectangle {
         }
     }
 
-    focus: true
 }
