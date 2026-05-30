@@ -331,4 +331,24 @@ Rectangle {
             }
         }
     }
+    // Launcher
+    Launcher {
+        id: pedLauncher
+        anchors.fill: parent
+        z: 100
+    }
+
+    // Super key
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Super_L || event.key === Qt.Key_Super_R) {
+            if (pedLauncher.visible) {
+                pedLauncher.hide()
+            } else {
+                pedLauncher.show()
+            }
+            event.accepted = true
+        }
+    }
+
+    focus: true
 }
