@@ -10,9 +10,9 @@ PED OS is a Linux-based desktop operating system built on top of Wayland,
 using a customized Hyprland compositor and a Qt/QML interface layer.
 
 ---
-
 ## Layer Stack
 
+```
 ┌─────────────────────────────────────┐
 │           User Applications         │
 ├─────────────────────────────────────┤
@@ -29,18 +29,26 @@ using a customized Hyprland compositor and a Qt/QML interface layer.
 ├─────────────────────────────────────┤
 │            Linux Kernel             │
 └─────────────────────────────────────┘
-
----
+```
 
 ## Components
 
 ### ped-shell
-Main desktop interface. Manages the overall layout, wallpaper, widgets and
-coordinates all other components.
+Main desktop interface. Manages the overall layout, wallpaper, top bar,
+dock and coordinates all other components.
+
+**Current implementation:**
+- Top bar with live clock and date
+- Minimalist floating dock
+- Dock hover zoom effect
+- Dock tooltip on hover
+- Dock bounce animation on click
+- Entrance animations on startup
 
 ### ped-dock
 Minimalist application dock. Handles pinned apps, running indicators and
-smooth animations.
+smooth animations. Currently embedded in ped-shell, will be extracted
+as a standalone component.
 
 ### ped-launcher
 Universal search and app launcher. Keyboard-driven, fast and minimal.
