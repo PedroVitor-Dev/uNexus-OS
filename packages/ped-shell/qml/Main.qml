@@ -91,17 +91,15 @@ Rectangle {
         color: "#1a1a1a"
         opacity: 0.0
 
-        SequentialAnimation on opacity {
-            running: true
-            PauseAnimation { duration: 400 }
-            NumberAnimation { from: 0.0; to: 0.85; duration: 1000; easing.type: Easing.OutCubic }
+    SequentialAnimation on opacity {
+    running: true
+    NumberAnimation { from: 0.0; to: 1.0; duration: 1000; easing.type: Easing.OutCubic }
+}
         }
 
-        SequentialAnimation on anchors.bottomMargin {
-            running: true
-            PauseAnimation { duration: 400 }
-            NumberAnimation { from: 40; to: 12; duration: 1000; easing.type: Easing.OutCubic }
-        }
+        SequentialAnimation on anchors.verticalCenterOffset {
+    running: true
+    NumberAnimation { from: 20; to: 0; duration: 1000; easing.type: Easing.OutCubic }
 
         Row {
             id: dockRow
