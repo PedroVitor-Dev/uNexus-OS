@@ -20,6 +20,7 @@ qt_add_qml_module(ped-shell
         qml/Launcher.qml
         qml/LoginScreen.qml
         qml/ContextMenu.qml
+        qml/NotificationCenter.qml
 )
 target_include_directories(ped-shell PRIVATE include)
 

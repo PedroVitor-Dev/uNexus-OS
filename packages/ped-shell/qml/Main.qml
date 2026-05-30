@@ -377,4 +377,17 @@ Window {
                 contextMenu.show(mouse.x, mouse.y)
         }
     }
+    NotificationCenter {
+        id: notifCenter
+        anchors.fill: parent
+        z: 120
+    }
+
+    // Teste — notificação ao fazer login
+    Connections {
+        target: loginScreen
+        function onLoginSuccess() {
+            notifCenter.send("Welcome back!", "PED OS is ready.", "👋")
+        }
+    }
 }
