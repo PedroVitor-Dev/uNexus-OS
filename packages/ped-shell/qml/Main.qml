@@ -9,15 +9,84 @@ Window {
     title: "PED OS Shell"
     color: "#0a0a0a"
 
+    // Wallpaper
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "#0a0a0a" }
-            GradientStop { position: 1.0; color: "#0d1117" }
+            GradientStop { position: 0.0; color: "#050810" }
+            GradientStop { position: 0.5; color: "#0a0f1e" }
+            GradientStop { position: 1.0; color: "#060d18" }
+        }
+
+        // Círculo grande fundo esquerdo
+        Rectangle {
+            width: 600
+            height: 600
+            radius: 300
+            x: -150
+            y: 80
+            color: "transparent"
+            border.color: "#0d2a4a"
+            border.width: 1
+            opacity: 0.4
+        }
+
+        // Círculo médio fundo direito
+        Rectangle {
+            width: 400
+            height: 400
+            radius: 200
+            x: parent.width - 250
+            y: parent.height - 300
+            color: "transparent"
+            border.color: "#0d2a4a"
+            border.width: 1
+            opacity: 0.3
+        }
+
+        // Glow azul esquerdo
+        Rectangle {
+            width: 300
+            height: 300
+            radius: 150
+            x: -80
+            y: 200
+            color: "#051428"
+            opacity: 0.6
+        }
+
+        // Glow azul direito
+        Rectangle {
+            width: 250
+            height: 250
+            radius: 125
+            x: parent.width - 180
+            y: 100
+            color: "#04111f"
+            opacity: 0.5
+        }
+
+        // Linha horizontal sutil
+        Rectangle {
+            width: parent.width
+            height: 1
+            y: parent.height * 0.6
+            color: "#4d9eff"
+            opacity: 0.04
+        }
+
+        // Linha horizontal sutil 2
+        Rectangle {
+            width: parent.width
+            height: 1
+            y: parent.height * 0.4
+            color: "#4d9eff"
+            opacity: 0.03
         }
     }
 
+    // Top bar
     Rectangle {
         id: topBar
         anchors.top: parent.top
@@ -83,6 +152,7 @@ Window {
         }
     }
 
+    // Center logo
     Column {
         id: centerLogo
         anchors.centerIn: parent
@@ -113,7 +183,7 @@ Window {
         }
     }
 
-    // Dock container — flutua acima do fundo
+    // Dock container
     Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 12
@@ -121,7 +191,7 @@ Window {
         width: dockRow.width + 24
         height: 90
 
-        // Tooltip global — aparece acima do dock
+        // Tooltip global
         Rectangle {
             id: globalTooltip
             anchors.horizontalCenter: parent.horizontalCenter
@@ -183,63 +253,63 @@ Window {
                 ]
 
                 delegate: Rectangle {
-    id: dockItem
-    width: dockItemMouse.containsMouse ? 52 : 44
-    height: dockItemMouse.containsMouse ? 52 : 44
-    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-    radius: 12
-    color: dockItemMouse.containsMouse ? "#2a2a2a" : "transparent"
+                    id: dockItem
+                    width: dockItemMouse.containsMouse ? 52 : 44
+                    height: dockItemMouse.containsMouse ? 52 : 44
+                    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+                    radius: 12
+                    color: dockItemMouse.containsMouse ? "#2a2a2a" : "transparent"
 
-    property bool bouncing: false
+                    property bool bouncing: false
 
-    Behavior on width {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-    }
-    Behavior on height {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-    }
+                    Behavior on width {
+                        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                    }
+                    Behavior on height {
+                        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                    }
 
-    transform: Translate {
-        id: bounceTranslate
-        y: 0
-    }
+                    transform: Translate {
+                        id: bounceTranslate
+                        y: 0
+                    }
 
-    SequentialAnimation {
-        id: bounceAnim
-        NumberAnimation { target: bounceTranslate; property: "y"; to: -16; duration: 120; easing.type: Easing.OutCubic }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 120; easing.type: Easing.InBounce }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: -8;  duration: 80;  easing.type: Easing.OutCubic }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 80;  easing.type: Easing.InBounce }
-    }
+                    SequentialAnimation {
+                        id: bounceAnim
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: -16; duration: 120; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 120; easing.type: Easing.InBounce }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: -8;  duration: 80;  easing.type: Easing.OutCubic }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 80;  easing.type: Easing.InBounce }
+                    }
 
-    Text {
-        anchors.centerIn: parent
-        text: modelData.icon
-        font.pixelSize: dockItemMouse.containsMouse ? 28 : 24
+                    Text {
+                        anchors.centerIn: parent
+                        text: modelData.icon
+                        font.pixelSize: dockItemMouse.containsMouse ? 28 : 24
 
-        Behavior on font.pixelSize {
-            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-        }
-    }
+                        Behavior on font.pixelSize {
+                            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                        }
+                    }
 
-    MouseArea {
-        id: dockItemMouse
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton
+                    MouseArea {
+                        id: dockItemMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton
 
-        onClicked: bounceAnim.start()
+                        onClicked: bounceAnim.start()
 
-        onContainsMouseChanged: {
-            if (containsMouse) {
-                globalTooltipText.text = modelData.label
-                globalTooltip.opacity = 1.0
-            } else {
-                globalTooltip.opacity = 0.0
-            }
-        }
-    }
-}
+                        onContainsMouseChanged: {
+                            if (containsMouse) {
+                                globalTooltipText.text = modelData.label
+                                globalTooltip.opacity = 1.0
+                            } else {
+                                globalTooltip.opacity = 0.0
+                            }
+                        }
+                    }
+                }
             }
         }
     }
