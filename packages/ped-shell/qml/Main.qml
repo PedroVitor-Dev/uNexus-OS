@@ -19,7 +19,6 @@ Window {
             GradientStop { position: 1.0; color: "#060d18" }
         }
 
-        // Círculo grande fundo esquerdo
         Rectangle {
             width: 600
             height: 600
@@ -32,7 +31,6 @@ Window {
             opacity: 0.4
         }
 
-        // Círculo médio fundo direito
         Rectangle {
             width: 400
             height: 400
@@ -45,7 +43,6 @@ Window {
             opacity: 0.3
         }
 
-        // Glow azul esquerdo
         Rectangle {
             width: 300
             height: 300
@@ -56,7 +53,6 @@ Window {
             opacity: 0.6
         }
 
-        // Glow azul direito
         Rectangle {
             width: 250
             height: 250
@@ -67,7 +63,6 @@ Window {
             opacity: 0.5
         }
 
-        // Linha horizontal sutil
         Rectangle {
             width: parent.width
             height: 1
@@ -76,7 +71,6 @@ Window {
             opacity: 0.04
         }
 
-        // Linha horizontal sutil 2
         Rectangle {
             width: parent.width
             height: 1
@@ -96,15 +90,42 @@ Window {
         color: "#111111"
         opacity: 0.0
 
-        Text {
+        Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.verticalCenter: parent.verticalCenter
-            text: "PED OS"
-            color: "#ffffff"
-            font.pixelSize: 12
-            font.letterSpacing: 4
-            opacity: 0.7
+            width: logoText.width + 16
+            height: 22
+            radius: 6
+            color: logoMouse.containsMouse ? "#1e2d45" : "transparent"
+
+            Behavior on color {
+                ColorAnimation { duration: 150 }
+            }
+
+            Text {
+                id: logoText
+                anchors.centerIn: parent
+                text: "PED OS"
+                color: "#ffffff"
+                font.pixelSize: 12
+                font.letterSpacing: 4
+                opacity: 0.7
+            }
+
+            MouseArea {
+                id: logoMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (pedLauncher.visible) {
+                        pedLauncher.hide()
+                    } else {
+                        pedLauncher.show()
+                    }
+                }
+            }
         }
 
         Text {
@@ -191,7 +212,6 @@ Window {
         width: dockRow.width + 24
         height: 90
 
-        // Tooltip global
         Rectangle {
             id: globalTooltip
             anchors.horizontalCenter: parent.horizontalCenter
@@ -218,7 +238,6 @@ Window {
             }
         }
 
-        // Dock background
         Rectangle {
             id: dockBg
             anchors.bottom: parent.bottom
@@ -253,101 +272,88 @@ Window {
                 ]
 
                 delegate: Rectangle {
-    id: dockItem
-    width: dockItemMouse.containsMouse ? 52 : 44
-    height: dockItemMouse.containsMouse ? 52 : 44
-    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-    radius: 12
-    color: dockItemMouse.containsMouse ? "#2a2a2a" : "transparent"
+                    id: dockItem
+                    width: dockItemMouse.containsMouse ? 52 : 44
+                    height: dockItemMouse.containsMouse ? 52 : 44
+                    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+                    radius: 12
+                    color: dockItemMouse.containsMouse ? "#2a2a2a" : "transparent"
 
-    property bool active: false
+                    property bool active: false
 
-    Behavior on width {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-    }
-    Behavior on height {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-    }
+                    Behavior on width {
+                        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                    }
+                    Behavior on height {
+                        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                    }
 
-    transform: Translate {
-        id: bounceTranslate
-        y: 0
-    }
+                    transform: Translate {
+                        id: bounceTranslate
+                        y: 0
+                    }
 
-    SequentialAnimation {
-        id: bounceAnim
-        NumberAnimation { target: bounceTranslate; property: "y"; to: -16; duration: 120; easing.type: Easing.OutCubic }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 120; easing.type: Easing.InBounce }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: -8;  duration: 80;  easing.type: Easing.OutCubic }
-        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 80;  easing.type: Easing.InBounce }
-    }
+                    SequentialAnimation {
+                        id: bounceAnim
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: -16; duration: 120; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 120; easing.type: Easing.InBounce }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: -8;  duration: 80;  easing.type: Easing.OutCubic }
+                        NumberAnimation { target: bounceTranslate; property: "y"; to: 0;   duration: 80;  easing.type: Easing.InBounce }
+                    }
 
-    Text {
-        anchors.centerIn: parent
-        text: modelData.icon
-        font.pixelSize: dockItemMouse.containsMouse ? 28 : 24
+                    Text {
+                        anchors.centerIn: parent
+                        text: modelData.icon
+                        font.pixelSize: dockItemMouse.containsMouse ? 28 : 24
 
-        Behavior on font.pixelSize {
-            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-        }
-    }
+                        Behavior on font.pixelSize {
+                            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                        }
+                    }
 
-// Indicador de app ativo
-Rectangle {
-    width: dockItem.active ? 6 : 0
-    height: 3
-    radius: 2
-    color: "#4d9eff"
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
-    anchors.bottomMargin: 3
+                    Rectangle {
+                        width: dockItem.active ? 6 : 0
+                        height: 3
+                        radius: 2
+                        color: "#4d9eff"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 3
 
-    Behavior on width {
-        NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
-    }
-}
+                        Behavior on width {
+                            NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                        }
+                    }
 
-    MouseArea {
-        id: dockItemMouse
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton
+                    MouseArea {
+                        id: dockItemMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton
 
-        onClicked: {
-            dockItem.active = !dockItem.active
-            bounceAnim.start()
-        }
+                        onClicked: {
+                            dockItem.active = !dockItem.active
+                            bounceAnim.start()
+                        }
 
-        onContainsMouseChanged: {
-            if (containsMouse) {
-                globalTooltipText.text = modelData.label
-                globalTooltip.opacity = 1.0
-            } else {
-                globalTooltip.opacity = 0.0
+                        onContainsMouseChanged: {
+                            if (containsMouse) {
+                                globalTooltipText.text = modelData.label
+                                globalTooltip.opacity = 1.0
+                            } else {
+                                globalTooltip.opacity = 0.0
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-}
-            }
-        }
-    }
+
     // Launcher
     Launcher {
         id: pedLauncher
         anchors.fill: parent
         z: 100
     }
-
-    // Super key
-Keys.onPressed: {
-    if (event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)) {
-        if (pedLauncher.visible) {
-            pedLauncher.hide()
-        } else {
-            pedLauncher.show()
-        }
-        event.accepted = true
-    }
-}
-
 }
