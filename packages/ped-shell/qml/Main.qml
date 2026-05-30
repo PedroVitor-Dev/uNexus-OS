@@ -174,6 +174,22 @@ Window {
             }
 
             Text {
+    visible: systemInfo.hasBattery
+    text: systemInfo.batteryCharging ? "⚡" : (systemInfo.batteryLevel < 20 ? "🪫" : "🔋")
+    font.pixelSize: 13
+    anchors.verticalCenter: parent.verticalCenter
+}
+
+Text {
+    visible: systemInfo.hasBattery
+    text: systemInfo.batteryLevel + "%"
+    color: systemInfo.batteryLevel < 20 ? "#ff4d4d" : "#ffffff"
+    font.pixelSize: 12
+    opacity: 0.7
+    anchors.verticalCenter: parent.verticalCenter
+}
+
+            Text {
                 id: dateText
                 color: "#ffffff"
                 font.pixelSize: 12

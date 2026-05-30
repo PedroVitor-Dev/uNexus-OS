@@ -15,7 +15,6 @@ void SystemInfo::update() {
 }
 
 void SystemInfo::readBattery() {
-    // Linux battery path
     QString basePath = "/sys/class/power_supply/";
     QDir dir(basePath);
     QStringList entries = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -44,8 +43,18 @@ void SystemInfo::readBattery() {
                     emit batteryChargingChanged();
                 }
             }
+
+            if (!m_hasBattery) {
+                m_hasBattery = true;
+                emit hasBatteryChanged();
+            }
             return;
         }
+    }
+
+    if (m_hasBattery) {
+        m_hasBattery = false;
+        emit hasBatteryChanged();
     }
 }
 
@@ -60,7 +69,8 @@ void SystemInfo::readNetwork() {
         QFile operstate(path + entry + "/operstate");
         if (operstate.open(QIODevice::ReadOnly)) {
             QTextStream stream(&operstate);
-            if (stream.readAll().trimmed() == "up") {
+            QString state = stream.readAll().trimmed();
+            if (state == "up" || state == "unknown") {
                 connected = true;
                 break;
             }
