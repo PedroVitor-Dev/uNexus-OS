@@ -27,7 +27,7 @@ Window {
         anchors.right: parent.right
         height: 32
         color: "#111111"
-        opacity: 0.9
+        opacity: 0.0
 
         Text {
             anchors.centerIn: parent
@@ -37,12 +37,23 @@ Window {
             font.letterSpacing: 4
             opacity: 0.7
         }
+
+        NumberAnimation on opacity {
+            from: 0.0
+            to: 0.9
+            duration: 800
+            easing.type: Easing.OutCubic
+            running: true
+        }
     }
 
     // Center logo
     Column {
+        id: centerLogo
         anchors.centerIn: parent
         spacing: 12
+        opacity: 0.0
+        anchors.verticalCenterOffset: 20
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -61,6 +72,22 @@ Window {
             font.letterSpacing: 2
             opacity: 0.7
         }
+
+        NumberAnimation on opacity {
+            from: 0.0
+            to: 1.0
+            duration: 1000
+            easing.type: Easing.OutCubic
+            running: true
+        }
+
+        NumberAnimation on anchors.verticalCenterOffset {
+            from: 20
+            to: 0
+            duration: 1000
+            easing.type: Easing.OutCubic
+            running: true
+        }
     }
 
     // Dock
@@ -73,7 +100,26 @@ Window {
         height: 56
         radius: 16
         color: "#1a1a1a"
-        opacity: 0.85
+        opacity: 0.0
+        anchors.bottomMargin: 40
+
+        NumberAnimation on opacity {
+            from: 0.0
+            to: 0.85
+            duration: 1000
+            delay: 400
+            easing.type: Easing.OutCubic
+            running: true
+        }
+
+        NumberAnimation on anchors.bottomMargin {
+            from: 40
+            to: 12
+            duration: 1000
+            delay: 400
+            easing.type: Easing.OutCubic
+            running: true
+        }
 
         Row {
             id: dockRow
