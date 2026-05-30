@@ -186,6 +186,7 @@ Window {
                             id: dockItemMouse
                             anchors.fill: parent
                             hoverEnabled: true
+                            acceptedButtons: Qt.NoButton
                         }
                     }
 
@@ -193,7 +194,7 @@ Window {
                         id: tooltip
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
-                        height: 18
+                        height: 68
                         width: tooltipText.width + 12
                         radius: 6
                         color: "#222222"
