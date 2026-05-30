@@ -26,12 +26,21 @@ PED OS is built around four principles: **elegant**, **fast**, **silent**, **foc
 
 | Feature | Status |
 |---|---|
+| Login screen with avatar | ✅ |
+| Geometric wallpaper | ✅ |
 | Top bar with clock & date | ✅ |
+| Network indicator (real data) | ✅ |
+| Battery indicator (real data) | ✅ |
 | Minimalist dock | ✅ |
 | Dock hover zoom | ✅ |
 | Dock tooltip | ✅ |
 | Dock bounce on click | ✅ |
+| Active app indicator | ✅ |
 | Entrance animations | ✅ |
+| PED Launcher with search | ✅ |
+| Launcher categories | ✅ |
+| Right-click context menu | ✅ |
+| Notification system | ✅ |
 
 ---
 
