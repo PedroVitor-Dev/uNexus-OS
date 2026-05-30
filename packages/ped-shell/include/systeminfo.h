@@ -13,6 +13,7 @@ class SystemInfo : public QObject {
 
 public:
     explicit SystemInfo(QObject *parent = nullptr);
+    ~SystemInfo() override = default;
 
     int batteryLevel() const { return m_batteryLevel; }
     bool batteryCharging() const { return m_batteryCharging; }
