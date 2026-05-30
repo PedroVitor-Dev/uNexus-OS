@@ -11,6 +11,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 qt_add_executable(ped-shell
     src/main.cpp
     src/systeminfo.cpp
+    include/systeminfo.h
 )
 
 qt_add_qml_module(ped-shell
