@@ -110,20 +110,22 @@ Item {
                 ColorAnimation { duration: 150 }
             }
 
-            TextInput {
-                id: passwordInput
-                anchors.left: parent.left
-                anchors.right: enterBtn.left
-                anchors.leftMargin: 16
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                color: "#ffffff"
-                font.pixelSize: 15
-                echoMode: TextInput.Password
-                passwordCharacter: "●"
+        TextInput {
+    id: passwordInput
+    anchors.left: parent.left
+    anchors.right: enterBtn.left
+    anchors.leftMargin: 16
+    anchors.rightMargin: 8
+    anchors.verticalCenter: parent.verticalCenter
+    color: "#ffffff"
+    font.pixelSize: 15
+    echoMode: TextInput.Password
+    passwordCharacter: "●"
+    focus: true
 
-                Keys.onReturnPressed: doLogin()
-            }
+    Keys.onReturnPressed: doLogin()
+    Keys.onEnterPressed: doLogin()
+}
 
             Text {
                 anchors.left: parent.left
