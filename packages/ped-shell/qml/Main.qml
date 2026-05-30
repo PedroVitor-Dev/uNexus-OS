@@ -362,4 +362,19 @@ Window {
         z: 200
         onLoginSuccess: loginScreen.destroy()
     }
+    ContextMenu {
+        id: contextMenu
+        anchors.fill: parent
+        z: 150
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        z: 1
+        onClicked: {
+            if (mouse.button === Qt.RightButton)
+                contextMenu.show(mouse.x, mouse.y)
+        }
+    }
 }
