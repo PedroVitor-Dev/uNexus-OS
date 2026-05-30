@@ -15,7 +15,9 @@ qt_add_executable(ped-shell
 qt_add_qml_module(ped-shell
     URI PedShell
     VERSION 1.0
-    QML_FILES qml/Main.qml
+    QML_FILES
+        qml/Main.qml
+        qml/Launcher.qml
 )
 
 target_include_directories(ped-shell PRIVATE include)
