@@ -7,20 +7,20 @@ Item {
     visible: false
     opacity: 0.0
 
-property var allApps: [
-    { icon: "🎮", name: "Steam",    category: "Gaming", command: "steam", args: [] },
-    { icon: "🎮", name: "Lutris",   category: "Gaming", command: "lutris", args: [] },
+    property var allApps: [
+        { icon: "🎮", name: "Steam",    category: "Gaming", command: "steam",  args: [], flatpakId: "com.valvesoftware.Steam" },
+        { icon: "🎮", name: "Lutris",   category: "Gaming", command: "lutris", args: [], flatpakId: "net.lutris.Lutris" },
 
-    { icon: "🗂", name: "Files",    category: "System", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
-    { icon: "⚙️", name: "Settings", category: "System", command: "systemsettings", args: [] },
-    { icon: "🖥", name: "Terminal", category: "System", command: "terminal", args: [] },
-    { icon: "🏪", name: "Store",    category: "System", command: "gnome-software", args: [] },
+        { icon: "🗂", name: "Files",    category: "System", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
+        { icon: "⚙️", name: "Settings", category: "System", command: "systemsettings", args: [] },
+        { icon: "🖥", name: "Terminal", category: "System", command: "terminal", args: [] },
+        { icon: "🏪", name: "Store",    category: "System", command: "gnome-software", args: [] },
 
-    { icon: "🌐", name: "Browser",  category: "Media", command: "xdg-open", args: ["https://www.google.com"] },
-    { icon: "🎵", name: "Music",    category: "Media", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
-    { icon: "📷", name: "Camera",   category: "Media", command: "snapshot", args: [] },
-    { icon: "📝", name: "Notes",    category: "Media", command: "gedit", args: [] }
-]
+        { icon: "🌐", name: "Browser",  category: "Media", command: "xdg-open", args: ["https://www.google.com"] },
+        { icon: "🎵", name: "Music",    category: "Media", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
+        { icon: "📷", name: "Camera",   category: "Media", command: "snapshot", args: [] },
+        { icon: "📝", name: "Notes",    category: "Media", command: "gedit", args: [] }
+    ]
 
     property string searchText: ""
     property string activeCategory: "All"
@@ -32,6 +32,21 @@ property var allApps: [
                               a.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1
             return matchCategory && matchSearch
         })
+    }
+
+    function launchApp(app) {
+        var opened = false
+
+        if (app.command && app.command.length > 0)
+            opened = appLauncher.launch(app.command, app.args || [])
+
+        if (!opened && app.flatpakId && app.flatpakId.length > 0)
+            opened = appLauncher.launch("flatpak", ["run", app.flatpakId])
+
+        if (!opened && notifCenter)
+            notifCenter.send("App not found", app.name + " is not installed.", "⚠️")
+
+        launcher.hide()
     }
 
     function show() {
@@ -70,14 +85,12 @@ property var allApps: [
         ScriptAction { script: launcher.visible = false }
     }
 
-    // Overlay escuro
     Rectangle {
         anchors.fill: parent
         color: "#000000"
         opacity: 0.6
     }
 
-    // Painel central
     Rectangle {
         id: panel
         width: 600
@@ -90,7 +103,6 @@ property var allApps: [
         border.color: "#4d9eff"
         border.width: 1
 
-        // Glow azul na borda
         Rectangle {
             anchors.fill: parent
             anchors.margins: -2
@@ -111,7 +123,6 @@ property var allApps: [
             opacity: 0.07
         }
 
-        // Campo de busca
         Rectangle {
             id: searchBox
             anchors.top: parent.top
@@ -159,7 +170,6 @@ property var allApps: [
             }
         }
 
-        // Categorias
         Row {
             id: categoryRow
             anchors.top: searchBox.bottom
@@ -197,7 +207,6 @@ property var allApps: [
             }
         }
 
-        // Lista de resultados
         Column {
             id: resultsList
             anchors.top: categoryRow.bottom
@@ -255,33 +264,30 @@ property var allApps: [
                         id: itemMouse
                         anchors.fill: parent
                         hoverEnabled: true
+
                         onClicked: {
-    if (modelData.command === "terminal") {
-        var opened = appLauncher.launchFirstAvailable([
-            "gnome-terminal",
-            "konsole",
-            "xfce4-terminal",
-            "xterm"
-        ])
+                            if (modelData.command === "terminal") {
+                                var opened = appLauncher.launchFirstAvailable([
+                                    "gnome-terminal",
+                                    "konsole",
+                                    "xfce4-terminal",
+                                    "xterm"
+                                ])
 
-        if (!opened && notifCenter)
-            notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
-    } else {
-        var success = appLauncher.launch(modelData.command, modelData.args)
+                                if (!opened && notifCenter)
+                                    notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
 
-        if (!success && notifCenter)
-            notifCenter.send("App not found", modelData.name + " is not installed.", "⚠️")
-    }
-
-    launcher.hide()
-}
+                                launcher.hide()
+                            } else {
+                                launcher.launchApp(modelData)
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    // Fechar ao clicar fora
     MouseArea {
         anchors.fill: parent
         z: -1

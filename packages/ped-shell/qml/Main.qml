@@ -11,6 +11,19 @@ Window {
 
     property string pedFont: "Exo 2"
 
+    function launchDesktopApp(app) {
+        var opened = false
+
+        if (app.command && app.command.length > 0)
+            opened = appLauncher.launch(app.command, app.args || [])
+
+        if (!opened && app.flatpakId && app.flatpakId.length > 0)
+            opened = appLauncher.launch("flatpak", ["run", app.flatpakId])
+
+        if (!opened)
+            notifCenter.send("App not found", app.label + " is not installed.", "⚠️")
+    }
+
     // Wallpaper
     Rectangle {
         anchors.fill: parent
@@ -335,13 +348,13 @@ Window {
             spacing: 8
 
             Repeater {
-           model: [
-    { icon: "🗂", label: "Files",    command: "xdg-open", args: [Qt.resolvedUrl(".")] },
-    { icon: "🌐", label: "Browser",  command: "xdg-open", args: ["https://www.google.com"] },
-    { icon: "⚙️", label: "Settings", command: "systemsettings", args: [] },
-    { icon: "🖥", label: "Terminal", command: "terminal", args: [] },
-    { icon: "🎮", label: "Steam",    command: "steam", args: [] }
-]
+                model: [
+                    { icon: "🗂", label: "Files",    command: "xdg-open", args: [Qt.resolvedUrl(".")] },
+                    { icon: "🌐", label: "Browser",  command: "xdg-open", args: ["https://www.google.com"] },
+                    { icon: "⚙️", label: "Settings", command: "systemsettings", args: [] },
+                    { icon: "🖥", label: "Terminal", command: "terminal", args: [] },
+                    { icon: "🎮", label: "Steam",    command: "steam", args: [], flatpakId: "com.valvesoftware.Steam" }
+                ]
 
                 delegate: Rectangle {
                     id: dockItem
@@ -404,27 +417,24 @@ Window {
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton
 
-                       onClicked: {
-    dockItem.active = !dockItem.active
-    bounceAnim.start()
+                        onClicked: {
+                            dockItem.active = !dockItem.active
+                            bounceAnim.start()
 
-    if (modelData.command === "terminal") {
-        var opened = appLauncher.launchFirstAvailable([
-            "gnome-terminal",
-            "konsole",
-            "xfce4-terminal",
-            "xterm"
-        ])
+                            if (modelData.command === "terminal") {
+                                var opened = appLauncher.launchFirstAvailable([
+                                    "gnome-terminal",
+                                    "konsole",
+                                    "xfce4-terminal",
+                                    "xterm"
+                                ])
 
-        if (!opened)
-            notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
-    } else {
-        var success = appLauncher.launch(modelData.command, modelData.args)
-
-        if (!success)
-            notifCenter.send("App not found", modelData.label + " is not installed.", "⚠️")
-    }
-}
+                                if (!opened)
+                                    notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
+                            } else {
+                                root.launchDesktopApp(modelData)
+                            }
+                        }
 
                         onContainsMouseChanged: {
                             if (containsMouse) {
