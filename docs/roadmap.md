@@ -3,67 +3,83 @@
 ---
 
 ## Phase 1 — Foundation
+> 1–2 months
 
 - [x] Configure Linux development environment
 - [x] Create GitHub organization
 - [x] Create first interfaces
 - [x] First fluid animation
+- [x] Login screen
+- [x] Dock with animations
+- [x] Launcher with search
+- [x] Notification system
+- [x] Context menu
+- [x] Real battery and network indicators
 - [ ] Create PED OS logo
 - [ ] Create mockups in Figma
 
 **Milestones:**
 - ✅ First PED OS window running
-- ✅ First launcher prototype
 - ✅ First fluid animations
+- ✅ Interface looks like a real OS
 - ⬜ First official wallpaper
 
 ---
 
 ## Phase 2 — Real Interface
+> 2–4 months
 
-- [x] PED Dock (embedded in ped-shell)
 - [ ] PED Dock (standalone component)
-- [ ] PED Launcher
+- [ ] PED Launcher (standalone component)
 - [ ] Theme system
-- [ ] Login screen
-- [ ] Notification center
+- [ ] Game Mode toggle (performance boost)
+- [ ] FPS overlay
+- [ ] GPU driver manager UI
+- [ ] Controller detection and setup
 - [ ] Workspace management
-- [ ] Top panel (advanced)
+- [ ] Notification center (advanced)
 
 **Milestones:**
-- ✅ Interface looks like a real OS
+- ⬜ Game Mode working and measurable
 - ⬜ First demo video (YouTube / X)
 - ⬜ First internal ISO
 
 ---
 
-## Phase 3 — Public Alpha
+## Phase 3 — Gaming Core
+> 4–6 months
+
+- [ ] Steam integration out of the box
+- [ ] Lutris integration
+- [ ] Proton/Wine management UI
+- [ ] Per-game performance profiles
+- [ ] GPU overclocking UI
+- [ ] Controller mapping tool
+- [ ] Low-latency kernel tweaks
+- [ ] Auto CPU governor switching
+
+**Milestones:**
+- ⬜ Play Windows games out of the box
+- ⬜ Benchmarks better than stock Ubuntu
+- ⬜ First external testers
+
+---
+
+## Phase 4 — Public Alpha
+> 6–12 months
 
 - [ ] Bootable ISO
 - [ ] Working installer
 - [ ] Official website
-- [ ] Initial documentation
+- [ ] Discord community
 - [ ] Organized GitHub
-
-**Milestones:**
-- ⬜ First external testers
-- ⬜ Discord community
-- ⬜ Viral screenshots
-
----
-
-## Phase 4 — Extreme Polish
-
 - [ ] Ultra fluid animation system
 - [ ] Refined UX
 - [ ] Advanced themes
-- [ ] Productivity mode
 - [ ] Perfect multi-monitor support
-- [ ] Widgets
-- [ ] Extensions
 
 **Milestones:**
-- ⬜ Real active users
+- ⬜ First real gamers using it daily
 - ⬜ External contributors
 - ⬜ Open source recognition
 
@@ -73,22 +89,22 @@
 
 - Public ISO
 - 10k users
-- Active community
+- Active gaming community
 - Own ecosystem
 - GitHub recognition
 
 ---
 
-## Future Ecosystem
+## Future Gaming Features
 
-| Project | Description |
+| Feature | Description |
 |---|---|
-| PED Phone | Mobile UI |
-| PED Cloud | Cloud integration |
-| PED Browser | Own browser |
-| PED AI | AI assistant |
-| PED Tablet | Tablet UI |
-| PED Game Mode | Gaming experience |
+| PED Game Mode | Auto performance profile when game launches |
+| PED FPS Overlay | In-game FPS, CPU, GPU stats |
+| PED Store | Curated gaming apps and tools |
+| PED Controller | Plug and play controller support |
+| PED Optimizer | One-click system optimization for gaming |
+| PED Streamer | Streaming tools built in |
 
 ---
 
