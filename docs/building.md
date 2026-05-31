@@ -50,6 +50,8 @@ cmake --build build
 ./build/ped-shell
 ```
 
+Default password: `1234` (or leave blank)
+
 ---
 
 ## Updating
@@ -61,6 +63,26 @@ rm -rf build
 cmake -B build
 cmake --build build
 ./build/ped-shell
+```
+
+---
+
+## Gaming Dependencies (coming soon)
+
+Future versions will require:
+
+```bash
+# Steam
+sudo apt install steam
+
+# Lutris
+sudo apt install lutris
+
+# Vulkan
+sudo apt install vulkan-tools mesa-vulkan-drivers
+
+# GameMode
+sudo apt install gamemode
 ```
 
 ---
@@ -77,6 +99,9 @@ Normal in virtual machines. Does not affect functionality.
 
 **`./build/ped-shell: No such file or directory`:**
 Build failed. Run `cmake --build build` again and check for errors.
+
+**Battery shows 100% on VM:**
+Expected behavior. Battery reading requires real hardware.
 
 ---
 
