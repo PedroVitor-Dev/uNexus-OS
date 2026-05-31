@@ -430,7 +430,7 @@ Rectangle {
             spacing: 8
 
             Repeater {
-           model: [
+         model: [
     { icon: "🗂", label: "Files",    command: "nautilus", args: [], windowClasses: ["org.gnome.Nautilus", "nautilus", "Nautilus"], processNames: ["nautilus"] },
     { icon: "🌐", label: "Browser",  command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
     { icon: "⚙️", label: "Settings", command: "gnome-control-center", args: [], windowClasses: ["gnome-control-center", "Gnome-control-center"], processNames: ["gnome-control-center"] },
@@ -513,23 +513,36 @@ Rectangle {
                         acceptedButtons: Qt.LeftButton
 
                         onClicked: {
-                            bounceAnim.start()
-                            if (opened)
-                             dockItem.active = true
-                            if (modelData.command === "terminal") {
-                                var opened = appLauncher.launchFirstAvailable([
-                                    "gnome-terminal",
-                                    "konsole",
-                                    "xfce4-terminal",
-                                    "xterm"
-                                ])
+    bounceAnim.start()
 
-                                if (!opened)
-                                    notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
-                            } else {
-                                root.launchDesktopApp(modelData)
-                            }
-                        }
+    if (modelData.windowClasses && modelData.windowClasses.length > 0) {
+        var focusedOrOpened = appLauncher.focusOrLaunch(
+            modelData.windowClasses,
+            modelData.command || "",
+            modelData.args || [],
+            modelData.flatpakId || ""
+        )
+
+        if (!focusedOrOpened)
+            notifCenter.send("App not found", modelData.label + " is not installed.", "⚠️")
+
+        return
+    }
+
+    if (modelData.command === "terminal") {
+        var opened = appLauncher.launchFirstAvailable([
+            "gnome-terminal",
+            "konsole",
+            "xfce4-terminal",
+            "xterm"
+        ])
+
+        if (!opened)
+            notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
+    } else {
+        root.launchDesktopApp(modelData)
+    }
+}
 
                         onContainsMouseChanged: {
                             if (containsMouse) {
