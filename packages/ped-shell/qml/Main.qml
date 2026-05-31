@@ -145,67 +145,91 @@ Window {
             Component.onCompleted: text = Qt.formatDateTime(new Date(), "hh:mm:ss")
         }
 
-        Row {
-            anchors.right: parent.right
-            anchors.rightMargin: 16
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 10
-
-            Text {
-                text: systemInfo.networkConnected ? "🌐" : "🚫"
-                color: systemInfo.networkConnected ? "#4d9eff" : "#ff4d4d"
-                font.pixelSize: 13
-                opacity: 0.8
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Text {
-                text: systemInfo.batteryCharging ? "⚡" : (systemInfo.batteryLevel < 20 ? "🪫" : "🔋")
-                font.pixelSize: 13
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Text {
-                text: systemInfo.batteryLevel + "%"
-                color: systemInfo.batteryLevel < 20 ? "#ff4d4d" : "#ffffff"
-                font.pixelSize: 12
-                opacity: 0.7
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Text {
-    visible: systemInfo.hasBattery
-    text: systemInfo.batteryCharging ? "⚡" : (systemInfo.batteryLevel < 20 ? "🪫" : "🔋")
-    font.pixelSize: 13
+Row {
+    anchors.right: parent.right
+    anchors.rightMargin: 16
     anchors.verticalCenter: parent.verticalCenter
-}
+    spacing: 10
 
-Text {
-    visible: systemInfo.hasBattery
-    text: systemInfo.batteryLevel + "%"
-    color: systemInfo.batteryLevel < 20 ? "#ff4d4d" : "#ffffff"
-    font.pixelSize: 12
-    opacity: 0.7
+    // Game Mode toggle
+Rectangle {
+    width: 26
+    height: 22
+    radius: 6
+    color: gameMode.active ? "#ff4d00" : "#1a2030"
+    border.color: gameMode.active ? "#ff6a00" : "#2a3a55"
+    border.width: 1
     anchors.verticalCenter: parent.verticalCenter
-}
 
-            Text {
-                id: dateText
-                color: "#ffffff"
-                font.pixelSize: 12
-                opacity: 0.5
-                anchors.verticalCenter: parent.verticalCenter
+    Behavior on color {
+        ColorAnimation { duration: 200 }
+    }
 
-                Timer {
-                    interval: 60000
-                    running: true
-                    repeat: true
-                    onTriggered: dateText.text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
-                }
+    Text {
+        anchors.centerIn: parent
+        text: "🎮"
+        font.pixelSize: 13
+        opacity: gameMode.active ? 1.0 : 0.5
+    }
 
-                Component.onCompleted: text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            gameMode.toggle()
+            if (gameMode.active) {
+                notifCenter.send("Game Mode ON", "Performance optimized for gaming.", "🎮")
+            } else {
+                notifCenter.send("Game Mode OFF", "System back to normal.", "💤")
             }
         }
+    }
+}
+
+    // Rede
+    Text {
+        text: systemInfo.networkConnected ? "🌐" : "🚫"
+        color: systemInfo.networkConnected ? "#4d9eff" : "#ff4d4d"
+        font.pixelSize: 13
+        opacity: 0.8
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    // Bateria
+    Text {
+        visible: systemInfo.hasBattery
+        text: systemInfo.batteryCharging ? "⚡" : (systemInfo.batteryLevel < 20 ? "🪫" : "🔋")
+        font.pixelSize: 13
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    Text {
+        visible: systemInfo.hasBattery
+        text: systemInfo.batteryLevel + "%"
+        color: systemInfo.batteryLevel < 20 ? "#ff4d4d" : "#ffffff"
+        font.pixelSize: 12
+        opacity: 0.7
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    // Data
+    Text {
+        id: dateText
+        color: "#ffffff"
+        font.pixelSize: 12
+        opacity: 0.5
+        anchors.verticalCenter: parent.verticalCenter
+
+        Timer {
+            interval: 60000
+            running: true
+            repeat: true
+            onTriggered: dateText.text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+        }
+
+        Component.onCompleted: text = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+    }
+}
 
         NumberAnimation on opacity {
             from: 0.0
