@@ -24,76 +24,140 @@ Window {
             notifCenter.send("App not found", app.label + " is not installed.", "⚠️")
     }
 
-    // Wallpaper
+// Wallpaper
+Rectangle {
+    anchors.fill: parent
+    color: "#04050d"
+
+    // Gradiente base
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "#050810" }
-            GradientStop { position: 0.5; color: "#0a0f1e" }
-            GradientStop { position: 1.0; color: "#060d18" }
+            GradientStop { position: 0.0; color: "#04050d" }
+            GradientStop { position: 0.5; color: "#080b18" }
+            GradientStop { position: 1.0; color: "#050810" }
         }
+    }
 
-        Rectangle {
-            width: 600
-            height: 600
-            radius: 300
-            x: -150
-            y: 80
-            color: "transparent"
-            border.color: "#0d2a4a"
-            border.width: 1
-            opacity: 0.4
+    // Triângulo grande esquerdo
+    Canvas {
+        width: parent.width
+        height: parent.height
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.clearRect(0, 0, width, height)
+
+            ctx.beginPath()
+            ctx.moveTo(0, height * 0.3)
+            ctx.lineTo(width * 0.35, height * 0.0)
+            ctx.lineTo(width * 0.15, height * 0.75)
+            ctx.closePath()
+            ctx.strokeStyle = "#0d3060"
+            ctx.lineWidth = 1
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.moveTo(width * 0.6, height)
+            ctx.lineTo(width, height * 0.4)
+            ctx.lineTo(width, height)
+            ctx.closePath()
+            ctx.strokeStyle = "#0d3060"
+            ctx.lineWidth = 1
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.moveTo(width * 0.7, 0)
+            ctx.lineTo(width, height * 0.25)
+            ctx.lineTo(width * 0.85, 0)
+            ctx.closePath()
+            ctx.strokeStyle = "#4d9eff"
+            ctx.lineWidth = 1
+            ctx.globalAlpha = 0.15
+            ctx.stroke()
+
+            ctx.globalAlpha = 1.0
+            ctx.beginPath()
+            ctx.moveTo(width * 0.1, height * 0.85)
+            ctx.lineTo(width * 0.3, height * 0.6)
+            ctx.lineTo(width * 0.45, height)
+            ctx.closePath()
+            ctx.strokeStyle = "#4d9eff"
+            ctx.lineWidth = 1
+            ctx.globalAlpha = 0.1
+            ctx.stroke()
         }
+    }
 
+    // Glow canto superior direito
+    Rectangle {
+        width: 500
+        height: 500
+        radius: 250
+        x: parent.width - 200
+        y: -150
+        color: "transparent"
         Rectangle {
-            width: 400
-            height: 400
-            radius: 200
-            x: parent.width - 250
-            y: parent.height - 300
-            color: "transparent"
-            border.color: "#0d2a4a"
-            border.width: 1
-            opacity: 0.3
-        }
-
-        Rectangle {
+            anchors.centerIn: parent
             width: 300
             height: 300
             radius: 150
-            x: -80
-            y: 200
-            color: "#051428"
-            opacity: 0.6
-        }
-
-        Rectangle {
-            width: 250
-            height: 250
-            radius: 125
-            x: parent.width - 180
-            y: 100
-            color: "#04111f"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            width: parent.width
-            height: 1
-            y: parent.height * 0.6
             color: "#4d9eff"
             opacity: 0.04
         }
+    }
 
-        Rectangle {
-            width: parent.width
-            height: 1
-            y: parent.height * 0.4
+    // Glow canto inferior esquerdo
+    Rectangle {
+        width: 400
+        height: 400
+        radius: 200
+        x: -150
+        y: parent.height - 200
+        color: "#4d9eff"
+        opacity: 0.03
+    }
+
+    // Partículas estáticas
+    Repeater {
+        model: 30
+        delegate: Rectangle {
+            property real px: Math.random()
+            property real py: Math.random()
+            x: px * parent.width
+            y: py * parent.height
+            width: Math.random() > 0.7 ? 3 : 1.5
+            height: width
+            radius: width
             color: "#4d9eff"
-            opacity: 0.03
+            opacity: Math.random() * 0.4 + 0.1
+
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                NumberAnimation { to: 0.05; duration: Math.random() * 2000 + 1000; easing.type: Easing.InOutSine }
+                NumberAnimation { to: Math.random() * 0.4 + 0.1; duration: Math.random() * 2000 + 1000; easing.type: Easing.InOutSine }
+            }
         }
     }
+
+    // Linhas diagonais sutis
+    Canvas {
+        width: parent.width
+        height: parent.height
+        opacity: 0.06
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.strokeStyle = "#4d9eff"
+            ctx.lineWidth = 1
+            for (var i = -height; i < width + height; i += 80) {
+                ctx.beginPath()
+                ctx.moveTo(i, 0)
+                ctx.lineTo(i + height, height)
+                ctx.stroke()
+            }
+        }
+    }
+}
 
     // Top bar
     Rectangle {
