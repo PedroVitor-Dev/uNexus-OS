@@ -11,6 +11,15 @@ Window {
 
     property string pedFont: "Exo 2"
 
+    property int dockStateVersion: 0
+
+Timer {
+    interval: 1000
+    running: true
+    repeat: true
+    onTriggered: dockStateVersion++
+}
+
  function launchDesktopApp(app) {
     var opened = false
 
@@ -421,13 +430,13 @@ Rectangle {
             spacing: 8
 
             Repeater {
-                model: [
-                    { icon: "🗂", label: "Files",    command: "xdg-open", args: [Qt.resolvedUrl(".")] },
-                    { icon: "🌐", label: "Browser",  command: "xdg-open", args: ["https://www.google.com"] },
-                    { icon: "⚙️", label: "Settings", command: "systemsettings", args: [] },
-                    { icon: "🖥", label: "Terminal", command: "terminal", args: [] },
-                    { icon: "🎮", label: "Steam", command: "steam", args: [], flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"] }
-                ]
+           model: [
+    { icon: "🗂", label: "Files",    command: "nautilus", args: [], windowClasses: ["org.gnome.Nautilus", "nautilus", "Nautilus"], processNames: ["nautilus"] },
+    { icon: "🌐", label: "Browser",  command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
+    { icon: "⚙️", label: "Settings", command: "gnome-control-center", args: [], windowClasses: ["gnome-control-center", "Gnome-control-center"], processNames: ["gnome-control-center"] },
+    { icon: "🖥", label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] },
+    { icon: "🎮", label: "Steam",    command: "steam", args: [], flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"], processNames: ["steam", "steamwebhelper"] }
+]
 
                 delegate: Rectangle {
                     id: dockItem
@@ -437,7 +446,20 @@ Rectangle {
                     radius: 12
                     color: dockItemMouse.containsMouse ? "#2a2a2a" : "transparent"
 
-                    property bool active: false
+                    property bool active: {
+    root.dockStateVersion
+
+    var hasWindowClasses = modelData.windowClasses && modelData.windowClasses.length > 0
+    var hasProcessNames = modelData.processNames && modelData.processNames.length > 0
+
+    if (hasWindowClasses && appLauncher.isWindowOpen(modelData.windowClasses))
+        return true
+
+    if (hasProcessNames && appLauncher.isProcessRunning(modelData.processNames))
+        return true
+
+    return false
+}
 
                     Behavior on width {
                         NumberAnimation { duration: 150; easing.type: Easing.OutCubic }

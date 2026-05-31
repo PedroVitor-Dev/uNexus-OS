@@ -145,3 +145,24 @@ bool AppLauncher::focusWithWmctrl(const QStringList &windowClasses)
 
     return false;
 }
+
+bool AppLauncher::isProcessRunning(const QStringList &processNames)
+{
+    if (processNames.isEmpty())
+        return false;
+
+    if (QStandardPaths::findExecutable("pgrep").isEmpty())
+        return false;
+
+    for (const QString &processName : processNames) {
+        if (processName.trimmed().isEmpty())
+            continue;
+
+        const int result = QProcess::execute("pgrep", {"-x", processName});
+
+        if (result == 0)
+            return true;
+    }
+
+    return false;
+}
