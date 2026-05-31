@@ -491,9 +491,9 @@ Rectangle {
                         acceptedButtons: Qt.LeftButton
 
                         onClicked: {
-                            dockItem.active = !dockItem.active
                             bounceAnim.start()
-
+                            if (opened)
+                             dockItem.active = true
                             if (modelData.command === "terminal") {
                                 var opened = appLauncher.launchFirstAvailable([
                                     "gnome-terminal",
