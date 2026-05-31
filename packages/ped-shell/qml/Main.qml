@@ -8,6 +8,7 @@ Window {
     height: 720
     title: "PED OS Shell"
     color: "#0a0a0a"
+    font.family: "Exo 2"
 
     // Wallpaper
     Rectangle {
