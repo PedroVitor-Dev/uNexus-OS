@@ -8,18 +8,18 @@ Item {
     opacity: 0.0
 
 property var allApps: [
-    { icon: "🎮", name: "Steam",    category: "Gaming" },
-    { icon: "🎮", name: "Lutris",   category: "Gaming" },
+    { icon: "🎮", name: "Steam",    category: "Gaming", command: "steam", args: [] },
+    { icon: "🎮", name: "Lutris",   category: "Gaming", command: "lutris", args: [] },
 
-    { icon: "🗂", name: "Files",    category: "System" },
-    { icon: "⚙️", name: "Settings", category: "System" },
-    { icon: "🖥", name: "Terminal", category: "System" },
-    { icon: "🏪", name: "Store",    category: "System" },
+    { icon: "🗂", name: "Files",    category: "System", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
+    { icon: "⚙️", name: "Settings", category: "System", command: "systemsettings", args: [] },
+    { icon: "🖥", name: "Terminal", category: "System", command: "terminal", args: [] },
+    { icon: "🏪", name: "Store",    category: "System", command: "gnome-software", args: [] },
 
-    { icon: "🌐", name: "Browser",  category: "Media" },
-    { icon: "🎵", name: "Music",    category: "Media" },
-    { icon: "📷", name: "Camera",   category: "Media" },
-    { icon: "📝", name: "Notes",    category: "Media" }
+    { icon: "🌐", name: "Browser",  category: "Media", command: "xdg-open", args: ["https://www.google.com"] },
+    { icon: "🎵", name: "Music",    category: "Media", command: "xdg-open", args: [Qt.resolvedUrl(".")] },
+    { icon: "📷", name: "Camera",   category: "Media", command: "snapshot", args: [] },
+    { icon: "📝", name: "Notes",    category: "Media", command: "gedit", args: [] }
 ]
 
     property string searchText: ""
@@ -255,7 +255,26 @@ property var allApps: [
                         id: itemMouse
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: launcher.hide()
+                        onClicked: {
+    if (modelData.command === "terminal") {
+        var opened = appLauncher.launchFirstAvailable([
+            "gnome-terminal",
+            "konsole",
+            "xfce4-terminal",
+            "xterm"
+        ])
+
+        if (!opened && notifCenter)
+            notifCenter.send("App not found", "No terminal emulator was found.", "⚠️")
+    } else {
+        var success = appLauncher.launch(modelData.command, modelData.args)
+
+        if (!success && notifCenter)
+            notifCenter.send("App not found", modelData.name + " is not installed.", "⚠️")
+    }
+
+    launcher.hide()
+}
                     }
                 }
             }

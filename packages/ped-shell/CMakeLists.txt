@@ -12,8 +12,10 @@ qt_add_executable(ped-shell
     src/main.cpp
     src/systeminfo.cpp
     src/gamemode.cpp
+    src/applauncher.cpp
     include/systeminfo.h
     include/gamemode.h
+    include/applauncher.h
 )
 
 qt_add_qml_module(ped-shell
