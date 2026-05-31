@@ -7,16 +7,20 @@ Item {
     visible: false
     opacity: 0.0
 
-    property var allApps: [
-        { icon: "🗂", name: "Files",    category: "System" },
-        { icon: "⚙️", name: "Settings", category: "System" },
-        { icon: "🖥", name: "Terminal", category: "System" },
-        { icon: "🏪", name: "Store",    category: "System" },
-        { icon: "🌐", name: "Browser",  category: "Media" },
-        { icon: "🎵", name: "Music",    category: "Media" },
-        { icon: "📷", name: "Camera",   category: "Media" },
-        { icon: "📝", name: "Notes",    category: "Media" }
-    ]
+property var allApps: [
+    { icon: "🎮", name: "Steam",    category: "Gaming" },
+    { icon: "🎮", name: "Lutris",   category: "Gaming" },
+
+    { icon: "🗂", name: "Files",    category: "System" },
+    { icon: "⚙️", name: "Settings", category: "System" },
+    { icon: "🖥", name: "Terminal", category: "System" },
+    { icon: "🏪", name: "Store",    category: "System" },
+
+    { icon: "🌐", name: "Browser",  category: "Media" },
+    { icon: "🎵", name: "Music",    category: "Media" },
+    { icon: "📷", name: "Camera",   category: "Media" },
+    { icon: "📝", name: "Notes",    category: "Media" }
+]
 
     property string searchText: ""
     property string activeCategory: "All"
@@ -165,7 +169,7 @@ Item {
             spacing: 8
 
             Repeater {
-                model: ["All", "System", "Media"]
+                model: ["All", "Gaming", "System", "Media"]
 
                 delegate: Rectangle {
                     width: catText.width + 20
