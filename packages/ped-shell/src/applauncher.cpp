@@ -221,3 +221,58 @@ bool AppLauncher::focusWithWmctrl(const QStringList &windowClasses)
 
     return false;
 }
+
+bool AppLauncher::closeWindow(const QStringList &windowClasses)
+{
+    if (windowClasses.isEmpty())
+        return false;
+
+    if (!QStandardPaths::findExecutable("hyprctl").isEmpty()) {
+        QProcess clientsProcess;
+        clientsProcess.start("hyprctl", {"clients", "-j"});
+
+        if (clientsProcess.waitForFinished(1500) &&
+            clientsProcess.exitStatus() == QProcess::NormalExit &&
+            clientsProcess.exitCode() == 0) {
+
+            const QJsonDocument document = QJsonDocument::fromJson(clientsProcess.readAllStandardOutput());
+
+            if (document.isArray()) {
+                const QJsonArray clients = document.array();
+
+                for (const QJsonValue &value : clients) {
+                    const QJsonObject client = value.toObject();
+                    const QString windowClass = client.value("class").toString();
+                    const QString address = client.value("address").toString();
+
+                    if (address.isEmpty())
+                        continue;
+
+                    for (const QString &candidate : windowClasses) {
+                        if (windowClass.compare(candidate, Qt::CaseInsensitive) != 0)
+                            continue;
+
+                        const int result = QProcess::execute("hyprctl", {
+                            "dispatch",
+                            "closewindow",
+                            "address:" + address
+                        });
+
+                        return result == 0;
+                    }
+                }
+            }
+        }
+    }
+
+    if (!QStandardPaths::findExecutable("wmctrl").isEmpty()) {
+        for (const QString &windowClass : windowClasses) {
+            const int result = QProcess::execute("wmctrl", {"-x", "-c", windowClass});
+
+            if (result == 0)
+                return true;
+        }
+    }
+
+    return false;
+}
