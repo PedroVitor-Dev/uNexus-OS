@@ -35,6 +35,9 @@ bool AppLauncher::launchFirstAvailable(const QStringList &commands, const QStrin
 
 bool AppLauncher::isInstalled(const QString &command)
 {
+    if (command.trimmed().isEmpty())
+        return false;
+
     return !QStandardPaths::findExecutable(command).isEmpty();
 }
 
@@ -51,6 +54,78 @@ bool AppLauncher::isFlatpakInstalled(const QString &flatpakId)
     process.waitForFinished(1500);
 
     return process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0;
+}
+
+bool AppLauncher::isWindowOpen(const QStringList &windowClasses)
+{
+    if (windowClasses.isEmpty())
+        return false;
+
+    if (!QStandardPaths::findExecutable("hyprctl").isEmpty()) {
+        QProcess clientsProcess;
+        clientsProcess.start("hyprctl", {"clients", "-j"});
+
+        if (clientsProcess.waitForFinished(1500) &&
+            clientsProcess.exitStatus() == QProcess::NormalExit &&
+            clientsProcess.exitCode() == 0) {
+
+            const QJsonDocument document = QJsonDocument::fromJson(clientsProcess.readAllStandardOutput());
+
+            if (document.isArray()) {
+                const QJsonArray clients = document.array();
+
+                for (const QJsonValue &value : clients) {
+                    const QJsonObject client = value.toObject();
+                    const QString windowClass = client.value("class").toString();
+
+                    for (const QString &candidate : windowClasses) {
+                        if (windowClass.compare(candidate, Qt::CaseInsensitive) == 0)
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+
+    if (!QStandardPaths::findExecutable("wmctrl").isEmpty()) {
+        QProcess process;
+        process.start("wmctrl", {"-lx"});
+
+        if (process.waitForFinished(1500) &&
+            process.exitStatus() == QProcess::NormalExit &&
+            process.exitCode() == 0) {
+
+            const QString output = QString::fromUtf8(process.readAllStandardOutput());
+
+            for (const QString &candidate : windowClasses) {
+                if (output.contains(candidate, Qt::CaseInsensitive))
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool AppLauncher::isProcessRunning(const QStringList &processNames)
+{
+    if (processNames.isEmpty())
+        return false;
+
+    if (QStandardPaths::findExecutable("pgrep").isEmpty())
+        return false;
+
+    for (const QString &processName : processNames) {
+        if (processName.trimmed().isEmpty())
+            continue;
+
+        const int result = QProcess::execute("pgrep", {"-x", processName});
+
+        if (result == 0)
+            return true;
+    }
+
+    return false;
 }
 
 bool AppLauncher::focusWindow(const QStringList &windowClasses)
@@ -139,27 +214,6 @@ bool AppLauncher::focusWithWmctrl(const QStringList &windowClasses)
 
     for (const QString &windowClass : windowClasses) {
         const int result = QProcess::execute("wmctrl", {"-x", "-a", windowClass});
-
-        if (result == 0)
-            return true;
-    }
-
-    return false;
-}
-
-bool AppLauncher::isProcessRunning(const QStringList &processNames)
-{
-    if (processNames.isEmpty())
-        return false;
-
-    if (QStandardPaths::findExecutable("pgrep").isEmpty())
-        return false;
-
-    for (const QString &processName : processNames) {
-        if (processName.trimmed().isEmpty())
-            continue;
-
-        const int result = QProcess::execute("pgrep", {"-x", processName});
 
         if (result == 0)
             return true;
