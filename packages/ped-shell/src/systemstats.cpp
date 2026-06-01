@@ -150,24 +150,35 @@ void SystemStats::readGpu() {
 
 void SystemStats::readRam() {
     QFile file("/proc/meminfo");
-    if (!file.open(QIODevice::ReadOnly)) return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
 
     QTextStream stream(&file);
-    long total = 0, available = 0;
+    long total = 0;
+    long available = 0;
 
     while (!stream.atEnd()) {
         QString line = stream.readLine();
-        if (line.startsWith("MemTotal:"))
-            total = line.split(QRegularExpression("\\s+"))[1].toLong();
-        if (line.startsWith("MemAvailable:"))
-            available = line.split(QRegularExpression("\\s+"))[1].toLong();
+        QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+
+        if (parts.size() < 2)
+            continue;
+
+        if (parts[0] == "MemTotal:")
+            total = parts[1].toLong();
+
+        if (parts[0] == "MemAvailable:")
+            available = parts[1].toLong();
     }
 
-    if (total > 0) {
-        int usage = (int)(100.0 * (total - available) / total);
-        if (usage != m_ramUsage) {
-            m_ramUsage = usage;
-            emit ramUsageChanged();
-        }
+    if (total <= 0 || available <= 0)
+        return;
+
+    int usage = static_cast<int>(100.0 * (total - available) / total);
+
+    if (usage != m_ramUsage) {
+        m_ramUsage = usage;
+        emit ramUsageChanged();
     }
+}
 }
