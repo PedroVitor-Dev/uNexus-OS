@@ -658,7 +658,7 @@ Window {
         z: 150
     }
 
-    MouseArea {
+MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         z: 1
@@ -687,8 +687,9 @@ Window {
             notifCenter.send("Welcome back!", "PED OS is ready.", "👋")
         }
     }
+
     FpsOverlay {
-    anchors.fill: parent
-    z: 130
-}
+        anchors.fill: parent
+        z: 130
+    }
 }
