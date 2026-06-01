@@ -153,28 +153,31 @@ void SystemStats::readRam() {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    QTextStream stream(&file);
     long total = 0;
     long available = 0;
 
-    while (!stream.atEnd()) {
-        QString line = stream.readLine();
-        QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+    while (!file.atEnd()) {
+        const QString line = QString::fromUtf8(file.readLine()).trimmed();
 
-        if (parts.size() < 2)
-            continue;
+        if (line.startsWith("MemTotal:")) {
+            QString value = line;
+            value.remove("MemTotal:");
+            value.remove("kB");
+            total = value.trimmed().toLong();
+        }
 
-        if (parts[0] == "MemTotal:")
-            total = parts[1].toLong();
-
-        if (parts[0] == "MemAvailable:")
-            available = parts[1].toLong();
+        if (line.startsWith("MemAvailable:")) {
+            QString value = line;
+            value.remove("MemAvailable:");
+            value.remove("kB");
+            available = value.trimmed().toLong();
+        }
     }
 
     if (total <= 0 || available <= 0)
         return;
 
-    int usage = static_cast<int>(100.0 * (total - available) / total);
+    int usage = static_cast<int>(((total - available) * 100) / total);
 
     if (usage != m_ramUsage) {
         m_ramUsage = usage;
