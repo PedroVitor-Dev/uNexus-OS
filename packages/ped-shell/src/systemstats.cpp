@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QRegularExpression>
+#include <sys/sysinfo.h>
 
 SystemStats::SystemStats(QObject *parent) : QObject(parent) {
     connect(&m_timer, &QTimer::timeout, this, &SystemStats::update);
@@ -149,35 +150,28 @@ void SystemStats::readGpu() {
 }
 
 void SystemStats::readRam() {
-    QFile file("/proc/meminfo");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    struct sysinfo info;
+
+    if (sysinfo(&info) != 0)
         return;
 
-    long total = 0;
-    long available = 0;
+    unsigned long long total = info.totalram;
+    unsigned long long freeRam = info.freeram;
+    unsigned long long bufferRam = info.bufferram;
+    unsigned long long sharedRam = info.sharedram;
 
-    while (!file.atEnd()) {
-        const QString line = QString::fromUtf8(file.readLine()).trimmed();
+    total *= info.mem_unit;
+    freeRam *= info.mem_unit;
+    bufferRam *= info.mem_unit;
+    sharedRam *= info.mem_unit;
 
-        if (line.startsWith("MemTotal:")) {
-            QString value = line;
-            value.remove("MemTotal:");
-            value.remove("kB");
-            total = value.trimmed().toLong();
-        }
-
-        if (line.startsWith("MemAvailable:")) {
-            QString value = line;
-            value.remove("MemAvailable:");
-            value.remove("kB");
-            available = value.trimmed().toLong();
-        }
-    }
-
-    if (total <= 0 || available <= 0)
+    if (total == 0)
         return;
 
-    int usage = static_cast<int>(((total - available) * 100) / total);
+    unsigned long long available = freeRam + bufferRam;
+    unsigned long long used = total > available ? total - available : 0;
+
+    int usage = static_cast<int>((used * 100) / total);
 
     if (usage != m_ramUsage) {
         m_ramUsage = usage;
