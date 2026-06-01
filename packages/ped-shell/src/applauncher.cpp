@@ -129,7 +129,14 @@ bool AppLauncher::isProcessRunning(const QStringList &processNames)
         if (processName.trimmed().isEmpty())
             continue;
 
-        const int result = QProcess::execute("pgrep", {"-x", processName});
+      QStringList args;
+
+if (processName.length() > 15)
+    args = {"-f", processName};
+else
+    args = {"-x", processName};
+
+const int result = QProcess::execute("pgrep", args);
 
         if (result == 0)
             return true;

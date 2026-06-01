@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QRegularExpression>
-#include <QDebug>
+#include <sys/sysinfo.h>
 
 SystemStats::SystemStats(QObject *parent) : QObject(parent) {
     connect(&m_timer, &QTimer::timeout, this, &SystemStats::update);
@@ -150,40 +150,25 @@ void SystemStats::readGpu() {
 }
 
 void SystemStats::readRam() {
-    QFile file("/proc/meminfo");
+    struct sysinfo info;
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "SystemStats: failed to open /proc/meminfo";
-        return;
-    }
-
-    long long total = 0;
-    long long available = 0;
-
-    while (!file.atEnd()) {
-        const QByteArray line = file.readLine().simplified();
-
-        if (line.startsWith("MemTotal:")) {
-            QList<QByteArray> parts = line.split(' ');
-            if (parts.size() >= 2)
-                total = parts[1].toLongLong();
-        }
-
-        if (line.startsWith("MemAvailable:")) {
-            QList<QByteArray> parts = line.split(' ');
-            if (parts.size() >= 2)
-                available = parts[1].toLongLong();
-        }
-    }
-
-    qDebug() << "SystemStats RAM:" << "total=" << total << "available=" << available;
-
-    if (total <= 0 || available <= 0)
+    if (sysinfo(&info) != 0)
         return;
 
-    int usage = static_cast<int>(((total - available) * 100) / total);
+    unsigned long long total = static_cast<unsigned long long>(info.totalram) * info.mem_unit;
+    unsigned long long freeRam = static_cast<unsigned long long>(info.freeram) * info.mem_unit;
+    unsigned long long bufferRam = static_cast<unsigned long long>(info.bufferram) * info.mem_unit;
 
-    qDebug() << "SystemStats RAM usage:" << usage;
+    if (total == 0)
+        return;
+
+    unsigned long long available = freeRam + bufferRam;
+
+    if (available > total)
+        available = freeRam;
+
+    unsigned long long used = total - available;
+    int usage = static_cast<int>((used * 100) / total);
 
     if (usage != m_ramUsage) {
         m_ramUsage = usage;
