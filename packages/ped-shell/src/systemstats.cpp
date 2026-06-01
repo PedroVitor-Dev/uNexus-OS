@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QProcess>
+#include <QRegularExpression>
 
 SystemStats::SystemStats(QObject *parent) : QObject(parent) {
     connect(&m_timer, &QTimer::timeout, this, &SystemStats::update);
