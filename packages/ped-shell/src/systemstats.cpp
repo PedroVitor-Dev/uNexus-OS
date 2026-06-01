@@ -53,48 +53,98 @@ void SystemStats::readCpu() {
 }
 
 void SystemStats::readGpu() {
-    // AMD
-    QDir amdDir("/sys/class/drm");
-    QStringList cards = amdDir.entryList(QStringList() << "card*", QDir::Dirs);
+    bool foundGpuUsage = false;
+    bool foundGpuTemp = false;
+    int newGpuUsage = 0;
+    int newGpuTemp = 0;
+
+    QDir drmDir("/sys/class/drm");
+    QStringList cards = drmDir.entryList(QStringList() << "card*", QDir::Dirs | QDir::NoDotAndDotDot);
+
     for (const QString &card : cards) {
         QString busyPath = "/sys/class/drm/" + card + "/device/gpu_busy_percent";
-        QString tempPath = "/sys/class/drm/" + card + "/device/hwmon/hwmon0/temp1_input";
 
         QFile busyFile(busyPath);
         if (busyFile.open(QIODevice::ReadOnly)) {
-            QTextStream s(&busyFile);
-            int usage = s.readAll().trimmed().toInt();
-            if (usage != m_gpuUsage) {
-                m_gpuUsage = usage;
-                emit gpuUsageChanged();
+            QTextStream stream(&busyFile);
+            bool ok = false;
+            int usage = stream.readAll().trimmed().toInt(&ok);
+
+            if (ok) {
+                newGpuUsage = usage;
+                foundGpuUsage = true;
             }
         }
 
-        QFile tempFile(tempPath);
-        if (tempFile.open(QIODevice::ReadOnly)) {
-            QTextStream s(&tempFile);
-            int temp = s.readAll().trimmed().toInt() / 1000;
-            if (temp != m_gpuTemp) {
-                m_gpuTemp = temp;
-                emit gpuTempChanged();
+        QDir hwmonDir("/sys/class/drm/" + card + "/device/hwmon");
+        QStringList hwmons = hwmonDir.entryList(QStringList() << "hwmon*", QDir::Dirs | QDir::NoDotAndDotDot);
+
+        for (const QString &hwmon : hwmons) {
+            QString tempPath = hwmonDir.absoluteFilePath(hwmon + "/temp1_input");
+
+            QFile tempFile(tempPath);
+            if (tempFile.open(QIODevice::ReadOnly)) {
+                QTextStream stream(&tempFile);
+                bool ok = false;
+                int temp = stream.readAll().trimmed().toInt(&ok);
+
+                if (ok) {
+                    newGpuTemp = temp / 1000;
+                    foundGpuTemp = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundGpuUsage || foundGpuTemp)
+            break;
+    }
+
+    if (!foundGpuUsage || !foundGpuTemp) {
+        QProcess proc;
+        proc.start("nvidia-smi", {
+            "--query-gpu=utilization.gpu,temperature.gpu",
+            "--format=csv,noheader,nounits"
+        });
+
+        if (proc.waitForFinished(500) && proc.exitCode() == 0) {
+            QString out = proc.readAllStandardOutput().trimmed();
+            QStringList parts = out.split(",");
+
+            if (parts.size() >= 2) {
+                bool usageOk = false;
+                bool tempOk = false;
+
+                int usage = parts[0].trimmed().toInt(&usageOk);
+                int temp = parts[1].trimmed().toInt(&tempOk);
+
+                if (usageOk) {
+                    newGpuUsage = usage;
+                    foundGpuUsage = true;
+                }
+
+                if (tempOk) {
+                    newGpuTemp = temp;
+                    foundGpuTemp = true;
+                }
             }
         }
     }
 
-    // NVIDIA fallback
-    if (m_gpuUsage == 0) {
-        QProcess proc;
-        proc.start("nvidia-smi", {"--query-gpu=utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits"});
-        if (proc.waitForFinished(500)) {
-            QString out = proc.readAllStandardOutput().trimmed();
-            QStringList parts = out.split(",");
-            if (parts.size() >= 2) {
-                int usage = parts[0].trimmed().toInt();
-                int temp  = parts[1].trimmed().toInt();
-                if (usage != m_gpuUsage) { m_gpuUsage = usage; emit gpuUsageChanged(); }
-                if (temp  != m_gpuTemp)  { m_gpuTemp  = temp;  emit gpuTempChanged(); }
-            }
-        }
+    if (m_hasGpuStats != foundGpuUsage || m_hasGpuTemp != foundGpuTemp) {
+        m_hasGpuStats = foundGpuUsage;
+        m_hasGpuTemp = foundGpuTemp;
+        emit gpuAvailabilityChanged();
+    }
+
+    if (m_gpuUsage != newGpuUsage) {
+        m_gpuUsage = newGpuUsage;
+        emit gpuUsageChanged();
+    }
+
+    if (m_gpuTemp != newGpuTemp) {
+        m_gpuTemp = newGpuTemp;
+        emit gpuTempChanged();
     }
 }
 

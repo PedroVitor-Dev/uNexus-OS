@@ -50,27 +50,31 @@ Item {
                 }
             }
 
-            Row {
-                spacing: 6
-                Text { text: "GPU"; color: "#aaaaaa"; font.pixelSize: 11; font.family: "Exo 2"; width: 35 }
-                Text {
-                    text: systemStats.gpuUsage + "%"
-                    color: systemStats.gpuUsage > 80 ? "#ff4d4d" : systemStats.gpuUsage > 50 ? "#ffaa00" : "#00ff88"
-                    font.pixelSize: 11
-                    font.family: "Exo 2"
-                }
-            }
+Row {
+    spacing: 6
+    Text { text: "GPU"; color: "#aaaaaa"; font.pixelSize: 11; font.family: "Exo 2"; width: 35 }
+    Text {
+        text: systemStats.hasGpuStats ? systemStats.gpuUsage + "%" : "N/A"
+        color: systemStats.hasGpuStats
+               ? (systemStats.gpuUsage > 80 ? "#ff4d4d" : systemStats.gpuUsage > 50 ? "#ffaa00" : "#00ff88")
+               : "#777777"
+        font.pixelSize: 11
+        font.family: "Exo 2"
+    }
+}
 
-            Row {
-                spacing: 6
-                Text { text: "TEMP"; color: "#aaaaaa"; font.pixelSize: 11; font.family: "Exo 2"; width: 35 }
-                Text {
-                    text: systemStats.gpuTemp + "°C"
-                    color: systemStats.gpuTemp > 85 ? "#ff4d4d" : systemStats.gpuTemp > 70 ? "#ffaa00" : "#00ff88"
-                    font.pixelSize: 11
-                    font.family: "Exo 2"
-                }
-            }
+Row {
+    spacing: 6
+    Text { text: "TEMP"; color: "#aaaaaa"; font.pixelSize: 11; font.family: "Exo 2"; width: 35 }
+    Text {
+        text: systemStats.hasGpuTemp ? systemStats.gpuTemp + "C" : "N/A"
+        color: systemStats.hasGpuTemp
+               ? (systemStats.gpuTemp > 85 ? "#ff4d4d" : systemStats.gpuTemp > 70 ? "#ffaa00" : "#00ff88")
+               : "#777777"
+        font.pixelSize: 11
+        font.family: "Exo 2"
+    }
+}
 
             Row {
                 spacing: 6

@@ -10,6 +10,8 @@ class SystemStats : public QObject {
     Q_PROPERTY(int gpuUsage READ gpuUsage NOTIFY gpuUsageChanged)
     Q_PROPERTY(int gpuTemp READ gpuTemp NOTIFY gpuTempChanged)
     Q_PROPERTY(int ramUsage READ ramUsage NOTIFY ramUsageChanged)
+    Q_PROPERTY(bool hasGpuStats READ hasGpuStats NOTIFY gpuAvailabilityChanged)
+    Q_PROPERTY(bool hasGpuTemp READ hasGpuTemp NOTIFY gpuAvailabilityChanged)
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
 
 public:
@@ -20,6 +22,8 @@ public:
     int gpuUsage() const { return m_gpuUsage; }
     int gpuTemp() const { return m_gpuTemp; }
     int ramUsage() const { return m_ramUsage; }
+    bool hasGpuStats() const { return m_hasGpuStats; }
+    bool hasGpuTemp() const { return m_hasGpuTemp; }
     bool visible() const { return m_visible; }
 
     void setVisible(bool v) {
@@ -34,6 +38,7 @@ signals:
     void gpuUsageChanged();
     void gpuTempChanged();
     void ramUsageChanged();
+    void gpuAvailabilityChanged();
     void visibleChanged();
 
 private slots:
@@ -44,6 +49,8 @@ private:
     int m_gpuUsage = 0;
     int m_gpuTemp = 0;
     int m_ramUsage = 0;
+    bool m_hasGpuStats = false;
+    bool m_hasGpuTemp = false;
     bool m_visible = false;
     QTimer m_timer;
 
