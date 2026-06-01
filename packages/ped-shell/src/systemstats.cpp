@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QDebug>
 
 SystemStats::SystemStats(QObject *parent) : QObject(parent) {
     connect(&m_timer, &QTimer::timeout, this, &SystemStats::update);
@@ -151,34 +152,38 @@ void SystemStats::readGpu() {
 void SystemStats::readRam() {
     QFile file("/proc/meminfo");
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "SystemStats: failed to open /proc/meminfo";
         return;
+    }
 
     long long total = 0;
     long long available = 0;
 
     while (!file.atEnd()) {
-        const QByteArray line = file.readLine();
+        const QByteArray line = file.readLine().simplified();
 
         if (line.startsWith("MemTotal:")) {
-            QList<QByteArray> parts = line.simplified().split(' ');
-
+            QList<QByteArray> parts = line.split(' ');
             if (parts.size() >= 2)
                 total = parts[1].toLongLong();
         }
 
         if (line.startsWith("MemAvailable:")) {
-            QList<QByteArray> parts = line.simplified().split(' ');
-
+            QList<QByteArray> parts = line.split(' ');
             if (parts.size() >= 2)
                 available = parts[1].toLongLong();
         }
     }
 
+    qDebug() << "SystemStats RAM:" << "total=" << total << "available=" << available;
+
     if (total <= 0 || available <= 0)
         return;
 
     int usage = static_cast<int>(((total - available) * 100) / total);
+
+    qDebug() << "SystemStats RAM usage:" << usage;
 
     if (usage != m_ramUsage) {
         m_ramUsage = usage;
