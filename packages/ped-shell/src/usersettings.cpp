@@ -6,6 +6,7 @@ UserSettings::UserSettings(QObject *parent)
 {
     m_themeIndex = m_settings.value("appearance/themeIndex", 0).toInt();
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
+    m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
 }
 
 void UserSettings::setThemeIndex(int themeIndex)
@@ -32,4 +33,14 @@ void UserSettings::setStatsOverlayVisible(bool visible)
     m_statsOverlayVisible = visible;
     m_settings.setValue("appearance/statsOverlayVisible", m_statsOverlayVisible);
     emit statsOverlayVisibleChanged();
+}
+
+void UserSettings::setFirstSetupCompleted(bool completed)
+{
+    if (m_firstSetupCompleted == completed)
+        return;
+
+    m_firstSetupCompleted = completed;
+    m_settings.setValue("setup/firstSetupCompleted", m_firstSetupCompleted);
+    emit firstSetupCompletedChanged();
 }

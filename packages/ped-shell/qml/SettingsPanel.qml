@@ -228,6 +228,29 @@ Item {
                             label: "Battery"
                             value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : "Not available"
                         }
+                        Rectangle {
+                            width: parent.width
+                            height: 34
+                            radius: 7
+                            color: setupMouse.containsMouse ? "#254160" : "#172233"
+                            border.color: root.themeAccent
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "Open First Setup"
+                                color: "#b7ddff"
+                                font.pixelSize: 12
+                                font.family: root.pedFont
+                            }
+
+                            MouseArea {
+                                id: setupMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: firstSetup.show()
+                            }
+                        }
                     }
 
                     SettingsSection {

@@ -34,6 +34,7 @@ qt_add_qml_module(ped-shell
         qml/FpsOverlay.qml
         qml/SettingsPanel.qml
         qml/GameSettingsPanel.qml
+        qml/FirstSetupPanel.qml
 )
 
 target_include_directories(ped-shell PRIVATE include)

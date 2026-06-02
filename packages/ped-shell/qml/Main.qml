@@ -772,6 +772,9 @@ MouseArea {
         onLoginSuccess: {
             loginScreen.destroy()
             notifCenter.send("Welcome back!", "PED OS is ready.", "👋")
+
+            if (!userSettings.firstSetupCompleted)
+                firstSetup.show()
         }
     }
 
@@ -790,5 +793,11 @@ MouseArea {
         id: gameSettings
         anchors.fill: parent
         z: 191
+    }
+
+    FirstSetupPanel {
+        id: firstSetup
+        anchors.fill: parent
+        z: 195
     }
 }
