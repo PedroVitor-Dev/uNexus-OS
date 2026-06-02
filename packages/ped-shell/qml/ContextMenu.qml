@@ -8,6 +8,8 @@ Item {
     property int menuX: 0
     property int menuY: 0
 
+    signal openSettingsRequested()
+
     function show(x, y) {
         menuX = x
         menuY = y
@@ -113,7 +115,12 @@ Item {
                         id: itemMouse
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: contextMenu.hide()
+                        onClicked: {
+                            if (modelData.label === "Settings")
+                                contextMenu.openSettingsRequested()
+
+                            contextMenu.hide()
+                        }
                     }
                 }
             }

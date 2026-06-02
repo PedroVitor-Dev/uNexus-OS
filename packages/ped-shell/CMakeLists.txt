@@ -30,6 +30,7 @@ qt_add_qml_module(ped-shell
         qml/ContextMenu.qml
         qml/NotificationCenter.qml
         qml/FpsOverlay.qml
+        qml/SettingsPanel.qml
 )
 
 target_include_directories(ped-shell PRIVATE include)

@@ -11,7 +11,7 @@ Item {
         { icon: "🎮", name: "Steam",  category: "Gaming", command: "steam",  flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"] },
         { icon: "🎮", name: "Lutris", category: "Gaming", command: "lutris", flatpakId: "net.lutris.Lutris", windowClasses: ["lutris", "Lutris"] },
         { icon: "🗂", name: "Files",    category: "System", command: "nautilus", args: [] },
-        { icon: "⚙️", name: "Settings", category: "System", command: "gnome-control-center", args: [] },
+        { icon: "⚙️", name: "Settings", category: "System", internalAction: "settings" },
         { icon: "🖥", name: "Terminal", category: "System", command: "gnome-terminal", args: [] },
         { icon: "🏪", name: "Store",    category: "System", command: "gnome-software", args: [] },
         { icon: "🌐", name: "Browser",  category: "Media", command: "firefox", args: [] },
@@ -22,6 +22,7 @@ Item {
 
     property string searchText: ""
     property string activeCategory: "All"
+    property var settingsPanel: null
 
     function filteredApps() {
         return allApps.filter(function(a) {
@@ -33,6 +34,13 @@ Item {
     }
 
 function launchApp(app) {
+    if (app.internalAction === "settings") {
+        launcher.hide()
+        if (settingsPanel)
+            settingsPanel.show()
+        return
+    }
+
     var opened = false
     var isGamingApp = app.category === "Gaming"
 

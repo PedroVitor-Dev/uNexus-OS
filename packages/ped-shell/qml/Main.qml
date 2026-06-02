@@ -20,6 +20,11 @@ Window {
     }
 
     function launchDesktopApp(app) {
+    if (app.internalAction === "settings") {
+        pedSettings.show()
+        return
+    }
+
     var opened = false
     var isGamingApp = app.gaming === true
 
@@ -445,7 +450,7 @@ Window {
                 model: [
                     { icon: "🗂", label: "Files", command: "nautilus", args: [], windowClasses: ["org.gnome.Nautilus", "nautilus", "Nautilus"], processNames: ["nautilus"] },
                     { icon: "🌐", label: "Browser", command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
-                    { icon: "⚙️", label: "Settings", command: "gnome-control-center", args: [], windowClasses: ["gnome-control-center", "Gnome-control-center"], processNames: ["gnome-control-center"] },
+                    { icon: "⚙️", label: "Settings", internalAction: "settings" },
                     { icon: "🖥", label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] },
                     { icon: "🎮", label: "Steam", command: "steam", args: [], flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"], processNames: ["steam", "steamwebhelper"], gaming: true }
                 ]
@@ -657,12 +662,14 @@ Window {
         id: pedLauncher
         anchors.fill: parent
         z: 100
+        settingsPanel: pedSettings
     }
 
     ContextMenu {
         id: contextMenu
         anchors.fill: parent
         z: 150
+        onOpenSettingsRequested: pedSettings.show()
     }
 
 MouseArea {
@@ -698,5 +705,11 @@ MouseArea {
     FpsOverlay {
         anchors.fill: parent
         z: 130
+    }
+
+    SettingsPanel {
+        id: pedSettings
+        anchors.fill: parent
+        z: 190
     }
 }
