@@ -56,7 +56,7 @@ Item {
         anchors.centerIn: parent
         radius: 14
         color: "#0e1520"
-        border.color: "#2d5f8f"
+        border.color: root.themeAccent
         border.width: 1
 
         MouseArea { anchors.fill: parent }
@@ -157,7 +157,40 @@ Item {
                         SettingsOptionRow {
                             width: parent.width
                             label: "Theme"
-                            value: "PED Dark"
+                            value: root.themeName
+                        }
+
+                        Row {
+                            width: parent.width
+                            spacing: 8
+
+                            ThemeButton {
+                                label: "Neon"
+                                swatch: "#4d9eff"
+                                active: root.themeIndex === 0
+                                onClicked: root.applyTheme(0)
+                            }
+
+                            ThemeButton {
+                                label: "Violet"
+                                swatch: "#b86cff"
+                                active: root.themeIndex === 1
+                                onClicked: root.applyTheme(1)
+                            }
+
+                            ThemeButton {
+                                label: "Toxic"
+                                swatch: "#00ff88"
+                                active: root.themeIndex === 2
+                                onClicked: root.applyTheme(2)
+                            }
+
+                            ThemeButton {
+                                label: "Ember"
+                                swatch: "#ff6a2a"
+                                active: root.themeIndex === 3
+                                onClicked: root.applyTheme(3)
+                            }
                         }
 
                         SettingsOptionRow {
@@ -224,7 +257,7 @@ Item {
                             height: 34
                             radius: 7
                             color: repoMouse.containsMouse ? "#254160" : "#172233"
-                            border.color: "#2d5f8f"
+                            border.color: root.themeAccent
                             border.width: 1
 
                             Text {
@@ -272,7 +305,7 @@ Item {
 
             Text {
                 text: section.title
-                color: "#4d9eff"
+                color: root.themeAccent
                 font.pixelSize: 11
                 font.family: root.pedFont
                 font.letterSpacing: 1
@@ -335,6 +368,50 @@ Item {
         }
     }
 
+    component ThemeButton: Rectangle {
+        id: themeButton
+        property string label: ""
+        property color swatch: "#4d9eff"
+        property bool active: false
+        signal clicked()
+
+        width: Math.floor((parent.width - 24) / 4)
+        height: 42
+        radius: 8
+        color: themeMouse.containsMouse ? "#1b2a40" : "#172233"
+        border.color: active ? swatch : "#223247"
+        border.width: active ? 2 : 1
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            width: 14
+            height: 14
+            radius: 7
+            color: themeButton.swatch
+        }
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 28
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            text: themeButton.label
+            color: themeButton.active ? "#ffffff" : "#8ea4bd"
+            font.pixelSize: 10
+            font.family: root.pedFont
+            elide: Text.ElideRight
+        }
+
+        MouseArea {
+            id: themeMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: themeButton.clicked()
+        }
+    }
     component SettingsToggle: Rectangle {
         id: toggleRow
         property string label: ""

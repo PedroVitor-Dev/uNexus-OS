@@ -10,6 +10,55 @@ Window {
     color: "#0a0a0a"
 
     property string pedFont: "Exo 2"
+    property int themeIndex: 0
+    property string themeName: "Neon Blue"
+    property color themeBgTop: "#04050d"
+    property color themeBgMid: "#080b18"
+    property color themeBgBottom: "#050810"
+    property color themeAccent: "#4d9eff"
+    property color themeAccentDim: "#0d3060"
+    property color themeGlow: "#4d9eff"
+
+    function applyTheme(index) {
+        themeIndex = index
+
+        if (index === 1) {
+            themeName = "Cyber Violet"
+            themeBgTop = "#0b0414"
+            themeBgMid = "#150a2a"
+            themeBgBottom = "#06040d"
+            themeAccent = "#b86cff"
+            themeAccentDim = "#3a1a66"
+            themeGlow = "#ff4df0"
+        } else if (index === 2) {
+            themeName = "Toxic Green"
+            themeBgTop = "#03100b"
+            themeBgMid = "#071b12"
+            themeBgBottom = "#020807"
+            themeAccent = "#00ff88"
+            themeAccentDim = "#0b4a31"
+            themeGlow = "#9dff00"
+        } else if (index === 3) {
+            themeName = "Ember Core"
+            themeBgTop = "#120606"
+            themeBgMid = "#24100a"
+            themeBgBottom = "#090404"
+            themeAccent = "#ff6a2a"
+            themeAccentDim = "#5a2413"
+            themeGlow = "#ffcc33"
+        } else {
+            themeName = "Neon Blue"
+            themeBgTop = "#04050d"
+            themeBgMid = "#080b18"
+            themeBgBottom = "#050810"
+            themeAccent = "#4d9eff"
+            themeAccentDim = "#0d3060"
+            themeGlow = "#4d9eff"
+        }
+
+        wallpaperLines.requestPaint()
+        diagonalGrid.requestPaint()
+    }
     property int dockStateVersion: 0
 
     Timer {
@@ -69,19 +118,20 @@ Window {
 
     Rectangle {
         anchors.fill: parent
-        color: "#04050d"
+        color: root.themeBgTop
 
         Rectangle {
             anchors.fill: parent
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: "#04050d" }
-                GradientStop { position: 0.5; color: "#080b18" }
-                GradientStop { position: 1.0; color: "#050810" }
+                GradientStop { position: 0.0; color: root.themeBgTop }
+                GradientStop { position: 0.5; color: root.themeBgMid }
+                GradientStop { position: 1.0; color: root.themeBgBottom }
             }
         }
 
         Canvas {
+            id: wallpaperLines
             width: parent.width
             height: parent.height
             onPaint: {
@@ -93,7 +143,7 @@ Window {
                 ctx.lineTo(width * 0.35, height * 0.0)
                 ctx.lineTo(width * 0.15, height * 0.75)
                 ctx.closePath()
-                ctx.strokeStyle = "#0d3060"
+                ctx.strokeStyle = root.themeAccentDim
                 ctx.lineWidth = 1
                 ctx.stroke()
 
@@ -102,7 +152,7 @@ Window {
                 ctx.lineTo(width, height * 0.4)
                 ctx.lineTo(width, height)
                 ctx.closePath()
-                ctx.strokeStyle = "#0d3060"
+                ctx.strokeStyle = root.themeAccentDim
                 ctx.lineWidth = 1
                 ctx.stroke()
 
@@ -111,7 +161,7 @@ Window {
                 ctx.lineTo(width, height * 0.25)
                 ctx.lineTo(width * 0.85, 0)
                 ctx.closePath()
-                ctx.strokeStyle = "#4d9eff"
+                ctx.strokeStyle = root.themeAccent
                 ctx.lineWidth = 1
                 ctx.globalAlpha = 0.15
                 ctx.stroke()
@@ -122,7 +172,7 @@ Window {
                 ctx.lineTo(width * 0.3, height * 0.6)
                 ctx.lineTo(width * 0.45, height)
                 ctx.closePath()
-                ctx.strokeStyle = "#4d9eff"
+                ctx.strokeStyle = root.themeAccent
                 ctx.lineWidth = 1
                 ctx.globalAlpha = 0.1
                 ctx.stroke()
@@ -142,8 +192,8 @@ Window {
                 width: 300
                 height: 300
                 radius: 150
-                color: "#4d9eff"
-                opacity: 0.04
+                color: root.themeGlow
+                opacity: 0.05
             }
         }
 
@@ -153,8 +203,8 @@ Window {
             radius: 200
             x: -150
             y: parent.height - 200
-            color: "#4d9eff"
-            opacity: 0.03
+            color: root.themeGlow
+            opacity: 0.04
         }
 
         Repeater {
@@ -169,24 +219,25 @@ Window {
                 width: Math.random() > 0.7 ? 3 : 1.5
                 height: width
                 radius: width
-                color: "#4d9eff"
+                color: root.themeAccent
                 opacity: Math.random() * 0.4 + 0.1
 
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
                     NumberAnimation { to: 0.05; duration: Math.random() * 2000 + 1000; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: Math.random() * 0.4 + 0.1; duration: Math.random() * 2000 + 1000; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: Math.random() * 0.5 + 0.12; duration: Math.random() * 2000 + 1000; easing.type: Easing.InOutSine }
                 }
             }
         }
 
         Canvas {
+            id: diagonalGrid
             width: parent.width
             height: parent.height
-            opacity: 0.06
+            opacity: 0.08
             onPaint: {
                 var ctx = getContext("2d")
-                ctx.strokeStyle = "#4d9eff"
+                ctx.strokeStyle = root.themeAccent
                 ctx.lineWidth = 1
 
                 for (var i = -height; i < width + height; i += 80) {
@@ -383,7 +434,7 @@ Window {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "gaming on linux, effortless."
-            color: "#4d9eff"
+            color: root.themeAccent
             font.pixelSize: 14
             font.letterSpacing: 2
             font.family: root.pedFont
@@ -519,7 +570,7 @@ Window {
                         width: dockItem.active ? 6 : 0
                         height: 3
                         radius: 2
-                        color: "#4d9eff"
+                        color: root.themeAccent
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 3
