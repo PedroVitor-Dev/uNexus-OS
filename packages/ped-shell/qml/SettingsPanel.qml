@@ -6,25 +6,13 @@ Item {
     visible: false
     opacity: 0.0
 
-    property bool toolsRefresh: false
-
     function show() {
         visible = true
-        toolsRefresh = !toolsRefresh
         showAnim.start()
     }
 
     function hide() {
         hideAnim.start()
-    }
-
-    function toggleGameMode() {
-        gameMode.toggle()
-        if (gameMode.active) {
-            notifCenter.send("Game Mode ON", "Performance optimized for gaming.", "GAME")
-        } else {
-            notifCenter.send("Game Mode OFF", "System back to normal.", "IDLE")
-        }
     }
 
     NumberAnimation {
@@ -63,7 +51,7 @@ Item {
 
     Rectangle {
         id: panel
-        width: Math.min(760, parent.width - 32)
+        width: Math.min(820, parent.width - 32)
         height: Math.min(560, parent.height - 72)
         anchors.centerIn: parent
         radius: 14
@@ -80,7 +68,7 @@ Item {
 
             Row {
                 width: parent.width
-                height: 34
+                height: 36
                 spacing: 10
 
                 Column {
@@ -96,7 +84,7 @@ Item {
                     }
 
                     Text {
-                        text: "Gaming tools, performance overlay and shell behavior"
+                        text: "System preferences, language, shell status and about"
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -133,7 +121,7 @@ Item {
 
             Row {
                 width: parent.width
-                height: parent.height - 72
+                height: parent.height - 74
                 spacing: 14
 
                 Column {
@@ -142,66 +130,48 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Performance"
+                        title: "Language"
 
-                        SettingsToggle {
+                        SettingsOptionRow {
                             width: parent.width
-                            label: "Game Mode"
-                            detail: gameMode.active ? "gamemoded optimizations enabled" : "Use normal system behavior"
-                            checked: gameMode.active
-                            onClicked: settingsPanel.toggleGameMode()
+                            label: "System language"
+                            value: "English"
                         }
 
-                        SettingsToggle {
+                        SettingsOptionRow {
                             width: parent.width
-                            label: "PED Stats Overlay"
-                            detail: systemStats.visible ? "CPU, RAM, GPU and temperature visible" : "Overlay hidden"
-                            checked: systemStats.visible
-                            onClicked: systemStats.visible = !systemStats.visible
+                            label: "Region"
+                            value: "Auto"
+                        }
+
+                        SettingsHint {
+                            width: parent.width
+                            text: "Language switching is planned for the installer and first boot setup."
                         }
                     }
 
                     SettingsSection {
                         width: parent.width
-                        title: "Runtime Tools"
+                        title: "Appearance"
 
-                        SettingsStatusRow {
+                        SettingsOptionRow {
                             width: parent.width
-                            label: "MangoHud"
-                            installed: settingsPanel.toolsRefresh ? appLauncher.isMangoHudInstalled() : appLauncher.isMangoHudInstalled()
+                            label: "Theme"
+                            value: "PED Dark"
                         }
 
-                        SettingsStatusRow {
+                        SettingsOptionRow {
                             width: parent.width
-                            label: "GameModeRun"
-                            installed: settingsPanel.toolsRefresh ? appLauncher.isGameModeRunInstalled() : appLauncher.isGameModeRunInstalled()
+                            label: "Font"
+                            value: root.pedFont
                         }
 
-                        Rectangle {
+                        SettingsToggle {
                             width: parent.width
-                            height: 34
-                            radius: 7
-                            color: copyMouse.containsMouse ? "#254160" : "#172233"
-                            border.color: "#2d5f8f"
-                            border.width: 1
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Copy Steam launch options"
-                                color: "#b7ddff"
-                                font.pixelSize: 12
-                                font.family: root.pedFont
-                            }
-
-                            MouseArea {
-                                id: copyMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                    notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "GAME")
-                                }
-                            }
+                            label: "PED Stats Overlay"
+                            detail: systemStats.visible ? "Visible on desktop" : "Hidden"
+                            checked: systemStats.visible
+                            onClicked: systemStats.visible = !systemStats.visible
                         }
                     }
                 }
@@ -212,51 +182,68 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Gaming Launchers"
+                        title: "System"
 
-                        SettingsInstallRow {
-                            width: parent.width
-                            label: "Steam"
-                            installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) : (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam"))
-                            installCommand: "flatpak install -y flathub com.valvesoftware.Steam"
-                        }
-
-                        SettingsInstallRow {
-                            width: parent.width
-                            label: "Lutris"
-                            installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) : (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris"))
-                            installCommand: "flatpak install -y flathub net.lutris.Lutris"
-                        }
-
-                        SettingsInstallRow {
-                            width: parent.width
-                            label: "Heroic"
-                            installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) : (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl"))
-                            installCommand: "flatpak install -y flathub com.heroicgameslauncher.hgl"
-                        }
-
-                        SettingsInstallRow {
-                            width: parent.width
-                            label: "Bottles"
-                            installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles")) : (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
-                            installCommand: "flatpak install -y flathub com.usebottles.bottles"
-                        }
-                    }
-
-                    SettingsSection {
-                        width: parent.width
-                        title: "Shell"
-
-                        SettingsInfoRow {
+                        SettingsOptionRow {
                             width: parent.width
                             label: "Network"
                             value: systemInfo.networkConnected ? "Online" : "Offline"
                         }
 
-                        SettingsInfoRow {
+                        SettingsOptionRow {
                             width: parent.width
                             label: "Battery"
                             value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : "Not available"
+                        }
+                    }
+
+                    SettingsSection {
+                        width: parent.width
+                        title: "About"
+
+                        SettingsOptionRow {
+                            width: parent.width
+                            label: "Name"
+                            value: "PED OS"
+                        }
+
+                        SettingsOptionRow {
+                            width: parent.width
+                            label: "Shell"
+                            value: "ped-shell 0.1.0"
+                        }
+
+                        SettingsOptionRow {
+                            width: parent.width
+                            label: "License"
+                            value: "GPL-3.0"
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 34
+                            radius: 7
+                            color: repoMouse.containsMouse ? "#254160" : "#172233"
+                            border.color: "#2d5f8f"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "Copy repository URL"
+                                color: "#b7ddff"
+                                font.pixelSize: 12
+                                font.family: root.pedFont
+                            }
+
+                            MouseArea {
+                                id: repoMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: {
+                                    appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/Ped-Os")
+                                    notifCenter.send("Repository copied", "PED OS repository URL copied.", "INFO")
+                                }
+                            }
                         }
                     }
                 }
@@ -290,6 +277,61 @@ Item {
                 font.family: root.pedFont
                 font.letterSpacing: 1
             }
+        }
+    }
+
+    component SettingsOptionRow: Rectangle {
+        id: optionRow
+        property string label: ""
+        property string value: ""
+
+        height: 38
+        radius: 8
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            text: optionRow.label
+            color: "#ffffff"
+            font.pixelSize: 12
+            font.family: root.pedFont
+        }
+
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            text: optionRow.value
+            color: "#8ea4bd"
+            font.pixelSize: 11
+            font.family: root.pedFont
+        }
+    }
+
+    component SettingsHint: Rectangle {
+        id: hintRow
+        property string text: ""
+
+        height: hintText.height + 18
+        radius: 8
+        color: "#101927"
+        border.color: "#24364c"
+        border.width: 1
+
+        Text {
+            id: hintText
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            text: hintRow.text
+            color: "#8ea4bd"
+            font.pixelSize: 10
+            font.family: root.pedFont
+            wrapMode: Text.WordWrap
         }
     }
 
@@ -358,128 +400,6 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: toggleRow.clicked()
-        }
-    }
-
-    component SettingsStatusRow: Rectangle {
-        id: statusRow
-        property string label: ""
-        property bool installed: false
-
-        height: 36
-        radius: 8
-        color: "#172233"
-
-        Text {
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: statusRow.label
-            color: "#ffffff"
-            font.pixelSize: 12
-            font.family: root.pedFont
-        }
-
-        Rectangle {
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            width: statusLabel.width + 14
-            height: 20
-            radius: 7
-            color: statusRow.installed ? "#0d3020" : "#2a1010"
-
-            Text {
-                id: statusLabel
-                anchors.centerIn: parent
-                text: statusRow.installed ? "installed" : "missing"
-                color: statusRow.installed ? "#00ff88" : "#ff6b6b"
-                font.pixelSize: 10
-                font.family: root.pedFont
-            }
-        }
-    }
-
-    component SettingsInstallRow: Rectangle {
-        id: installRow
-        property string label: ""
-        property bool installed: false
-        property string installCommand: ""
-
-        height: 42
-        radius: 8
-        color: "#172233"
-
-        Text {
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: installRow.label
-            color: "#ffffff"
-            font.pixelSize: 12
-            font.family: root.pedFont
-        }
-
-        Rectangle {
-            id: installButton
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            width: installRow.installed ? installedLabel.width + 14 : 92
-            height: 22
-            radius: 7
-            color: installRow.installed ? "#0d3020" : (installMouse.containsMouse ? "#254160" : "#172f49")
-            border.color: installRow.installed ? "transparent" : "#2d5f8f"
-            border.width: installRow.installed ? 0 : 1
-
-            Text {
-                id: installedLabel
-                anchors.centerIn: parent
-                text: installRow.installed ? "installed" : "Copy install"
-                color: installRow.installed ? "#00ff88" : "#b7ddff"
-                font.pixelSize: 10
-                font.family: root.pedFont
-            }
-
-            MouseArea {
-                id: installMouse
-                anchors.fill: parent
-                enabled: !installRow.installed && installRow.installCommand.length > 0
-                hoverEnabled: enabled
-                onClicked: {
-                    appLauncher.copyToClipboard(installRow.installCommand)
-                    notifCenter.send("Install command copied", installRow.label + " Flatpak command copied.", "SETUP")
-                }
-            }
-        }
-    }
-    component SettingsInfoRow: Rectangle {
-        id: infoRow
-        property string label: ""
-        property string value: ""
-
-        height: 36
-        radius: 8
-        color: "#172233"
-
-        Text {
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: infoRow.label
-            color: "#ffffff"
-            font.pixelSize: 12
-            font.family: root.pedFont
-        }
-
-        Text {
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: infoRow.value
-            color: "#8ea4bd"
-            font.pixelSize: 11
-            font.family: root.pedFont
         }
     }
 }

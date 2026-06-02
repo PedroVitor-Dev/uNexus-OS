@@ -12,6 +12,7 @@ Item {
         { icon: "🎮", name: "Lutris", category: "Gaming", command: "lutris", flatpakId: "net.lutris.Lutris", windowClasses: ["lutris", "Lutris"] },
         { icon: "🎮", name: "Heroic", category: "Gaming", command: "heroic", flatpakId: "com.heroicgameslauncher.hgl", windowClasses: ["heroic", "Heroic", "com.heroicgameslauncher.hgl"] },
         { icon: "🎮", name: "Bottles", category: "Gaming", command: "bottles", flatpakId: "com.usebottles.bottles", windowClasses: ["bottles", "Bottles", "com.usebottles.bottles"] },
+        { icon: "🎮", name: "Game Settings", category: "Gaming", internalAction: "gameSettings" },
         { icon: "🗂", name: "Files",    category: "System", command: "nautilus", args: [] },
         { icon: "⚙️", name: "Settings", category: "System", internalAction: "settings" },
         { icon: "🖥", name: "Terminal", category: "System", command: "gnome-terminal", args: [] },
@@ -25,6 +26,7 @@ Item {
     property string searchText: ""
     property string activeCategory: "All"
     property var settingsPanel: null
+    property var gameSettingsPanel: null
 
     function filteredApps() {
         return allApps.filter(function(a) {
@@ -40,6 +42,13 @@ function launchApp(app) {
         launcher.hide()
         if (settingsPanel)
             settingsPanel.show()
+        return
+    }
+
+    if (app.internalAction === "gameSettings") {
+        launcher.hide()
+        if (gameSettingsPanel)
+            gameSettingsPanel.show()
         return
     }
 
@@ -290,7 +299,7 @@ function launchApp(app) {
                         height: 18
                         radius: 6
                         color: {
-                            if (modelData.category !== "Gaming") return "transparent"
+                            if (modelData.category !== "Gaming" || modelData.internalAction) return "transparent"
                             var installed = appLauncher.isInstalled(modelData.command || "") ||
                                             appLauncher.isFlatpakInstalled(modelData.flatpakId || "")
                             return installed ? "#0d3020" : "#2a1010"
@@ -300,12 +309,14 @@ function launchApp(app) {
                             id: statusText
                             anchors.centerIn: parent
                             text: {
+                                if (modelData.internalAction) return "panel"
                                 if (modelData.category !== "Gaming") return modelData.category
                                 var installed = appLauncher.isInstalled(modelData.command || "") ||
                                                 appLauncher.isFlatpakInstalled(modelData.flatpakId || "")
                                 return installed ? "✓ installed" : "not installed"
                             }
                             color: {
+                                if (modelData.internalAction) return "#4d9eff"
                                 if (modelData.category !== "Gaming") return "#4d9eff"
                                 var installed = appLauncher.isInstalled(modelData.command || "") ||
                                                 appLauncher.isFlatpakInstalled(modelData.flatpakId || "")
@@ -317,7 +328,7 @@ function launchApp(app) {
                     }
 
                     Rectangle {
-                        visible: modelData.category === "Gaming"
+                        visible: modelData.category === "Gaming" && !modelData.internalAction
                         z: 2
                         anchors.right: parent.right
                         anchors.rightMargin: statusText.width + 28

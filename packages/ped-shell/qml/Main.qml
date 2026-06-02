@@ -25,6 +25,11 @@ Window {
         return
     }
 
+    if (app.internalAction === "gameSettings") {
+        gameSettings.show()
+        return
+    }
+
     var opened = false
     var isGamingApp = app.gaming === true
 
@@ -663,6 +668,7 @@ Window {
         anchors.fill: parent
         z: 100
         settingsPanel: pedSettings
+        gameSettingsPanel: gameSettings
     }
 
     ContextMenu {
@@ -711,5 +717,11 @@ MouseArea {
         id: pedSettings
         anchors.fill: parent
         z: 190
+    }
+
+    GameSettingsPanel {
+        id: gameSettings
+        anchors.fill: parent
+        z: 191
     }
 }
