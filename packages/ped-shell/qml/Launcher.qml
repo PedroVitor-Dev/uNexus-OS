@@ -306,8 +306,42 @@ function launchApp(app) {
                         }
                     }
 
+                    Rectangle {
+                        visible: modelData.category === "Gaming"
+                        z: 2
+                        anchors.right: parent.right
+                        anchors.rightMargin: statusText.width + 28
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: copyOptsText.width + 16
+                        height: 22
+                        radius: 6
+                        color: copyOptsMouse.containsMouse ? "#254160" : "#172233"
+                        border.color: "#2d5f8f"
+                        border.width: 1
+
+                        Text {
+                            id: copyOptsText
+                            anchors.centerIn: parent
+                            text: "Copy opts"
+                            color: "#b7ddff"
+                            font.pixelSize: 11
+                        }
+
+                        MouseArea {
+                            id: copyOptsMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: {
+                                appLauncher.copyToClipboard("mangohud gamemoderun %command%")
+                                if (notifCenter)
+                                    notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "🎮")
+                            }
+                        }
+                    }
+
                     MouseArea {
                         id: itemMouse
+                        z: 1
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: launchApp(modelData)

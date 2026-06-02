@@ -1,5 +1,7 @@
 #include "applauncher.h"
 
+#include <QClipboard>
+#include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -65,6 +67,12 @@ bool AppLauncher::isMangoHudInstalled()
 bool AppLauncher::isGameModeRunInstalled()
 {
     return !QStandardPaths::findExecutable("gamemoderun").isEmpty();
+}
+
+void AppLauncher::copyToClipboard(const QString &text)
+{
+    if (QClipboard *clipboard = QGuiApplication::clipboard())
+        clipboard->setText(text);
 }
 
 bool AppLauncher::isWindowOpen(const QStringList &windowClasses)
