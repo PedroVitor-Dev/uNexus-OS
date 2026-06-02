@@ -214,28 +214,32 @@ Item {
                         width: parent.width
                         title: "Gaming Launchers"
 
-                        SettingsStatusRow {
+                        SettingsInstallRow {
                             width: parent.width
                             label: "Steam"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) : (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam"))
+                            installCommand: "flatpak install -y flathub com.valvesoftware.Steam"
                         }
 
-                        SettingsStatusRow {
+                        SettingsInstallRow {
                             width: parent.width
                             label: "Lutris"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) : (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris"))
+                            installCommand: "flatpak install -y flathub net.lutris.Lutris"
                         }
 
-                        SettingsStatusRow {
+                        SettingsInstallRow {
                             width: parent.width
                             label: "Heroic"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) : (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl"))
+                            installCommand: "flatpak install -y flathub com.heroicgameslauncher.hgl"
                         }
 
-                        SettingsStatusRow {
+                        SettingsInstallRow {
                             width: parent.width
                             label: "Bottles"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles")) : (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
+                            installCommand: "flatpak install -y flathub com.usebottles.bottles"
                         }
                     }
 
@@ -396,6 +400,59 @@ Item {
         }
     }
 
+    component SettingsInstallRow: Rectangle {
+        id: installRow
+        property string label: ""
+        property bool installed: false
+        property string installCommand: ""
+
+        height: 42
+        radius: 8
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            text: installRow.label
+            color: "#ffffff"
+            font.pixelSize: 12
+            font.family: root.pedFont
+        }
+
+        Rectangle {
+            id: installButton
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: installRow.installed ? installedLabel.width + 14 : 92
+            height: 22
+            radius: 7
+            color: installRow.installed ? "#0d3020" : (installMouse.containsMouse ? "#254160" : "#172f49")
+            border.color: installRow.installed ? "transparent" : "#2d5f8f"
+            border.width: installRow.installed ? 0 : 1
+
+            Text {
+                id: installedLabel
+                anchors.centerIn: parent
+                text: installRow.installed ? "installed" : "Copy install"
+                color: installRow.installed ? "#00ff88" : "#b7ddff"
+                font.pixelSize: 10
+                font.family: root.pedFont
+            }
+
+            MouseArea {
+                id: installMouse
+                anchors.fill: parent
+                enabled: !installRow.installed && installRow.installCommand.length > 0
+                hoverEnabled: enabled
+                onClicked: {
+                    appLauncher.copyToClipboard(installRow.installCommand)
+                    notifCenter.send("Install command copied", installRow.label + " Flatpak command copied.", "SETUP")
+                }
+            }
+        }
+    }
     component SettingsInfoRow: Rectangle {
         id: infoRow
         property string label: ""
