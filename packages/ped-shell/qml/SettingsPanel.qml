@@ -168,28 +168,28 @@ Item {
                                 label: "Neon"
                                 swatch: "#4d9eff"
                                 active: root.themeIndex === 0
-                                onClicked: root.applyTheme(0)
+                                onClicked: root.applyTheme(0, true)
                             }
 
                             ThemeButton {
                                 label: "Violet"
                                 swatch: "#b86cff"
                                 active: root.themeIndex === 1
-                                onClicked: root.applyTheme(1)
+                                onClicked: root.applyTheme(1, true)
                             }
 
                             ThemeButton {
                                 label: "Toxic"
                                 swatch: "#00ff88"
                                 active: root.themeIndex === 2
-                                onClicked: root.applyTheme(2)
+                                onClicked: root.applyTheme(2, true)
                             }
 
                             ThemeButton {
                                 label: "Ember"
                                 swatch: "#ff6a2a"
                                 active: root.themeIndex === 3
-                                onClicked: root.applyTheme(3)
+                                onClicked: root.applyTheme(3, true)
                             }
                         }
 

@@ -19,7 +19,7 @@ Window {
     property color themeAccentDim: "#0d3060"
     property color themeGlow: "#4d9eff"
 
-    function applyTheme(index) {
+    function applyTheme(index, persist) {
         themeIndex = index
 
         if (index === 1) {
@@ -58,6 +58,21 @@ Window {
 
         wallpaperLines.requestPaint()
         diagonalGrid.requestPaint()
+
+        if (persist !== false)
+            userSettings.themeIndex = themeIndex
+    }
+
+    Component.onCompleted: {
+        applyTheme(userSettings.themeIndex, false)
+        systemStats.visible = userSettings.statsOverlayVisible
+    }
+
+    Connections {
+        target: systemStats
+        function onVisibleChanged() {
+            userSettings.statsOverlayVisible = systemStats.visible
+        }
     }
     property int dockStateVersion: 0
 

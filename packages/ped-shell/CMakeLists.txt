@@ -14,10 +14,12 @@ qt_add_executable(ped-shell
     src/gamemode.cpp
     src/applauncher.cpp
     src/systemstats.cpp
+    src/usersettings.cpp
     include/systeminfo.h
     include/gamemode.h
     include/applauncher.h
     include/systemstats.h
+    include/usersettings.h
 )
 
 qt_add_qml_module(ped-shell
