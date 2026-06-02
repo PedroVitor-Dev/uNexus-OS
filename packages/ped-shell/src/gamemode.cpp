@@ -1,16 +1,19 @@
 #include "gamemode.h"
-#include <QProcess>
 
 GameMode::GameMode(QObject *parent) : QObject(parent) {}
 
 void GameMode::enable() {
-    QProcess::startDetached("gamemoded", {});
+    if (m_active)
+        return;
+
     m_active = true;
     emit activeChanged();
 }
 
 void GameMode::disable() {
-    QProcess::execute("pkill", {"gamemoded"});
+    if (!m_active)
+        return;
+
     m_active = false;
     emit activeChanged();
 }

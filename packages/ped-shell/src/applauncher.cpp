@@ -195,6 +195,18 @@ bool AppLauncher::focusOrLaunchGame(
     QStringList launchArguments = arguments;
     const bool hasMangoHud = useMangoHud && isMangoHudInstalled();
     const bool hasGameModeRun = useGameMode && isGameModeRunInstalled();
+    const QString normalizedCommand = command.trimmed().toLower();
+    const QString normalizedFlatpakId = flatpakId.trimmed().toLower();
+    const bool isGameLauncher =
+        normalizedCommand == "steam" ||
+        normalizedCommand == "lutris" ||
+        normalizedCommand == "heroic" ||
+        normalizedCommand == "heroicgameslauncher" ||
+        normalizedCommand == "bottles" ||
+        normalizedFlatpakId == "com.valvesoftware.steam" ||
+        normalizedFlatpakId == "net.lutris.lutris" ||
+        normalizedFlatpakId == "com.heroicgameslauncher.hgl" ||
+        normalizedFlatpakId == "com.usebottles.bottles";
 
     if (launchCommand.trimmed().isEmpty() ||
         (QStandardPaths::findExecutable(launchCommand).isEmpty() && !flatpakId.trimmed().isEmpty())) {
@@ -205,12 +217,12 @@ bool AppLauncher::focusOrLaunchGame(
     if (launchCommand.trimmed().isEmpty())
         return false;
 
-    if (hasGameModeRun) {
+    if (hasGameModeRun && !isGameLauncher) {
         launchArguments.prepend(launchCommand);
         launchCommand = "gamemoderun";
     }
 
-    if (hasMangoHud) {
+    if (hasMangoHud && !isGameLauncher) {
         launchArguments.prepend(launchCommand);
         launchCommand = "mangohud";
     }
