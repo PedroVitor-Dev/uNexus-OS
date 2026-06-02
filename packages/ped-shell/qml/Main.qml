@@ -716,10 +716,11 @@ Window {
                     hoverEnabled: true
 
                     onClicked: {
-                        if (dockActionMenu.currentApp &&
-                            dockActionMenu.currentApp.windowClasses &&
-                            dockActionMenu.currentApp.windowClasses.length > 0) {
-                            appLauncher.closeWindow(dockActionMenu.currentApp.windowClasses)
+                        if (dockActionMenu.currentApp) {
+                            appLauncher.closeApp(
+                                dockActionMenu.currentApp.windowClasses || [],
+                                dockActionMenu.currentApp.processNames || []
+                            )
                         }
 
                         dockActionMenu.hideMenu()

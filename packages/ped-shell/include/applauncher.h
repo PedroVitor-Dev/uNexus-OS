@@ -37,8 +37,10 @@ public:
     bool useGameMode = false);
     
     Q_INVOKABLE bool closeWindow(const QStringList &windowClasses);
+    Q_INVOKABLE bool closeApp(const QStringList &windowClasses, const QStringList &processNames);
 
 private:
     bool focusWithHyprctl(const QStringList &windowClasses);
     bool focusWithWmctrl(const QStringList &windowClasses);
+    bool terminateProcesses(const QStringList &processNames);
 };

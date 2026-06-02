@@ -14,9 +14,9 @@ Item {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "#050810" }
-            GradientStop { position: 0.5; color: "#0a0f1e" }
-            GradientStop { position: 1.0; color: "#060d18" }
+            GradientStop { position: 0.0; color: root.themeBgTop }
+            GradientStop { position: 0.5; color: root.themeBgMid }
+            GradientStop { position: 1.0; color: root.themeBgBottom }
         }
 
         Rectangle {
@@ -26,7 +26,7 @@ Item {
             x: -150
             y: 80
             color: "transparent"
-            border.color: "#0d2a4a"
+            border.color: root.themeAccentDim
             border.width: 1
             opacity: 0.4
         }
@@ -38,7 +38,7 @@ Item {
             x: parent.width - 250
             y: parent.height - 300
             color: "transparent"
-            border.color: "#0d2a4a"
+            border.color: root.themeAccentDim
             border.width: 1
             opacity: 0.3
         }
@@ -49,7 +49,7 @@ Item {
             radius: 150
             x: -80
             y: 200
-            color: "#051428"
+            color: root.themeAccentDim
             opacity: 0.6
         }
 
@@ -59,7 +59,7 @@ Item {
             radius: 125
             x: parent.width - 180
             y: 100
-            color: "#04111f"
+            color: root.themeBgMid
             opacity: 0.5
         }
     }
@@ -76,7 +76,7 @@ Item {
             radius: 48
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#1a2030"
-            border.color: "#4d9eff"
+            border.color: root.themeAccent
             border.width: 2
 
             Text {
@@ -103,7 +103,7 @@ Item {
             radius: 10
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#1a2030"
-            border.color: passwordInput.activeFocus ? "#4d9eff" : "#2a3a55"
+            border.color: passwordInput.activeFocus ? root.themeAccent : "#2a3a55"
             border.width: 1
 
             Behavior on border.color {
@@ -147,7 +147,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
-                color: enterMouse.containsMouse ? "#4d9eff" : "#1e2d45"
+                color: enterMouse.containsMouse ? root.themeAccent : "#1e2d45"
 
                 Behavior on color {
                     ColorAnimation { duration: 150 }

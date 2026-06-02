@@ -363,3 +363,46 @@ bool AppLauncher::closeWindow(const QStringList &windowClasses)
 
     return false;
 }
+
+bool AppLauncher::closeApp(const QStringList &windowClasses, const QStringList &processNames)
+{
+    const bool windowClosed = closeWindow(windowClasses);
+    const bool processesClosed = terminateProcesses(processNames);
+
+    return windowClosed || processesClosed;
+}
+
+bool AppLauncher::terminateProcesses(const QStringList &processNames)
+{
+    if (processNames.isEmpty())
+        return false;
+
+    if (QStandardPaths::findExecutable("pkill").isEmpty())
+        return false;
+
+    bool terminatedAny = false;
+
+    for (const QString &processName : processNames) {
+        if (processName.trimmed().isEmpty())
+            continue;
+
+        QStringList termArgs;
+        QStringList killArgs;
+
+        if (processName.length() > 15) {
+            termArgs = {"-TERM", "-f", processName};
+            killArgs = {"-KILL", "-f", processName};
+        } else {
+            termArgs = {"-TERM", "-x", processName};
+            killArgs = {"-KILL", "-x", processName};
+        }
+
+        if (QProcess::execute("pkill", termArgs) == 0)
+            terminatedAny = true;
+
+        if (isProcessRunning({processName}) && QProcess::execute("pkill", killArgs) == 0)
+            terminatedAny = true;
+    }
+
+    return terminatedAny;
+}
