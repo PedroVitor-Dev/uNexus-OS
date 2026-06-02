@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QStandardPaths>
 
 AppLauncher::AppLauncher(QObject *parent)
@@ -192,6 +193,8 @@ bool AppLauncher::focusOrLaunchGame(
 
     QString launchCommand = command;
     QStringList launchArguments = arguments;
+    const bool hasMangoHud = useMangoHud && isMangoHudInstalled();
+    const bool hasGameModeRun = useGameMode && isGameModeRunInstalled();
 
     if (launchCommand.trimmed().isEmpty() ||
         (QStandardPaths::findExecutable(launchCommand).isEmpty() && !flatpakId.trimmed().isEmpty())) {
@@ -202,17 +205,27 @@ bool AppLauncher::focusOrLaunchGame(
     if (launchCommand.trimmed().isEmpty())
         return false;
 
-    if (useGameMode && isGameModeRunInstalled()) {
+    if (hasGameModeRun) {
         launchArguments.prepend(launchCommand);
         launchCommand = "gamemoderun";
     }
 
-    if (useMangoHud && isMangoHudInstalled()) {
+    if (hasMangoHud) {
         launchArguments.prepend(launchCommand);
         launchCommand = "mangohud";
     }
 
-    return launch(launchCommand, launchArguments);
+    QProcess process;
+    process.setProgram(launchCommand);
+    process.setArguments(launchArguments);
+
+    if (hasMangoHud) {
+        QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+        environment.insert("MANGOHUD", "1");
+        process.setProcessEnvironment(environment);
+    }
+
+    return process.startDetached();
 }
 
 bool AppLauncher::focusWithHyprctl(const QStringList &windowClasses)

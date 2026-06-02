@@ -285,6 +285,10 @@ Window {
                         systemStats.visible = gameMode.active
                         if (gameMode.active) {
                             notifCenter.send("Game Mode ON", "Performance optimized for gaming.", "🎮")
+                            if (!appLauncher.isMangoHudInstalled())
+                                notifCenter.send("MangoHud missing", "Install on Arch: sudo pacman -S mangohud lib32-mangohud", "⚠️")
+                            if (!appLauncher.isGameModeRunInstalled())
+                                notifCenter.send("gamemoderun missing", "Install on Arch: sudo pacman -S gamemode lib32-gamemode", "⚠️")
                         } else {
                             notifCenter.send("Game Mode OFF", "System back to normal.", "💤")
                         }
