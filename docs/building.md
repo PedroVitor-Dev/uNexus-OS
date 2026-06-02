@@ -1,26 +1,57 @@
 # Building PED OS
 
-This guide explains how to build and run PED OS components from source.
+This guide explains how to build and run PED OS Shell from source.
 
 ---
 
-## Requirements
+## Current Target Environment
 
-| Dependency | Version | Install |
-|---|---|---|
-| Linux | any distro | — |
-| CMake | 3.20+ | `sudo apt install cmake` |
-| Qt6 | 6.x | `sudo apt install qt6-base-dev qt6-declarative-dev` |
-| GCC / G++ | 12+ | `sudo apt install build-essential` |
-| Git | any | `sudo apt install git` |
+The active development target is:
+
+- Arch Linux;
+- Hyprland;
+- Qt6;
+- CMake 3.20+;
+- Exo 2 UI font;
+- Noto Emoji for icon fallback.
+
+Ubuntu/Debian can still be used for early testing, but Hyprland features such as window focus/close are expected to work best on the Arch + Hyprland setup.
 
 ---
 
-## Quick Setup (Ubuntu / Debian)
+## Arch Linux Setup
+
+Install core dependencies:
 
 ```bash
-sudo apt update
-sudo apt install -y build-essential cmake git qt6-base-dev qt6-declarative-dev libqt6qml6
+sudo pacman -S git cmake qt6-base qt6-declarative base-devel wget noto-fonts-emoji
+```
+
+Install gaming and diagnostics dependencies:
+
+```bash
+sudo pacman -S gamemode lib32-gamemode mangohud lib32-mangohud flatpak vulkan-tools
+```
+
+Optional test utilities:
+
+```bash
+sudo pacman -S mesa-utils
+```
+
+Enable Flathub for Flatpak gaming apps:
+
+```bash
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+```
+
+Install Exo 2:
+
+```bash
+mkdir -p ~/.local/share/fonts
+cd ~/.local/share/fonts
+wget "https://github.com/google/fonts/raw/main/ofl/exo2/Exo2%5Bwght%5D.ttf" -O Exo2.ttf
+fc-cache -fv
 ```
 
 ---
@@ -34,7 +65,7 @@ cd Ped-Os
 
 ---
 
-## Building ped-shell
+## Build ped-shell
 
 ```bash
 cd packages/ped-shell
@@ -44,21 +75,22 @@ cmake --build build
 
 ---
 
-## Running ped-shell
+## Run ped-shell
 
 ```bash
 ./build/ped-shell
 ```
 
-Default password: `1234` (or leave blank)
+Default password: `1234` or blank.
 
 ---
 
-## Updating
+## Rebuild After Updates
+
+Use a clean rebuild after C++ or CMake changes:
 
 ```bash
-git pull
-cd packages/ped-shell
+cd ~/Ped-Os/packages/ped-shell
 rm -rf build
 cmake -B build
 cmake --build build
@@ -67,41 +99,138 @@ cmake --build build
 
 ---
 
-## Gaming Dependencies (coming soon)
+## Hyprland Auto-start
 
-Future versions will require:
+Add an `exec-once` line to your Hyprland config.
+
+Example:
+
+```ini
+exec-once = /home/<user>/Ped-Os/packages/ped-shell/build/ped-shell
+```
+
+The shell currently relies on Hyprland for the best window-management behavior.
+
+---
+
+## Optional Gaming Apps
+
+Native packages or Flatpaks can be used.
+
+Steam:
 
 ```bash
-# Steam
-sudo apt install steam
-
-# Lutris
-sudo apt install lutris
-
-# Vulkan
-sudo apt install vulkan-tools mesa-vulkan-drivers
-
-# GameMode
-sudo apt install gamemode
+flatpak install -y flathub com.valvesoftware.Steam
 ```
+
+Lutris:
+
+```bash
+flatpak install -y flathub net.lutris.Lutris
+```
+
+Heroic Games Launcher:
+
+```bash
+flatpak install -y flathub com.heroicgameslauncher.hgl
+```
+
+Bottles:
+
+```bash
+flatpak install -y flathub com.usebottles.bottles
+```
+
+---
+
+## Testing MangoHud
+
+Check whether tools are installed:
+
+```bash
+command -v mangohud
+command -v gamemoderun
+```
+
+For Steam games, PED OS can copy this launch option:
+
+```bash
+mangohud gamemoderun %command%
+```
+
+For standalone apps, Game Mode can launch gaming apps with MangoHud/GameMode wrappers when available.
+
+---
+
+## Ubuntu / Debian Notes
+
+Ubuntu is useful for basic Qt/QML testing:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake git qt6-base-dev qt6-declarative-dev libqt6qml6 gamemode
+```
+
+Some features may not behave the same on GNOME Wayland:
+
+- `hyprctl` is unavailable;
+- `wmctrl` may not see Wayland windows;
+- dock focus/close behavior is less reliable;
+- process detection may be used as fallback.
 
 ---
 
 ## Troubleshooting
 
-**CMake can't find Qt6:**
+**CMake cannot find Qt6**
+
+Install Qt6 development packages for your distro.
+
+Arch:
+
+```bash
+sudo pacman -S qt6-base qt6-declarative
+```
+
+Ubuntu:
+
 ```bash
 sudo apt install qt6-base-dev qt6-declarative-dev
 ```
 
-**libEGL / MESA warnings:**
-Normal in virtual machines. Does not affect functionality.
+**Window focus or close does not work**
 
-**`./build/ped-shell: No such file or directory`:**
-Build failed. Run `cmake --build build` again and check for errors.
+Make sure you are running inside Hyprland and `hyprctl` works:
 
-**Battery shows 100% on VM:**
-Expected behavior. Battery reading requires real hardware.
+```bash
+hyprctl clients -j
+```
+
+**MangoHud wrapper does not show in Steam itself**
+
+MangoHud usually appears inside the game process, not necessarily in the Steam client window.
+
+**GPU stats show N/A**
+
+Expected on machines without exposed GPU metrics or missing drivers. CPU and RAM should still update.
+
+**RAM looks low**
+
+On a lightweight Arch + Hyprland session, low RAM usage can be correct. Compare with:
+
+```bash
+free -h
+```
+
+**`./build/ped-shell: No such file or directory`**
+
+The build failed. Run:
+
+```bash
+cmake --build build
+```
+
+and inspect the compiler errors.
 
 ---
 
