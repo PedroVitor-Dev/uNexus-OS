@@ -10,6 +10,7 @@ Item {
     property color panelColor: "#111111"
     property string fontFamily: "Exo 2"
     property int dockStateVersion: 0
+    property var appStates: ({})
     property bool actionMenuVisible: false
     property string actionMenuSide: ""
     property bool expanded: false
@@ -19,6 +20,13 @@ Item {
 
     signal launchRequested(var app)
     signal actionMenuRequested(var app, var point, string side)
+
+    function stateFor(app) {
+        if (app && app.internalAction && appStates[app.internalAction])
+            return appStates[app.internalAction]
+
+        return ""
+    }
 
     width: 72
     height: dockPanel.height
@@ -97,6 +105,7 @@ Item {
                     accentColor: sideDock.accentColor
                     fontFamily: sideDock.fontFamily
                     dockStateVersion: sideDock.dockStateVersion
+                    appStateOverride: sideDock.stateFor(modelData)
                     onLaunchRequested: function(app) {
                         sideDock.launchRequested(app)
                     }

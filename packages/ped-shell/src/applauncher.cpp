@@ -183,6 +183,48 @@ bool AppLauncher::isWindowOpen(const QStringList &windowClasses)
     return false;
 }
 
+bool AppLauncher::isWindowHidden(const QStringList &windowClasses)
+{
+    if (windowClasses.isEmpty())
+        return false;
+
+    if (QStandardPaths::findExecutable("hyprctl").isEmpty())
+        return false;
+
+    QProcess clientsProcess;
+    clientsProcess.start("hyprctl", {"clients", "-j"});
+
+    if (!clientsProcess.waitForFinished(1500) ||
+        clientsProcess.exitStatus() != QProcess::NormalExit ||
+        clientsProcess.exitCode() != 0) {
+        return false;
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(clientsProcess.readAllStandardOutput());
+    if (!document.isArray())
+        return false;
+
+    const QJsonArray clients = document.array();
+
+    for (const QJsonValue &value : clients) {
+        const QJsonObject client = value.toObject();
+        const QString windowClass = client.value("class").toString();
+        const bool hidden = client.value("hidden").toBool(false);
+        const bool mapped = client.value("mapped").toBool(true);
+        const QString workspaceName = client.value("workspace").toObject().value("name").toString();
+
+        for (const QString &candidate : windowClasses) {
+            if (windowClass.compare(candidate, Qt::CaseInsensitive) != 0)
+                continue;
+
+            if (hidden || !mapped || workspaceName.startsWith(QStringLiteral("special:"), Qt::CaseInsensitive))
+                return true;
+        }
+    }
+
+    return false;
+}
+
 bool AppLauncher::isProcessRunning(const QStringList &processNames)
 {
     if (processNames.isEmpty())

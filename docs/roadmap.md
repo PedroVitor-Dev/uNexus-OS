@@ -73,6 +73,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 ### Features
 
 - [x] Keep app active state tied to real process/window state
+- [x] Add dock visual states for open, minimized/hidden and closed apps
 - [x] Keep Open / Focus behavior on dock and launcher
 - [x] Keep Close behavior available from the dock action menu
 - [x] Add PED Files MVP with local directory navigation

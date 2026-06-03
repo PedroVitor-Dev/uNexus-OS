@@ -18,6 +18,7 @@ public:
     Q_INVOKABLE bool isMangoHudInstalled();
     Q_INVOKABLE bool isGameModeRunInstalled();
     Q_INVOKABLE bool isWindowOpen(const QStringList &windowClasses);
+    Q_INVOKABLE bool isWindowHidden(const QStringList &windowClasses);
     Q_INVOKABLE bool isProcessRunning(const QStringList &processNames);
     Q_INVOKABLE void copyToClipboard(const QString &text);
     Q_INVOKABLE QString findIcon(const QStringList &iconNames);

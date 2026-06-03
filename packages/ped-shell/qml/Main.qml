@@ -98,6 +98,13 @@ Window {
         onTriggered: dockStateVersion++
     }
 
+    function panelDockState(panel) {
+        if (!panel || !panel.visible)
+            return "closed"
+
+        return "active"
+    }
+
     function launchDesktopApp(app) {
     if (app.internalAction === "settings") {
         pedSettings.show()
@@ -155,6 +162,35 @@ Window {
     if (!opened)
         notifCenter.send("App not found", app.label + " is not installed.", "⚠️")
 }
+
+    function closeDesktopApp(app) {
+        if (app.internalAction === "settings") {
+            pedSettings.hide()
+            dockStateVersion++
+            return
+        }
+
+        if (app.internalAction === "files") {
+            pedFiles.hide()
+            dockStateVersion++
+            return
+        }
+
+        if (app.internalAction === "gameSettings") {
+            gameSettings.hide()
+            dockStateVersion++
+            return
+        }
+
+        if (app.internalAction === "firstSetup") {
+            firstSetup.hide()
+            dockStateVersion++
+            return
+        }
+
+        appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
+        dockStateVersion++
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -491,6 +527,11 @@ Window {
         panelColor: "#111111"
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
+        appStates: ({
+            "files": root.panelDockState(pedFiles),
+            "settings": root.panelDockState(pedSettings),
+            "firstSetup": root.panelDockState(firstSetup)
+        })
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
         z: 80
@@ -512,6 +553,9 @@ Window {
         panelColor: "#16110e"
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
+        appStates: ({
+            "gameSettings": root.panelDockState(gameSettings)
+        })
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
         z: 80
@@ -610,12 +654,8 @@ Window {
                     hoverEnabled: true
 
                     onClicked: {
-                        if (dockActionMenu.currentApp) {
-                            appLauncher.closeApp(
-                                dockActionMenu.currentApp.windowClasses || [],
-                                dockActionMenu.currentApp.processNames || []
-                            )
-                        }
+                        if (dockActionMenu.currentApp)
+                            root.closeDesktopApp(dockActionMenu.currentApp)
 
                         dockActionMenu.hideMenu()
                     }
