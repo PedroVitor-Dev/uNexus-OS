@@ -29,7 +29,7 @@ Item {
             spacing: 6
 
             Text {
-                text: "PED STATS"
+                text: root.tr("PED STATS")
                 color: "#4d9eff"
                 font.pixelSize: 10
                 font.letterSpacing: 2

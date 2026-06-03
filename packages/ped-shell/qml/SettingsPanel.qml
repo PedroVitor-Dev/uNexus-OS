@@ -79,7 +79,7 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: "PED Settings"
+                        text: root.tr("PED Settings")
                         color: "#ffffff"
                         font.pixelSize: 22
                         font.family: root.pedFont
@@ -87,7 +87,7 @@ Item {
                     }
 
                     Text {
-                        text: "System preferences, language, shell status and about"
+                        text: root.tr("System preferences, language, shell status and about")
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -133,33 +133,45 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Language"
+                        title: root.tr("Language")
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "System language"
-                            value: "English"
+                            label: root.tr("System language")
+                            value: root.languageCode === "pt-BR" ? "Português (Brasil)" : "English"
                         }
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Region"
-                            value: "Auto"
+                            label: root.tr("Region")
+                            value: root.tr("Auto")
                         }
 
-                        SettingsHint {
+                        Row {
                             width: parent.width
-                            text: "Language switching is planned for the installer and first boot setup."
+                            spacing: 8
+
+                            LanguageButton {
+                                label: "English"
+                                active: root.languageCode === "en"
+                                onClicked: root.setLanguage("en")
+                            }
+
+                            LanguageButton {
+                                label: "Português"
+                                active: root.languageCode === "pt-BR"
+                                onClicked: root.setLanguage("pt-BR")
+                            }
                         }
                     }
 
                     SettingsSection {
                         width: parent.width
-                        title: "Appearance"
+                        title: root.tr("Appearance")
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Theme"
+                            label: root.tr("Theme")
                             value: root.themeName
                         }
 
@@ -198,14 +210,14 @@ Item {
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Font"
+                            label: root.tr("Font")
                             value: root.pedFont
                         }
 
                         SettingsToggle {
                             width: parent.width
-                            label: "PED Stats Overlay"
-                            detail: systemStats.visible ? "Visible on desktop" : "Hidden"
+                            label: root.tr("PED Stats Overlay")
+                            detail: systemStats.visible ? root.tr("Visible on desktop") : root.tr("Hidden")
                             checked: systemStats.visible
                             onClicked: systemStats.visible = !systemStats.visible
                         }
@@ -218,18 +230,18 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "System"
+                        title: root.tr("System")
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Network"
-                            value: systemInfo.networkConnected ? "Online" : "Offline"
+                            label: root.tr("Network")
+                            value: systemInfo.networkConnected ? root.tr("Online") : root.tr("Offline")
                         }
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Battery"
-                            value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : "Not available"
+                            label: root.tr("Battery")
+                            value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : root.tr("Not available")
                         }
                         Rectangle {
                             width: parent.width
@@ -241,7 +253,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "Open First Setup"
+                                text: root.tr("Open First Setup")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
                                 font.family: root.pedFont
@@ -258,23 +270,23 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "About"
+                        title: root.tr("About")
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Name"
+                            label: root.tr("Name")
                             value: "PED OS"
                         }
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "Shell"
+                            label: root.tr("Shell")
                             value: "ped-shell 0.1.0"
                         }
 
                         SettingsOptionRow {
                             width: parent.width
-                            label: "License"
+                            label: root.tr("License")
                             value: "GPL-3.0"
                         }
 
@@ -288,7 +300,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "Copy repository URL"
+                                text: root.tr("Copy repository URL")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
                                 font.family: root.pedFont
@@ -300,7 +312,7 @@ Item {
                                 hoverEnabled: true
                                 onClicked: {
                                     appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/Ped-Os")
-                                    notifCenter.send("Repository copied", "PED OS repository URL copied.", "INFO")
+                                    notifCenter.send(root.tr("Repository copied"), root.tr("PED OS repository URL copied."), "INFO")
                                 }
                             }
                         }
@@ -438,6 +450,37 @@ Item {
             onClicked: themeButton.clicked()
         }
     }
+
+    component LanguageButton: Rectangle {
+        id: languageButton
+        property string label: ""
+        property bool active: false
+        signal clicked()
+
+        width: Math.floor((parent.width - 8) / 2)
+        height: 36
+        radius: 8
+        color: languageMouse.containsMouse ? "#1b2a40" : "#172233"
+        border.color: active ? root.themeAccent : "#223247"
+        border.width: active ? 2 : 1
+
+        Text {
+            anchors.centerIn: parent
+            text: languageButton.label
+            color: languageButton.active ? "#ffffff" : "#8ea4bd"
+            font.pixelSize: 11
+            font.family: root.pedFont
+            elide: Text.ElideRight
+        }
+
+        MouseArea {
+            id: languageMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: languageButton.clicked()
+        }
+    }
+
     component SettingsToggle: Rectangle {
         id: toggleRow
         property string label: ""

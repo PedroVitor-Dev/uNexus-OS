@@ -5,6 +5,9 @@ UserSettings::UserSettings(QObject *parent)
     , m_settings("PED OS", "ped-shell")
 {
     m_themeIndex = m_settings.value("appearance/themeIndex", 0).toInt();
+    m_languageCode = m_settings.value("locale/languageCode", "en").toString();
+    if (m_languageCode != "pt-BR")
+        m_languageCode = "en";
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
     m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
 }
@@ -23,6 +26,18 @@ void UserSettings::setThemeIndex(int themeIndex)
     m_themeIndex = themeIndex;
     m_settings.setValue("appearance/themeIndex", m_themeIndex);
     emit themeIndexChanged();
+}
+
+void UserSettings::setLanguageCode(const QString &languageCode)
+{
+    const QString normalizedLanguage = languageCode == "pt-BR" ? "pt-BR" : "en";
+
+    if (m_languageCode == normalizedLanguage)
+        return;
+
+    m_languageCode = normalizedLanguage;
+    m_settings.setValue("locale/languageCode", m_languageCode);
+    emit languageCodeChanged();
 }
 
 void UserSettings::setStatsOverlayVisible(bool visible)

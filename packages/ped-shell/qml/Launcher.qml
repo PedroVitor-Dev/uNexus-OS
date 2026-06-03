@@ -65,10 +65,10 @@ function launchApp(app) {
 
     if (isGamingApp && gameMode.active) {
         if (!appLauncher.isMangoHudInstalled())
-            notifCenter.send("MangoHud not found", "Launching without MangoHud overlay.", "⚠️")
+            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️")
 
         if (!appLauncher.isGameModeRunInstalled())
-            notifCenter.send("GameMode not found", "Launching without gamemoderun.", "⚠️")
+            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️")
 
         opened = appLauncher.focusOrLaunchGame(
             app.windowClasses || [],
@@ -94,7 +94,7 @@ function launchApp(app) {
     }
 
     if (!opened && notifCenter)
-        notifCenter.send("App not found", app.name + " is not installed.", "⚠️")
+        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.name), "⚠️")
 
     launcher.hide()
 }
@@ -211,7 +211,7 @@ function launchApp(app) {
             Text {
                 anchors.left: searchInput.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Search apps..."
+                text: root.tr("Search apps...")
                 color: "#ffffff"
                 font.pixelSize: 16
                 opacity: 0.3
@@ -243,7 +243,7 @@ function launchApp(app) {
                     Text {
                         id: catText
                         anchors.centerIn: parent
-                        text: modelData
+                        text: root.tr(modelData)
                         color: launcher.activeCategory === modelData ? "#ffffff" : "#aaaaaa"
                         font.pixelSize: 12
                     }
@@ -291,7 +291,7 @@ function launchApp(app) {
                         }
 
                         Text {
-                            text: modelData.name
+                            text: root.tr(modelData.name)
                             color: "#ffffff"
                             font.pixelSize: 15
                             opacity: 0.9
@@ -317,11 +317,11 @@ function launchApp(app) {
                             id: statusText
                             anchors.centerIn: parent
                             text: {
-                                if (modelData.internalAction) return "panel"
-                                if (modelData.category !== "Gaming") return modelData.category
+                                if (modelData.internalAction) return root.tr("panel")
+                                if (modelData.category !== "Gaming") return root.tr(modelData.category)
                                 var installed = appLauncher.isInstalled(modelData.command || "") ||
                                                 appLauncher.isFlatpakInstalled(modelData.flatpakId || "")
-                                return installed ? "✓ installed" : "not installed"
+                                return installed ? "✓ " + root.tr("installed") : root.tr("not installed")
                             }
                             color: {
                                 if (modelData.internalAction) return "#4d9eff"
@@ -351,7 +351,7 @@ function launchApp(app) {
                         Text {
                             id: copyOptsText
                             anchors.centerIn: parent
-                            text: "Copy opts"
+                            text: root.tr("Copy opts")
                             color: "#b7ddff"
                             font.pixelSize: 11
                         }
@@ -363,7 +363,7 @@ function launchApp(app) {
                             onClicked: {
                                 appLauncher.copyToClipboard("mangohud gamemoderun %command%")
                                 if (notifCenter)
-                                    notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "🎮")
+                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮")
                             }
                         }
                     }

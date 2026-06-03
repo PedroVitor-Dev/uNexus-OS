@@ -24,9 +24,9 @@ Item {
     function toggleGameMode() {
         gameMode.toggle()
         if (gameMode.active) {
-            notifCenter.send("Game Mode ON", "Performance optimized for gaming.", "GAME")
+            notifCenter.send(root.tr("Game Mode ON"), root.tr("Performance optimized for gaming."), "GAME")
         } else {
-            notifCenter.send("Game Mode OFF", "System back to normal.", "IDLE")
+            notifCenter.send(root.tr("Game Mode OFF"), root.tr("System back to normal."), "IDLE")
         }
     }
 
@@ -91,7 +91,7 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: "Game Settings"
+                        text: root.tr("Game Settings")
                         color: "#ffffff"
                         font.pixelSize: 22
                         font.family: root.pedFont
@@ -99,7 +99,7 @@ Item {
                     }
 
                     Text {
-                        text: "Launchers, overlays and performance tools"
+                        text: root.tr("Launchers, overlays and performance tools")
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -145,20 +145,20 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Performance"
+                        title: root.tr("Performance")
 
                         SettingsToggle {
                             width: parent.width
-                            label: "Game Mode"
-                            detail: gameMode.active ? "gamemoded optimizations enabled" : "Use normal system behavior"
+                            label: root.tr("Game Mode")
+                            detail: gameMode.active ? root.tr("gamemoded optimizations enabled") : root.tr("Use normal system behavior")
                             checked: gameMode.active
                             onClicked: settingsPanel.toggleGameMode()
                         }
 
                         SettingsToggle {
                             width: parent.width
-                            label: "PED Stats Overlay"
-                            detail: systemStats.visible ? "CPU, RAM, GPU and temperature visible" : "Overlay hidden"
+                            label: root.tr("PED Stats Overlay")
+                            detail: systemStats.visible ? root.tr("CPU, RAM, GPU and temperature visible") : root.tr("Overlay hidden")
                             checked: systemStats.visible
                             onClicked: systemStats.visible = !systemStats.visible
                         }
@@ -166,7 +166,7 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Runtime Tools"
+                        title: root.tr("Runtime Tools")
 
                         SettingsStatusRow {
                             width: parent.width
@@ -190,7 +190,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "Copy Steam launch options"
+                                text: root.tr("Copy Steam launch options")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
                                 font.family: root.pedFont
@@ -202,7 +202,7 @@ Item {
                                 hoverEnabled: true
                                 onClicked: {
                                     appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                    notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "GAME")
+                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME")
                                 }
                             }
                         }
@@ -215,7 +215,7 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Gaming Launchers"
+                        title: root.tr("Gaming Launchers")
 
                         SettingsInstallRow {
                             width: parent.width
@@ -248,18 +248,18 @@ Item {
 
                     SettingsSection {
                         width: parent.width
-                        title: "Shell"
+                        title: root.tr("Shell")
 
                         SettingsInfoRow {
                             width: parent.width
-                            label: "Network"
-                            value: systemInfo.networkConnected ? "Online" : "Offline"
+                            label: root.tr("Network")
+                            value: systemInfo.networkConnected ? root.tr("Online") : root.tr("Offline")
                         }
 
                         SettingsInfoRow {
                             width: parent.width
-                            label: "Battery"
-                            value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : "Not available"
+                            label: root.tr("Battery")
+                            value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : root.tr("Not available")
                         }
                     }
                 }
@@ -395,7 +395,7 @@ Item {
             Text {
                 id: statusLabel
                 anchors.centerIn: parent
-                text: statusRow.installed ? "installed" : "missing"
+                text: statusRow.installed ? root.tr("installed") : root.tr("missing")
                 color: statusRow.installed ? "#00ff88" : "#ff6b6b"
                 font.pixelSize: 10
                 font.family: root.pedFont
@@ -438,7 +438,7 @@ Item {
             Text {
                 id: installedLabel
                 anchors.centerIn: parent
-                text: installRow.installed ? "installed" : "Copy install"
+                text: installRow.installed ? root.tr("installed") : root.tr("Copy install")
                 color: installRow.installed ? "#00ff88" : "#b7ddff"
                 font.pixelSize: 10
                 font.family: root.pedFont
@@ -451,7 +451,7 @@ Item {
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(installRow.installCommand)
-                    notifCenter.send("Install command copied", installRow.label + " Flatpak command copied.", "SETUP")
+                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} Flatpak command copied.", installRow.label), "SETUP")
                 }
             }
         }

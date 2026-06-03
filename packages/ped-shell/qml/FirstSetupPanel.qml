@@ -22,7 +22,7 @@ Item {
     function complete() {
         userSettings.firstSetupCompleted = true
         hide()
-        notifCenter.send("Setup complete", "PED OS gaming setup is ready.", "SETUP")
+        notifCenter.send(root.tr("Setup complete"), root.tr("PED OS gaming setup is ready."), "SETUP")
     }
 
     property bool refreshToken: false
@@ -99,7 +99,7 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: "First Setup"
+                        text: root.tr("First Setup")
                         color: "#ffffff"
                         font.pixelSize: 22
                         font.bold: true
@@ -107,7 +107,7 @@ Item {
                     }
 
                     Text {
-                        text: "Check gaming essentials and prepare PED OS for play"
+                        text: root.tr("Check gaming essentials and prepare PED OS for play")
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -128,7 +128,7 @@ Item {
 
                     SetupSection {
                         width: parent.width
-                        title: "Runtime"
+                        title: root.tr("Runtime")
 
                         SetupRow {
                             width: parent.width
@@ -154,16 +154,16 @@ Item {
 
                     SetupSection {
                         width: parent.width
-                        title: "Recommended"
+                        title: root.tr("Recommended")
 
                         SetupHint {
                             width: parent.width
-                            text: "Install Flatpak apps from Flathub for consistent game launcher support across PED OS builds."
+                            text: root.tr("Install Flatpak apps from Flathub for consistent game launcher support across PED OS builds.")
                         }
 
                         SetupCommandButton {
                             width: parent.width
-                            label: "Copy Flathub setup"
+                            label: root.tr("Copy Flathub setup")
                             command: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
                         }
                     }
@@ -175,7 +175,7 @@ Item {
 
                     SetupSection {
                         width: parent.width
-                        title: "Game Launchers"
+                        title: root.tr("Game Launchers")
 
                         SetupRow {
                             width: parent.width
@@ -225,7 +225,7 @@ Item {
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "You can reopen this checklist later from PED Settings."
+                        text: root.tr("You can reopen this checklist later from PED Settings.")
                         color: "#8ea4bd"
                         font.pixelSize: 11
                         font.family: root.pedFont
@@ -243,7 +243,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Finish setup"
+                        text: root.tr("Finish setup")
                         color: "#ffffff"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -324,7 +324,7 @@ Item {
             Text {
                 id: statusLabel
                 anchors.centerIn: parent
-                text: setupRow.ready ? "ready" : "Copy install"
+                text: setupRow.ready ? root.tr("ready") : root.tr("Copy install")
                 color: setupRow.ready ? "#00ff88" : "#b7ddff"
                 font.pixelSize: 10
                 font.family: root.pedFont
@@ -337,7 +337,7 @@ Item {
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(setupRow.command)
-                    notifCenter.send("Install command copied", setupRow.label + " command copied.", "SETUP")
+                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} command copied.", setupRow.label), "SETUP")
                 }
             }
         }
@@ -356,7 +356,7 @@ Item {
 
         Text {
             anchors.centerIn: parent
-            text: commandButton.label
+            text: root.tr(commandButton.label)
             color: "#b7ddff"
             font.pixelSize: 12
             font.family: root.pedFont
@@ -368,7 +368,7 @@ Item {
             hoverEnabled: true
             onClicked: {
                 appLauncher.copyToClipboard(commandButton.command)
-                notifCenter.send("Command copied", commandButton.label + " copied.", "SETUP")
+                notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP")
             }
         }
     }
@@ -390,7 +390,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 10
             anchors.rightMargin: 10
-            text: hintRow.text
+            text: root.tr(hintRow.text)
             color: "#8ea4bd"
             font.pixelSize: 10
             font.family: root.pedFont

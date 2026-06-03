@@ -6,7 +6,7 @@ Window {
     visible: true
     width: 1280
     height: 720
-    title: "PED OS Shell"
+    title: root.tr("PED OS Shell")
     color: "#0a0a0a"
 
     property string pedFont: "Exo 2"
@@ -18,6 +18,184 @@ Window {
     property color themeAccent: "#4d9eff"
     property color themeAccentDim: "#0d3060"
     property color themeGlow: "#4d9eff"
+    property string languageCode: "en"
+    property int localeVersion: 0
+
+    property var ptBr: ({
+        "PED Files": "Arquivos PED",
+        "Browser": "Navegador",
+        "PED Settings": "Configurações PED",
+        "Terminal": "Terminal",
+        "First Setup": "Configuração Inicial",
+        "Steam": "Steam",
+        "Lutris": "Lutris",
+        "Heroic": "Heroic",
+        "Bottles": "Bottles",
+        "Game Settings": "Configurações de Jogos",
+        "SYSTEM": "SISTEMA",
+        "GAMES": "JOGOS",
+        "Open / Focus": "Abrir / Focar",
+        "Close": "Fechar",
+        "Copy Options": "Copiar Opções",
+        "Launch options copied": "Opções de inicialização copiadas",
+        "Paste into Steam game launch options.": "Cole nas opções de inicialização do jogo na Steam.",
+        "MangoHud not found": "MangoHud não encontrado",
+        "Launching without MangoHud overlay.": "Abrindo sem overlay do MangoHud.",
+        "GameMode not found": "GameMode não encontrado",
+        "Launching without gamemoderun.": "Abrindo sem gamemoderun.",
+        "App not found": "App não encontrado",
+        "{app} is not installed.": "{app} não está instalado.",
+        "Welcome back!": "Bem-vindo de volta!",
+        "PED OS is ready.": "PED OS está pronto.",
+        "Game Mode ON": "Modo Jogo ligado",
+        "Performance optimized for gaming.": "Desempenho otimizado para jogos.",
+        "MangoHud missing": "MangoHud ausente",
+        "gamemoderun missing": "gamemoderun ausente",
+        "Install on Arch: sudo pacman -S mangohud lib32-mangohud": "Instale no Arch: sudo pacman -S mangohud lib32-mangohud",
+        "Install on Arch: sudo pacman -S gamemode lib32-gamemode": "Instale no Arch: sudo pacman -S gamemode lib32-gamemode",
+        "Game Mode OFF": "Modo Jogo desligado",
+        "System back to normal.": "Sistema voltou ao normal.",
+        "gaming on linux, effortless.": "jogar no linux, sem esforço.",
+        "minimized": "minimizado",
+        "System preferences, language, shell status and about": "Preferências do sistema, idioma, status do shell e sobre",
+        "Language": "Idioma",
+        "System language": "Idioma do sistema",
+        "Region": "Região",
+        "Auto": "Automático",
+        "Appearance": "Aparência",
+        "Theme": "Tema",
+        "Font": "Fonte",
+        "PED Stats Overlay": "Overlay de estatísticas PED",
+        "Visible on desktop": "Visível na área de trabalho",
+        "Hidden": "Oculto",
+        "System": "Sistema",
+        "Network": "Rede",
+        "Online": "Online",
+        "Offline": "Offline",
+        "Battery": "Bateria",
+        "Not available": "Indisponível",
+        "Open First Setup": "Abrir configuração inicial",
+        "About": "Sobre",
+        "Name": "Nome",
+        "Shell": "Shell",
+        "License": "Licença",
+        "Copy repository URL": "Copiar URL do repositório",
+        "Repository copied": "Repositório copiado",
+        "PED OS repository URL copied.": "URL do repositório do PED OS copiada.",
+        "Search apps...": "Buscar apps...",
+        "All": "Tudo",
+        "Gaming": "Jogos",
+        "Media": "Mídia",
+        "panel": "painel",
+        "installed": "instalado",
+        "not installed": "não instalado",
+        "Copy opts": "Copiar opções",
+        "PED Files subtitle": "Arquivos locais, pastas de jogos e atalhos do sistema",
+        "Local files, game folders and quick system places": "Arquivos locais, pastas de jogos e atalhos do sistema",
+        "PLACES": "LOCAIS",
+        "{count} items": "{count} itens",
+        "Open": "Abrir",
+        "Rename": "Renomear",
+        "Trash": "Lixeira",
+        "New folder": "Nova pasta",
+        "Folder created": "Pasta criada",
+        "Folder failed": "Falha ao criar pasta",
+        "Could not create folder.": "Não foi possível criar a pasta.",
+        "Renamed": "Renomeado",
+        "Rename failed": "Falha ao renomear",
+        "Could not rename item.": "Não foi possível renomear o item.",
+        "Open failed": "Falha ao abrir",
+        "No app handled this file.": "Nenhum app abriu este arquivo.",
+        "Moved to trash": "Movido para a lixeira",
+        "Trash failed": "Falha ao mover para a lixeira",
+        "Install gio or check permissions.": "Instale o gio ou verifique permissões.",
+        "Home": "Início",
+        "Desktop": "Área de Trabalho",
+        "Documents": "Documentos",
+        "Downloads": "Downloads",
+        "Pictures": "Imagens",
+        "Music": "Música",
+        "Videos": "Vídeos",
+        "Games": "Jogos",
+        "Steam Library": "Biblioteca Steam",
+        "Game Settings subtitle": "Launchers, overlays e ferramentas de desempenho",
+        "Launchers, overlays and performance tools": "Launchers, overlays e ferramentas de desempenho",
+        "Performance": "Desempenho",
+        "Game Mode": "Modo Jogo",
+        "gamemoded optimizations enabled": "Otimizações do gamemoded ativadas",
+        "Use normal system behavior": "Usar comportamento normal do sistema",
+        "CPU, RAM, GPU and temperature visible": "CPU, RAM, GPU e temperatura visíveis",
+        "Overlay hidden": "Overlay oculto",
+        "Runtime Tools": "Ferramentas de execução",
+        "Copy Steam launch options": "Copiar opções da Steam",
+        "Gaming Launchers": "Launchers de jogos",
+        "Copy install": "Copiar instalação",
+        "Install command copied": "Comando de instalação copiado",
+        "{app} Flatpak command copied.": "Comando Flatpak do {app} copiado.",
+        "{app} command copied.": "Comando do {app} copiado.",
+        "missing": "ausente",
+        "ready": "pronto",
+        "Setup complete": "Configuração concluída",
+        "PED OS gaming setup is ready.": "A configuração de jogos do PED OS está pronta.",
+        "Check gaming essentials and prepare PED OS for play": "Confira os essenciais de jogos e prepare o PED OS",
+        "Runtime": "Execução",
+        "Recommended": "Recomendado",
+        "Install Flatpak apps from Flathub for consistent game launcher support across PED OS builds.": "Instale apps Flatpak pelo Flathub para manter os launchers de jogos consistentes nas builds do PED OS.",
+        "Copy Flathub setup": "Copiar setup do Flathub",
+        "Game Launchers": "Launchers de jogos",
+        "You can reopen this checklist later from PED Settings.": "Você pode reabrir esta checklist depois pelas Configurações PED.",
+        "Finish setup": "Finalizar setup",
+        "Command copied": "Comando copiado",
+        "{label} copied.": "{label} copiado.",
+        "Change Wallpaper": "Trocar papel de parede",
+        "Settings": "Configurações",
+        "Store": "Loja",
+        "Camera": "Câmera",
+        "Notes": "Notas",
+        "Paste": "Colar",
+        "Refresh": "Atualizar",
+        "Open Terminal": "Abrir Terminal",
+        "Password": "Senha",
+        "Wrong password. Try again.": "Senha incorreta. Tente de novo.",
+        "UP": "SUBIR",
+        "GO": "IR",
+        "NEW": "NOVA",
+        "REF": "ATUAL",
+        "OK": "OK",
+        "ESC": "ESC",
+        "New Folder": "Nova Pasta",
+        "Folder": "Pasta",
+        "Image": "Imagem",
+        "Video": "Vídeo",
+        "Audio": "Áudio",
+        "Document": "Documento",
+        "Archive": "Arquivo compactado",
+        "Executable": "Executável",
+        "File": "Arquivo",
+        "PED OS Shell": "Shell PED OS",
+        "PED STATS": "ESTATÍSTICAS PED"
+    })
+
+    function tr(text) {
+        localeVersion
+        if (languageCode === "pt-BR" && ptBr[text])
+            return ptBr[text]
+        return text
+    }
+
+    function trAppMessage(template, appLabel) {
+        return tr(template).replace("{app}", tr(appLabel))
+    }
+
+    function trLabelMessage(template, label) {
+        return tr(template).replace("{label}", tr(label))
+    }
+
+    function setLanguage(code) {
+        languageCode = code === "pt-BR" ? "pt-BR" : "en"
+        userSettings.languageCode = languageCode
+        localeVersion++
+    }
 
     function applyTheme(index, persist) {
         themeIndex = index
@@ -64,6 +242,8 @@ Window {
     }
 
     Component.onCompleted: {
+        languageCode = userSettings.languageCode
+        localeVersion++
         applyTheme(userSettings.themeIndex, false)
         systemStats.visible = userSettings.statsOverlayVisible
     }
@@ -155,10 +335,10 @@ Window {
 
     if (isGamingApp && gameMode.active) {
         if (!appLauncher.isMangoHudInstalled())
-            notifCenter.send("MangoHud not found", "Launching without MangoHud overlay.", "⚠️")
+            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️")
 
         if (!appLauncher.isGameModeRunInstalled())
-            notifCenter.send("GameMode not found", "Launching without gamemoderun.", "⚠️")
+            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️")
 
         opened = appLauncher.focusOrLaunchGame(
             app.windowClasses || [],
@@ -184,7 +364,7 @@ Window {
     }
 
     if (!opened)
-        notifCenter.send("App not found", app.label + " is not installed.", "⚠️")
+        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.label), "⚠️")
 }
 
     function closeDesktopApp(app) {
@@ -445,13 +625,13 @@ Window {
                         gameMode.toggle()
                         systemStats.visible = gameMode.active
                         if (gameMode.active) {
-                            notifCenter.send("Game Mode ON", "Performance optimized for gaming.", "🎮")
+                            notifCenter.send(root.tr("Game Mode ON"), root.tr("Performance optimized for gaming."), "🎮")
                             if (!appLauncher.isMangoHudInstalled())
-                                notifCenter.send("MangoHud missing", "Install on Arch: sudo pacman -S mangohud lib32-mangohud", "⚠️")
+                                notifCenter.send(root.tr("MangoHud missing"), root.tr("Install on Arch: sudo pacman -S mangohud lib32-mangohud"), "⚠️")
                             if (!appLauncher.isGameModeRunInstalled())
-                                notifCenter.send("gamemoderun missing", "Install on Arch: sudo pacman -S gamemode lib32-gamemode", "⚠️")
+                                notifCenter.send(root.tr("gamemoderun missing"), root.tr("Install on Arch: sudo pacman -S gamemode lib32-gamemode"), "⚠️")
                         } else {
-                            notifCenter.send("Game Mode OFF", "System back to normal.", "💤")
+                            notifCenter.send(root.tr("Game Mode OFF"), root.tr("System back to normal."), "💤")
                         }
                     }
                 }
@@ -533,7 +713,7 @@ Window {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "gaming on linux, effortless."
+            text: root.tr("gaming on linux, effortless.")
             color: root.themeAccent
             font.pixelSize: 14
             font.letterSpacing: 2
@@ -545,13 +725,14 @@ Window {
     SideDock {
         id: systemDock
         side: "left"
-        title: "SYSTEM"
+        title: root.tr("SYSTEM")
         apps: root.systemDockApps
         accentColor: root.themeAccent
         panelColor: "#111111"
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
+        localeVersion: root.localeVersion
         appStateProvider: root.internalDockState
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
@@ -568,13 +749,14 @@ Window {
     SideDock {
         id: gameDock
         side: "right"
-        title: "GAMES"
+        title: root.tr("GAMES")
         apps: root.gameDockApps
         accentColor: "#ff8a3d"
         panelColor: "#16110e"
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
+        localeVersion: root.localeVersion
         appStateProvider: root.internalDockState
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
@@ -633,7 +815,7 @@ Window {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 12
-                    text: "Open / Focus"
+                    text: root.tr("Open / Focus")
                     color: "#ffffff"
                     font.pixelSize: 12
                     font.family: root.pedFont
@@ -662,7 +844,7 @@ Window {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 12
-                    text: "Close"
+                    text: root.tr("Close")
                     color: "#ff8a8a"
                     font.pixelSize: 12
                     font.family: root.pedFont
@@ -692,7 +874,7 @@ Window {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 12
-                    text: "Copy Options"
+                    text: root.tr("Copy Options")
                     color: "#ffbd7a"
                     font.pixelSize: 12
                     font.family: root.pedFont
@@ -705,7 +887,7 @@ Window {
 
                     onClicked: {
                         appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                        notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "🎮")
+                        notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮")
                         dockActionMenu.hideMenu()
                     }
                 }
@@ -755,7 +937,7 @@ MouseArea {
 
         onLoginSuccess: {
             loginScreen.destroy()
-            notifCenter.send("Welcome back!", "PED OS is ready.", "👋")
+            notifCenter.send(root.tr("Welcome back!"), root.tr("PED OS is ready."), "👋")
 
             if (!userSettings.firstSetupCompleted)
                 firstSetup.show()

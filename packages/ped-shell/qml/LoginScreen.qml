@@ -131,7 +131,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Password"
+                text: root.tr("Password")
                 color: "#ffffff"
                 font.pixelSize: 15
                 opacity: 0.3
@@ -174,7 +174,7 @@ Item {
         Text {
             id: errorText
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Wrong password. Try again."
+            text: root.tr("Wrong password. Try again.")
             color: "#ff4d4d"
             font.pixelSize: 12
             opacity: 0.0

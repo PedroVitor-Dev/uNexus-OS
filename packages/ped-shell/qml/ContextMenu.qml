@@ -103,7 +103,7 @@ Item {
                         }
 
                         Text {
-                            text: modelData.label
+                            text: root.tr(modelData.label)
                             color: "#ffffff"
                             font.pixelSize: 13
                             opacity: 0.85

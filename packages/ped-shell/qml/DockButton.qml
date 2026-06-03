@@ -9,6 +9,7 @@ Rectangle {
     property color accentColor: "#4d9eff"
     property string fontFamily: "Exo 2"
     property int dockStateVersion: 0
+    property int localeVersion: 0
     property string appStateOverride: ""
     property string resolvedIcon: app.iconNames ? appLauncher.findIcon(app.iconNames) : ""
     property string appState: {
@@ -161,10 +162,12 @@ Rectangle {
         Behavior on opacity { NumberAnimation { duration: 120 } }
 
         Text {
-            id: dockLabelText
-            anchors.centerIn: parent
-            text: dockButton.minimized ? dockButton.app.label + " - minimized" : dockButton.app.label
-            color: dockButton.minimized ? "#ffbd7a" : "#ffffff"
+                id: dockLabelText
+                anchors.centerIn: parent
+                text: dockButton.minimized
+                      ? root.tr(dockButton.app.label) + " - " + root.tr("minimized")
+                      : root.tr(dockButton.app.label)
+                color: dockButton.minimized ? "#ffbd7a" : "#ffffff"
             font.pixelSize: 12
             font.family: dockButton.fontFamily
         }

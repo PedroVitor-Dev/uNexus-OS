@@ -45,7 +45,7 @@ Item {
         if (selectedIsDir) {
             loadPath(selectedPath)
         } else if (!fileManager.openPath(selectedPath)) {
-            notifCenter.send("Open failed", "No app handled this file.", "FILES")
+            notifCenter.send(root.tr("Open failed"), root.tr("No app handled this file."), "FILES")
         }
     }
 
@@ -56,17 +56,17 @@ Item {
     function submitAction() {
         if (mode === "newFolder") {
             if (fileManager.createFolder(currentPath, actionInput.text)) {
-                notifCenter.send("Folder created", actionInput.text, "FILES")
+                notifCenter.send(root.tr("Folder created"), actionInput.text, "FILES")
                 refresh()
             } else {
-                notifCenter.send("Folder failed", "Could not create folder.", "FILES")
+                notifCenter.send(root.tr("Folder failed"), root.tr("Could not create folder."), "FILES")
             }
         } else if (mode === "rename" && selectedPath.length > 0) {
             if (fileManager.renamePath(selectedPath, actionInput.text)) {
-                notifCenter.send("Renamed", actionInput.text, "FILES")
+                notifCenter.send(root.tr("Renamed"), actionInput.text, "FILES")
                 refresh()
             } else {
-                notifCenter.send("Rename failed", "Could not rename item.", "FILES")
+                notifCenter.send(root.tr("Rename failed"), root.tr("Could not rename item."), "FILES")
             }
         }
     }
@@ -132,7 +132,7 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: "PED Files"
+                        text: root.tr("PED Files")
                         color: "#ffffff"
                         font.pixelSize: 22
                         font.family: root.pedFont
@@ -140,7 +140,7 @@ Item {
                     }
 
                     Text {
-                        text: "Local files, game folders and quick system places"
+                        text: root.tr("Local files, game folders and quick system places")
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.pedFont
@@ -162,7 +162,7 @@ Item {
                 spacing: 8
 
                 ToolButton {
-                    label: "UP"
+                    label: root.tr("UP")
                     onClicked: filesPanel.loadPath(fileManager.parentPath(filesPanel.currentPath))
                 }
 
@@ -191,22 +191,22 @@ Item {
                 }
 
                 ToolButton {
-                    label: "GO"
+                    label: root.tr("GO")
                     onClicked: filesPanel.loadPath(pathInput.text)
                 }
 
                 ToolButton {
-                    label: "NEW"
+                    label: root.tr("NEW")
                     onClicked: {
                         filesPanel.mode = "newFolder"
-                        actionInput.text = "New Folder"
+                        actionInput.text = root.tr("New Folder")
                         actionInput.forceActiveFocus()
                         actionInput.selectAll()
                     }
                 }
 
                 ToolButton {
-                    label: "REF"
+                    label: root.tr("REF")
                     onClicked: filesPanel.refresh()
                 }
             }
@@ -228,7 +228,7 @@ Item {
                     Text {
                         width: 92
                         anchors.verticalCenter: parent.verticalCenter
-                        text: filesPanel.mode === "rename" ? "Rename" : "New folder"
+                        text: filesPanel.mode === "rename" ? root.tr("Rename") : root.tr("New folder")
                         color: root.themeAccent
                         font.pixelSize: 11
                         font.family: root.pedFont
@@ -257,12 +257,12 @@ Item {
                     }
 
                     ToolButton {
-                        label: "OK"
+                        label: root.tr("OK")
                         onClicked: filesPanel.submitAction()
                     }
 
                     ToolButton {
-                        label: "ESC"
+                        label: root.tr("ESC")
                         onClicked: filesPanel.mode = "browse"
                     }
                 }
@@ -287,7 +287,7 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: "PLACES"
+                            text: root.tr("PLACES")
                             color: root.themeAccent
                             font.pixelSize: 10
                             font.family: root.pedFont
@@ -300,7 +300,7 @@ Item {
 
                             delegate: PlaceRow {
                                 width: parent.width
-                                label: modelData.label
+                                label: root.tr(modelData.label)
                                 icon: modelData.icon
                                 active: modelData.path === filesPanel.currentPath
                                 onClicked: filesPanel.loadPath(modelData.path)
@@ -328,7 +328,7 @@ Item {
 
                             Text {
                                 width: parent.width - selectedActions.width
-                                text: filesPanel.entries.length + " items"
+                                text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
                                 color: "#8ea4bd"
                                 font.pixelSize: 11
                                 font.family: root.pedFont
@@ -341,12 +341,12 @@ Item {
                                 visible: filesPanel.selectedPath.length > 0
 
                                 MiniAction {
-                                    label: "Open"
+                                    label: root.tr("Open")
                                     onClicked: filesPanel.openSelected()
                                 }
 
                                 MiniAction {
-                                    label: "Rename"
+                                    label: root.tr("Rename")
                                     onClicked: {
                                         filesPanel.mode = "rename"
                                         actionInput.text = filesPanel.selectedName
@@ -356,14 +356,14 @@ Item {
                                 }
 
                                 MiniAction {
-                                    label: "Trash"
+                                    label: root.tr("Trash")
                                     danger: true
                                     onClicked: {
                                         if (fileManager.moveToTrash(filesPanel.selectedPath)) {
-                                            notifCenter.send("Moved to trash", filesPanel.selectedName, "FILES")
+                                            notifCenter.send(root.tr("Moved to trash"), filesPanel.selectedName, "FILES")
                                             filesPanel.refresh()
                                         } else {
-                                            notifCenter.send("Trash failed", "Install gio or check permissions.", "FILES")
+                                            notifCenter.send(root.tr("Trash failed"), root.tr("Install gio or check permissions."), "FILES")
                                         }
                                     }
                                 }
@@ -568,7 +568,7 @@ Item {
             anchors.rightMargin: 12
             anchors.verticalCenter: parent.verticalCenter
             width: 86
-            text: fileRow.kind
+            text: root.tr(fileRow.kind)
             color: "#8ea4bd"
             font.pixelSize: 11
             font.family: root.pedFont

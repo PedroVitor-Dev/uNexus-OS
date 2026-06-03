@@ -11,6 +11,7 @@ Item {
     property string fontFamily: "Exo 2"
     property int dockStateVersion: 0
     property int appStateVersion: 0
+    property int localeVersion: 0
     property var appStateProvider: null
     property bool actionMenuVisible: false
     property string actionMenuSide: ""
@@ -108,6 +109,7 @@ Item {
                     accentColor: sideDock.accentColor
                     fontFamily: sideDock.fontFamily
                     dockStateVersion: sideDock.dockStateVersion
+                    localeVersion: sideDock.localeVersion
                     appStateOverride: sideDock.stateFor(modelData)
                     onLaunchRequested: function(app) {
                         sideDock.launchRequested(app)
