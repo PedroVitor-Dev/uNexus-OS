@@ -33,6 +33,7 @@ Rectangle {
     }
     property bool active: appState === "active" || appState === "running"
     property bool minimized: appState === "minimized"
+    property bool closed: appState === "closed"
 
     signal launchRequested(var app)
     signal actionMenuRequested(var app, var point, string side)
@@ -57,6 +58,13 @@ Rectangle {
             minimizedPill.scale = 1.0
     }
 
+    onClosedChanged: {
+        if (closed) {
+            scale = 1.0
+            minimizedPill.scale = 1.0
+        }
+    }
+
     SequentialAnimation on scale {
         running: dockButton.active
         loops: Animation.Infinite
@@ -74,7 +82,7 @@ Rectangle {
         anchors.fill: parent
         radius: parent.radius
         color: dockButton.accentColor
-        opacity: dockButton.active ? 0.08 : 0.0
+        opacity: dockButton.active && !dockButton.closed ? 0.08 : 0.0
 
         Behavior on opacity { NumberAnimation { duration: 180 } }
     }
@@ -102,10 +110,10 @@ Rectangle {
 
     Rectangle {
         width: 4
-        height: dockButton.active ? 18 : (dockButton.minimized ? 6 : 0)
+        height: dockButton.closed ? 0 : (dockButton.active ? 18 : (dockButton.minimized ? 6 : 0))
         radius: 2
         color: dockButton.accentColor
-        opacity: dockButton.minimized ? 0.75 : 1.0
+        opacity: dockButton.closed ? 0.0 : (dockButton.minimized ? 0.75 : 1.0)
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: dockButton.leftSide ? parent.left : undefined
         anchors.right: dockButton.leftSide ? undefined : parent.right
@@ -117,11 +125,11 @@ Rectangle {
 
     Rectangle {
         id: minimizedPill
-        width: dockButton.minimized ? 14 : 0
+        width: dockButton.minimized && !dockButton.closed ? 14 : 0
         height: 3
         radius: 2
         color: dockButton.accentColor
-        opacity: dockButton.minimized ? 0.9 : 0.0
+        opacity: dockButton.minimized && !dockButton.closed ? 0.9 : 0.0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 4

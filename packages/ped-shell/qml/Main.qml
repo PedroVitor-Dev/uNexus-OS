@@ -108,6 +108,27 @@ Window {
         return "active"
     }
 
+    function internalDockState(app) {
+        panelStateVersion
+
+        if (!app || !app.internalAction)
+            return ""
+
+        if (app.internalAction === "files")
+            return panelDockState(pedFiles)
+
+        if (app.internalAction === "settings")
+            return panelDockState(pedSettings)
+
+        if (app.internalAction === "gameSettings")
+            return panelDockState(gameSettings)
+
+        if (app.internalAction === "firstSetup")
+            return panelDockState(firstSetup)
+
+        return ""
+    }
+
     function launchDesktopApp(app) {
     if (app.internalAction === "settings") {
         pedSettings.show()
@@ -531,11 +552,7 @@ Window {
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
-        appStates: ({
-            "files": root.panelDockState(pedFiles),
-            "settings": root.panelDockState(pedSettings),
-            "firstSetup": root.panelDockState(firstSetup)
-        })
+        appStateProvider: root.internalDockState
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
         z: 80
@@ -558,9 +575,7 @@ Window {
         fontFamily: root.pedFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
-        appStates: ({
-            "gameSettings": root.panelDockState(gameSettings)
-        })
+        appStateProvider: root.internalDockState
         actionMenuVisible: dockActionMenu.visible
         actionMenuSide: dockActionMenu.currentSide
         z: 80

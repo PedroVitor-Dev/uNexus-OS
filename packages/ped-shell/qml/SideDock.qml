@@ -11,7 +11,7 @@ Item {
     property string fontFamily: "Exo 2"
     property int dockStateVersion: 0
     property int appStateVersion: 0
-    property var appStates: ({})
+    property var appStateProvider: null
     property bool actionMenuVisible: false
     property string actionMenuSide: ""
     property bool expanded: false
@@ -25,8 +25,8 @@ Item {
     function stateFor(app) {
         appStateVersion
 
-        if (app && app.internalAction && appStates[app.internalAction])
-            return appStates[app.internalAction]
+        if (appStateProvider)
+            return appStateProvider(app)
 
         return ""
     }
