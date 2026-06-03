@@ -161,6 +161,10 @@ Rectangle {
 
         Behavior on opacity { NumberAnimation { duration: 120 } }
 
+        onVisibleChanged: {
+            if (!visible) opacity = 0
+        }
+
         Text {
                 id: dockLabelText
                 anchors.centerIn: parent

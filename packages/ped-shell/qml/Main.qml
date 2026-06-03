@@ -370,30 +370,34 @@ Window {
     function closeDesktopApp(app) {
         if (app.internalAction === "settings") {
             pedSettings.hide()
-            dockStateVersion++
+            root.panelStateVersion++
+            root.dockStateVersion++
             return
         }
 
         if (app.internalAction === "files") {
             pedFiles.hide()
-            dockStateVersion++
+            root.panelStateVersion++
+            root.dockStateVersion++
             return
         }
 
         if (app.internalAction === "gameSettings") {
             gameSettings.hide()
-            dockStateVersion++
+            root.panelStateVersion++
+            root.dockStateVersion++
             return
         }
 
         if (app.internalAction === "firstSetup") {
             firstSetup.hide()
-            dockStateVersion++
+            root.panelStateVersion++
+            root.dockStateVersion++
             return
         }
 
         appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
-        dockStateVersion++
+        root.dockStateVersion++
     }
 
     Rectangle {
