@@ -23,11 +23,12 @@ Item {
     signal launchRequested(var app)
     signal actionMenuRequested(var app, var point, string side)
 
-    function stateFor(app) {
-        appStateVersion
+    function stateFor(app, stateVersion, dockVersion) {
+        stateVersion
+        dockVersion
 
         if (appStateProvider)
-            return appStateProvider(app)
+            return appStateProvider(app, stateVersion)
 
         return ""
     }
@@ -110,11 +111,7 @@ Item {
                     fontFamily: sideDock.fontFamily
                     dockStateVersion: sideDock.dockStateVersion
                     localeVersion: sideDock.localeVersion
-                    appStateOverride: {
-                        sideDock.appStateVersion
-                        sideDock.dockStateVersion
-                        return sideDock.stateFor(modelData)
-                    }
+                    appStateOverride: sideDock.stateFor(modelData, sideDock.appStateVersion, sideDock.dockStateVersion)
                     onLaunchRequested: function(app) {
                         sideDock.launchRequested(app)
                     }

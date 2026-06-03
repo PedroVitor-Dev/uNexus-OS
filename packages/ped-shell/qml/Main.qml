@@ -279,8 +279,8 @@ Window {
         onTriggered: dockStateVersion++
     }
 
-    function panelDockState(panel) {
-        panelStateVersion
+    function panelDockState(panel, stateVersion) {
+        stateVersion
 
         if (!panel || !panel.dockActive)
             return "closed"
@@ -288,23 +288,23 @@ Window {
         return "active"
     }
 
-    function internalDockState(app) {
-        panelStateVersion
+    function internalDockState(app, stateVersion) {
+        stateVersion
 
         if (!app || !app.internalAction)
             return ""
 
         if (app.internalAction === "files")
-            return panelDockState(pedFiles)
+            return panelDockState(pedFiles, stateVersion)
 
         if (app.internalAction === "settings")
-            return panelDockState(pedSettings)
+            return panelDockState(pedSettings, stateVersion)
 
         if (app.internalAction === "gameSettings")
-            return panelDockState(gameSettings)
+            return panelDockState(gameSettings, stateVersion)
 
         if (app.internalAction === "firstSetup")
-            return panelDockState(firstSetup)
+            return panelDockState(firstSetup, stateVersion)
 
         return ""
     }
