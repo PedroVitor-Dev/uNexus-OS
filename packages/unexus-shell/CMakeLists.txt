@@ -47,6 +47,8 @@ qt_add_resources(unexus-shell "unexus_brand_assets"
     BASE "${CMAKE_CURRENT_SOURCE_DIR}/../.."
     FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/4.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/SF Black.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/SF White.png"
 )
 
 target_include_directories(unexus-shell PRIVATE include)

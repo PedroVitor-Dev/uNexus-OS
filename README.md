@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo/4.png" width="320" alt="uNexus logo">
+  <img src="assets/logo/SF%20Black.png" width="320" alt="uNexus logo">
   <h1>uNexus</h1>
   <p>A gaming-first Linux shell built around speed, focus, and a polished desktop experience.</p>
 

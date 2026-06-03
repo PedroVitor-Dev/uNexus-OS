@@ -11,7 +11,7 @@ Window {
     color: "#0a0a0a"
 
     property string uiFont: "Exo 2"
-    property string brandLogoSource: "qrc:/UNexusShell/assets/logo/4.png"
+    property string brandLogoSource: "qrc:/UNexusShell/assets/logo/SF%20White.png"
     property int themeIndex: 0
     property string themeName: "Neon Blue"
     property color themeBgTop: "#04050d"
