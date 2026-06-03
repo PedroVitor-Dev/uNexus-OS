@@ -111,6 +111,7 @@ Item {
                     fontFamily: sideDock.fontFamily
                     dockStateVersion: sideDock.dockStateVersion
                     localeVersion: sideDock.localeVersion
+                    dockExpanded: sideDock.expanded
                     appStateOverride: sideDock.stateFor(modelData, sideDock.appStateVersion, sideDock.dockStateVersion)
                     onLaunchRequested: function(app) {
                         sideDock.launchRequested(app)

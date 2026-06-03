@@ -10,6 +10,8 @@ Rectangle {
     property string fontFamily: "Exo 2"
     property int dockStateVersion: 0
     property int localeVersion: 0
+    property bool dockExpanded: true
+    property bool hovered: false
     property string appStateOverride: ""
     property string resolvedIcon: app.iconNames ? appLauncher.findIcon(app.iconNames) : ""
     property string appState: {
@@ -45,10 +47,10 @@ Rectangle {
     signal launchRequested(var app)
     signal actionMenuRequested(var app, var point, string side)
 
-    width: dockMouseArea.containsMouse ? 56 : 48
-    height: dockMouseArea.containsMouse ? 56 : 48
+    width: hovered ? 56 : 48
+    height: hovered ? 56 : 48
     radius: 14
-    color: dockMouseArea.containsMouse ? "#2a2a2a" : "transparent"
+    color: hovered ? "#2a2a2a" : "transparent"
 
     Behavior on width { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
     Behavior on height { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
@@ -67,9 +69,15 @@ Rectangle {
 
     onClosedChanged: {
         if (closed) {
+            hovered = false
             scale = 1.0
             minimizedPill.scale = 1.0
         }
+    }
+
+    onDockExpandedChanged: {
+        if (!dockExpanded)
+            hovered = false
     }
 
     SequentialAnimation on scale {
@@ -97,7 +105,7 @@ Rectangle {
     Image {
         id: appIcon
         anchors.centerIn: parent
-        width: dockMouseArea.containsMouse ? 34 : 30
+        width: dockButton.hovered ? 34 : 30
         height: width
         source: dockButton.resolvedIcon
         fillMode: Image.PreserveAspectFit
@@ -109,7 +117,7 @@ Rectangle {
         anchors.centerIn: parent
         text: app.icon || "?"
         color: "#ffffff"
-        font.pixelSize: dockMouseArea.containsMouse ? 18 : 15
+        font.pixelSize: dockButton.hovered ? 18 : 15
         font.family: dockButton.fontFamily
         font.bold: true
         visible: appIcon.status !== Image.Ready
@@ -157,7 +165,7 @@ Rectangle {
         height: 24
         radius: 8
         color: "#1e1e1e"
-        opacity: dockMouseArea.containsMouse ? 1.0 : 0.0
+        opacity: dockButton.hovered ? 1.0 : 0.0
         visible: opacity > 0
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: dockButton.leftSide ? parent.right : undefined
@@ -188,9 +196,13 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onEntered: dockButton.hovered = true
+        onExited: dockButton.hovered = false
+        onCanceled: dockButton.hovered = false
 
         onClicked: function(mouse) {
             mouse.accepted = true
+            dockButton.hovered = false
 
             if (mouse.button === Qt.RightButton) {
                 dockButton.actionMenuRequested(
