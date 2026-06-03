@@ -482,6 +482,8 @@ Window {
         side: "left"
         title: "SYSTEM"
         apps: root.systemDockApps
+        accentColor: root.themeAccent
+        panelColor: "#111111"
         z: 80
     }
 
@@ -490,6 +492,8 @@ Window {
         side: "right"
         title: "GAMES"
         apps: root.gameDockApps
+        accentColor: "#ff8a3d"
+        panelColor: "#16110e"
         z: 80
     }
 
@@ -505,9 +509,11 @@ Window {
         z: 180
 
         property var currentApp: null
+        property string currentSide: ""
 
-        function showForApp(app, point) {
+        function showForApp(app, point, side) {
             currentApp = app
+            currentSide = side || ""
             x = Math.max(8, Math.min(root.width - width - 8, point.x - width / 2))
             y = Math.max(44, point.y - height - 10)
             visible = true
@@ -516,6 +522,7 @@ Window {
         function hideMenu() {
             visible = false
             currentApp = null
+            currentSide = ""
         }
 
         Column {
@@ -587,6 +594,35 @@ Window {
                     }
                 }
             }
+
+            Rectangle {
+                visible: dockActionMenu.currentApp !== null && dockActionMenu.currentApp.gaming === true
+                width: parent.width
+                height: 34
+                color: copyOptionsMouse.containsMouse ? "#2c2417" : "transparent"
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    text: "Copy Options"
+                    color: "#ffbd7a"
+                    font.pixelSize: 12
+                    font.family: root.pedFont
+                }
+
+                MouseArea {
+                    id: copyOptionsMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onClicked: {
+                        appLauncher.copyToClipboard("mangohud gamemoderun %command%")
+                        notifCenter.send("Launch options copied", "Paste into Steam game launch options.", "🎮")
+                        dockActionMenu.hideMenu()
+                    }
+                }
+            }
         }
     }
 
@@ -595,13 +631,33 @@ Window {
         property string side: "left"
         property string title: ""
         property var apps: []
-        property bool expanded: dockMouse.containsMouse || edgeMouse.containsMouse || dockActionMenu.visible
+        property color accentColor: root.themeAccent
+        property color panelColor: "#111111"
+        property bool expanded: false
         property bool leftSide: side === "left"
+        property bool menuOwnsDock: dockActionMenu.visible && dockActionMenu.currentSide === sideDock.side
+        property bool shouldExpand: dockMouse.containsMouse || edgeMouse.containsMouse || menuOwnsDock
 
         width: 72
         height: dockPanel.height
         y: Math.max(56, (root.height - height) / 2)
         x: leftSide ? (expanded ? 12 : -60) : (expanded ? root.width - width - 12 : root.width - 12)
+
+        onShouldExpandChanged: {
+            if (shouldExpand) {
+                hideTimer.stop()
+                expanded = true
+            } else {
+                hideTimer.restart()
+            }
+        }
+
+        Timer {
+            id: hideTimer
+            interval: 420
+            repeat: false
+            onTriggered: sideDock.expanded = false
+        }
 
         Behavior on x {
             NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
@@ -621,10 +677,12 @@ Window {
             width: sideDock.width
             height: dockColumn.height + 18
             radius: 16
-            color: "#111111"
-            opacity: 0.88
-            border.color: root.themeAccent
+            color: sideDock.panelColor
+            opacity: sideDock.expanded ? 0.92 : 0.78
+            border.color: sideDock.accentColor
             border.width: 1
+
+            Behavior on opacity { NumberAnimation { duration: 160 } }
 
             Column {
                 id: dockColumn
@@ -636,7 +694,7 @@ Window {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: sideDock.title
-                    color: root.themeAccent
+                    color: sideDock.accentColor
                     font.pixelSize: 9
                     font.family: root.pedFont
                     font.bold: true
@@ -649,6 +707,8 @@ Window {
                     delegate: DockButton {
                         app: modelData
                         leftSide: sideDock.leftSide
+                        dockSide: sideDock.side
+                        accentColor: sideDock.accentColor
                     }
                 }
             }
@@ -666,6 +726,9 @@ Window {
         id: dockButton
         property var app
         property bool leftSide: true
+        property string dockSide: "left"
+        property color accentColor: root.themeAccent
+        property string resolvedIcon: app.iconNames ? appLauncher.findIcon(app.iconNames) : ""
         property bool active: {
             root.dockStateVersion
 
@@ -702,7 +765,7 @@ Window {
             anchors.centerIn: parent
             width: dockMouseArea.containsMouse ? 34 : 30
             height: width
-            source: app.iconNames ? appLauncher.findIcon(app.iconNames) : ""
+            source: dockButton.resolvedIcon
             fillMode: Image.PreserveAspectFit
             smooth: true
             visible: status === Image.Ready
@@ -722,7 +785,7 @@ Window {
             width: 4
             height: dockButton.active ? 18 : 0
             radius: 2
-            color: root.themeAccent
+            color: dockButton.accentColor
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: dockButton.leftSide ? parent.left : undefined
             anchors.right: dockButton.leftSide ? undefined : parent.right
@@ -770,7 +833,8 @@ Window {
                 if (mouse.button === Qt.RightButton) {
                     dockActionMenu.showForApp(
                         dockButton.app,
-                        dockButton.mapToItem(root.contentItem, dockButton.width / 2, dockButton.height / 2)
+                        dockButton.mapToItem(root.contentItem, dockButton.width / 2, dockButton.height / 2),
+                        dockButton.dockSide
                     )
                     return
                 }
