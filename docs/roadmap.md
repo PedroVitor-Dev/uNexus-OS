@@ -64,7 +64,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [ ] Define the core visual language: spacing, shadows, borders, motion and typography
 - [ ] Create the first official wallpaper set
 - [ ] Replace temporary text/icon fallbacks with consistent visual app icons
-- [ ] Polish the side docks so system and gaming areas feel distinct but related
+- [x] Polish the side docks so system and gaming areas feel distinct but related
 - [ ] Refine panel transitions for Launcher, Settings, Game Settings and First Setup
 - [ ] Add empty, loading, error and unavailable states to every panel
 - [ ] Make the shell look good at common laptop and desktop resolutions

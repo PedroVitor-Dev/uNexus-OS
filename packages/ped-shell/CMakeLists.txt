@@ -32,6 +32,8 @@ qt_add_qml_module(ped-shell
         qml/ContextMenu.qml
         qml/NotificationCenter.qml
         qml/FpsOverlay.qml
+        qml/SideDock.qml
+        qml/DockButton.qml
         qml/SettingsPanel.qml
         qml/GameSettingsPanel.qml
         qml/FirstSetupPanel.qml

@@ -72,7 +72,7 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - Game Settings;
 - First Setup.
 
-The current dock is still embedded in `Main.qml`; it can later be extracted into a standalone QML component.
+The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
 ---
 
@@ -195,7 +195,7 @@ It shows install status and copies install commands for the user to run.
 | Component | Current status |
 |---|---|
 | `ped-shell` | Implemented as the main Qt/QML app |
-| `ped-dock` | Embedded in `Main.qml` |
+| `ped-dock` | Implemented through `SideDock.qml` and `DockButton.qml` |
 | `ped-launcher` | Implemented in `Launcher.qml` |
 | `ped-settings` | Implemented as `SettingsPanel.qml` and `GameSettingsPanel.qml` |
 | `ped-store` | Planned |
@@ -220,7 +220,6 @@ Future versions may add D-Bus or direct compositor protocols where needed.
 
 Near-term architecture work:
 
-- split the docks into dedicated QML components;
 - move repeated app metadata into a model or config file;
 - package `ped-shell` for Arch;
 - start an `archiso` profile;
