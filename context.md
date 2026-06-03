@@ -108,6 +108,7 @@ Core shell:
 - Desktop context menu.
 - Persistent theme, language, stats overlay and first setup preferences.
 - Official uNexus logo integrated into desktop, login, First Setup, Settings About and README.
+- Current slogan: `Open Source. Linux Powered. Gamer Focused.`
 
 Dock:
 
@@ -167,7 +168,9 @@ Assets:
 
 - Old screenshots/demo media with previous branding were removed.
 - Official PNG logo variants were added under `assets/logo`.
-- Runtime QML uses `qrc:/UNexusShell/assets/logo/4.png` through `brandLogoSource`.
+- Runtime QML uses `qrc:/UNexusShell/assets/logo/SF%20White.png` through `brandLogoSource`.
+- README uses `assets/logo/SF%20Black.png` for better contrast on GitHub/light backgrounds.
+- `assets/logo/4.png` remains tracked as an older logo variant/resource fallback.
 - `assets/logo/uNexus Logo Creation.pdf` may exist locally as an untracked design/source file; it was intentionally left out of the last UI commit unless the owner decides to track it.
 
 ---
@@ -176,6 +179,9 @@ Assets:
 
 Latest known commits:
 
+- `ec4e324 docs(ui): update unexus slogan`
+- `e0cb143 feat(ui): use transparent sf logo assets`
+- `23937d0 docs: refresh unexus project context`
 - `d4f47a2 feat(ui): integrate official uNexus logo assets`
 - `0d10a86 fix(files): rename panel title`
 - `6cb7314 feat(files): add breadcrumbs and sorting`
@@ -185,9 +191,6 @@ Latest known commits:
 - `7689bb9 refactor: rename project to unexus`
 - `2efb0c6 docs: add dock active state issue`
 - `d93f5da fix(dock): make internal state reactive`
-- `e036f77 fix(dock): fix behavior`
-- `5e7f8b4 feat(dock): polish behavior`
-- `dd50ee4 docs: refresh project context`
 
 ---
 
@@ -197,17 +200,18 @@ The most recent work focused on polish and identity:
 
 - Project name is now `uNexus`; old PED OS references should not return.
 - Package/module naming uses `unexus-shell` and `UNexusShell`.
-- Official logo PNGs are in `assets/logo`.
-- `Main.qml` exposes `brandLogoSource` and uses it on the desktop.
+- Official logo PNGs are in `assets/logo`; newest transparent variants are `SF White.png` and `SF Black.png`.
+- `Main.qml` exposes `brandLogoSource`, currently pointing to `qrc:/UNexusShell/assets/logo/SF%20White.png`, and uses it on the desktop/login/setup/settings.
 - Login, First Setup and Settings About use the official logo.
 - `CMakeLists.txt` registers the brand asset with Qt resources.
-- README now uses the logo instead of old screenshots.
+- README now uses `assets/logo/SF%20Black.png` instead of old screenshots.
 - Old screenshot/demo files were removed from tracked assets.
 - uNexus Files gained breadcrumbs and sorting.
 - uNexus Files title is now `File Manager` / `Gerenciador de Arquivos`.
 - uNexus Files folder rows are simpler and use a type label rather than oversized `DIR` text.
 - Main shell starts fullscreen for Hyprland testing.
 - The dock hover residue was reduced; active state bugs were previously tracked in `docs/issue-dock-active-hover-state.md`.
+- Brand slogan was changed everywhere visible to `Open Source. Linux Powered. Gamer Focused.`
 
 ---
 
@@ -215,7 +219,7 @@ The most recent work focused on polish and identity:
 
 - No full automated test/build validation was run on Windows.
 - Real validation should happen on Arch + Hyprland.
-- The Qt resource path for the logo should be validated on Arch after a clean build.
+- The Qt resource paths for `SF White.png` / `SF Black.png` should be validated on Arch after a clean build, especially because the filenames contain spaces and QML uses `%20`.
 - Localization is currently a simple QML dictionary, not Qt `.ts/.qm` translation files.
 - English strings are still the stable source keys, so changing English display text can break PT-BR lookup unless dictionary keys are updated too.
 - uNexus Files is still an MVP and does not yet have copy/cut/paste, delete confirmations, multi-select, preview/details pane or keyboard navigation.
@@ -230,11 +234,12 @@ The most recent work focused on polish and identity:
 
 Recommended next priorities:
 
-1. Validate the latest UI/logo changes on Arch + Hyprland:
+1. Validate the latest UI/logo/slogan changes on Arch + Hyprland:
    - Clean build from `packages/unexus-shell`.
-   - Confirm the logo renders on desktop, login, First Setup and Settings About.
+   - Confirm `SF White.png` renders on desktop, login, First Setup and Settings About.
    - Confirm fullscreen startup behaves correctly.
-   - Confirm README logo path is valid on GitHub after push.
+   - Confirm README `SF Black.png` path is valid on GitHub after push.
+   - Confirm the slogan reads `Open Source. Linux Powered. Gamer Focused.` in the shell and docs.
 
 2. Continue uNexus Files toward a real `unexus-files`:
    - Copy/cut/paste.
