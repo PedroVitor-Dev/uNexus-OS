@@ -2,7 +2,7 @@
 
 ## Summary
 
-The dock icon for internal apps, especially **PED Files**, keeps the active accent background after the panel is closed. Visually, it looks like the app is still active/open even though the internal panel is no longer visible.
+The dock icon for internal apps, especially **uNexus Files**, keeps the active accent background after the panel is closed. Visually, it looks like the app is still active/open even though the internal panel is no longer visible.
 
 This is not the regular hover background from `DockButton.qml`:
 
@@ -25,35 +25,35 @@ So the issue is likely that `dockButton.active` remains `true`, meaning `appStat
 
 - OS target: Arch Linux
 - Compositor: Hyprland
-- Shell: `ped-shell`
+- Shell: `unexus-shell`
 - UI: Qt6/QML
 - Relevant components:
-  - `packages/ped-shell/qml/Main.qml`
-  - `packages/ped-shell/qml/SideDock.qml`
-  - `packages/ped-shell/qml/DockButton.qml`
-  - `packages/ped-shell/qml/FilesPanel.qml`
-  - `packages/ped-shell/qml/SettingsPanel.qml`
-  - `packages/ped-shell/qml/GameSettingsPanel.qml`
-  - `packages/ped-shell/qml/FirstSetupPanel.qml`
+  - `packages/unexus-shell/qml/Main.qml`
+  - `packages/unexus-shell/qml/SideDock.qml`
+  - `packages/unexus-shell/qml/DockButton.qml`
+  - `packages/unexus-shell/qml/FilesPanel.qml`
+  - `packages/unexus-shell/qml/SettingsPanel.qml`
+  - `packages/unexus-shell/qml/GameSettingsPanel.qml`
+  - `packages/unexus-shell/qml/FirstSetupPanel.qml`
 
 ## Steps To Reproduce
 
-1. Start `ped-shell` on Arch + Hyprland.
+1. Start `unexus-shell` on Arch + Hyprland.
 2. Open the side dock.
-3. Click **PED Files**.
-4. Confirm the PED Files panel opens and the dock icon becomes active.
-5. Close PED Files using the panel close button or by clicking outside the panel.
+3. Click **uNexus Files**.
+4. Confirm the uNexus Files panel opens and the dock icon becomes active.
+5. Close uNexus Files using the panel close button or by clicking outside the panel.
 6. Reopen/observe the dock.
 
 ## Actual Behavior
 
-The PED Files dock icon still shows the active accent background after the panel is closed.
+The uNexus Files dock icon still shows the active accent background after the panel is closed.
 
 The panel itself is no longer visible, but the dock icon still looks active/open.
 
 ## Expected Behavior
 
-After closing PED Files:
+After closing uNexus Files:
 
 - the internal panel should set its dock state to closed;
 - `DockButton.appState` should resolve to `"closed"`;
@@ -108,7 +108,7 @@ Possibilities to investigate:
 Add temporary logs around:
 
 ```qml
-console.log("panel dockActive", pedFiles.dockActive)
+console.log("panel dockActive", unexusFiles.dockActive)
 console.log("panelStateVersion", root.panelStateVersion)
 console.log("internalDockState", app.internalAction, state)
 console.log("dock appStateOverride", app.label, appStateOverride)
@@ -127,8 +127,8 @@ Suggested places:
 
 ## Acceptance Criteria
 
-- Closing PED Files returns its dock icon to the closed visual state.
-- Closing PED Settings, Game Settings and First Setup does the same.
+- Closing uNexus Files returns its dock icon to the closed visual state.
+- Closing uNexus Settings, Game Settings and First Setup does the same.
 - External apps still show correct states:
   - active/open;
   - minimized/hidden;

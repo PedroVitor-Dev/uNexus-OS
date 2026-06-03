@@ -22,7 +22,7 @@ Item {
     function complete() {
         userSettings.firstSetupCompleted = true
         hide()
-        notifCenter.send(root.tr("Setup complete"), root.tr("PED OS gaming setup is ready."), "SETUP")
+        notifCenter.send(root.tr("Setup complete"), root.tr("uNexus gaming setup is ready."), "SETUP")
     }
 
     property bool refreshToken: false
@@ -86,11 +86,11 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "PED"
+                        text: "uNexus"
                         color: root.themeAccent
                         font.pixelSize: 11
                         font.bold: true
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
 
@@ -103,14 +103,14 @@ Item {
                         color: "#ffffff"
                         font.pixelSize: 22
                         font.bold: true
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
 
                     Text {
-                        text: root.tr("Check gaming essentials and prepare PED OS for play")
+                        text: root.tr("Check gaming essentials and prepare uNexus for play")
                         color: "#8ea4bd"
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
             }
@@ -158,7 +158,7 @@ Item {
 
                         SetupHint {
                             width: parent.width
-                            text: root.tr("Install Flatpak apps from Flathub for consistent game launcher support across PED OS builds.")
+                            text: root.tr("Install Flatpak apps from Flathub for consistent game launcher support across uNexus builds.")
                         }
 
                         SetupCommandButton {
@@ -225,10 +225,10 @@ Item {
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: root.tr("You can reopen this checklist later from PED Settings.")
+                        text: root.tr("You can reopen this checklist later from uNexus Settings.")
                         color: "#8ea4bd"
                         font.pixelSize: 11
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
 
@@ -246,7 +246,7 @@ Item {
                         text: root.tr("Finish setup")
                         color: "#ffffff"
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         font.bold: true
                     }
 
@@ -284,7 +284,7 @@ Item {
                 text: section.title
                 color: root.themeAccent
                 font.pixelSize: 11
-                font.family: root.pedFont
+                font.family: root.uiFont
                 font.letterSpacing: 1
             }
         }
@@ -307,7 +307,7 @@ Item {
             text: setupRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         Rectangle {
@@ -327,7 +327,7 @@ Item {
                 text: setupRow.ready ? root.tr("ready") : root.tr("Copy install")
                 color: setupRow.ready ? "#00ff88" : "#b7ddff"
                 font.pixelSize: 10
-                font.family: root.pedFont
+                font.family: root.uiFont
             }
 
             MouseArea {
@@ -359,7 +359,7 @@ Item {
             text: root.tr(commandButton.label)
             color: "#b7ddff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         MouseArea {
@@ -393,7 +393,7 @@ Item {
             text: root.tr(hintRow.text)
             color: "#8ea4bd"
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
             wrapMode: Text.WordWrap
         }
     }

@@ -94,7 +94,7 @@ Item {
                         text: root.tr("Game Settings")
                         color: "#ffffff"
                         font.pixelSize: 22
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         font.bold: true
                     }
 
@@ -102,7 +102,7 @@ Item {
                         text: root.tr("Launchers, overlays and performance tools")
                         color: "#8ea4bd"
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
 
@@ -120,7 +120,7 @@ Item {
                         text: "X"
                         color: "#ffffff"
                         font.pixelSize: 13
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
 
                     MouseArea {
@@ -157,7 +157,7 @@ Item {
 
                         SettingsToggle {
                             width: parent.width
-                            label: root.tr("PED Stats Overlay")
+                            label: root.tr("uNexus Stats Overlay")
                             detail: systemStats.visible ? root.tr("CPU, RAM, GPU and temperature visible") : root.tr("Overlay hidden")
                             checked: systemStats.visible
                             onClicked: systemStats.visible = !systemStats.visible
@@ -193,7 +193,7 @@ Item {
                                 text: root.tr("Copy Steam launch options")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
-                                font.family: root.pedFont
+                                font.family: root.uiFont
                             }
 
                             MouseArea {
@@ -290,7 +290,7 @@ Item {
                 text: section.title
                 color: "#4d9eff"
                 font.pixelSize: 11
-                font.family: root.pedFont
+                font.family: root.uiFont
                 font.letterSpacing: 1
             }
         }
@@ -319,14 +319,14 @@ Item {
                 text: toggleRow.label
                 color: "#ffffff"
                 font.pixelSize: 13
-                font.family: root.pedFont
+                font.family: root.uiFont
             }
 
             Text {
                 text: toggleRow.detail
                 color: "#8ea4bd"
                 font.pixelSize: 10
-                font.family: root.pedFont
+                font.family: root.uiFont
                 elide: Text.ElideRight
                 width: parent.width
             }
@@ -380,7 +380,7 @@ Item {
             text: statusRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         Rectangle {
@@ -398,7 +398,7 @@ Item {
                 text: statusRow.installed ? root.tr("installed") : root.tr("missing")
                 color: statusRow.installed ? "#00ff88" : "#ff6b6b"
                 font.pixelSize: 10
-                font.family: root.pedFont
+                font.family: root.uiFont
             }
         }
     }
@@ -420,7 +420,7 @@ Item {
             text: installRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         Rectangle {
@@ -441,7 +441,7 @@ Item {
                 text: installRow.installed ? root.tr("installed") : root.tr("Copy install")
                 color: installRow.installed ? "#00ff88" : "#b7ddff"
                 font.pixelSize: 10
-                font.family: root.pedFont
+                font.family: root.uiFont
             }
 
             MouseArea {
@@ -472,7 +472,7 @@ Item {
             text: infoRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         Text {
@@ -482,7 +482,7 @@ Item {
             text: infoRow.value
             color: "#8ea4bd"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
     }
 }

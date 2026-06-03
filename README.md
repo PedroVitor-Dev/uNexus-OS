@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>PED OS</h1>
+  <h1>uNexus</h1>
   <p>A Linux-based operating system shell built for gamers. Fast, clean, and optimized for play.</p>
 
   ![Status](https://img.shields.io/badge/status-in%20development-blue)
@@ -10,11 +10,11 @@
 
   <br/>
 
-  <img src="assets/screenshots/desktop.png" width="800" alt="PED OS Desktop"/>
+  <img src="assets/screenshots/desktop.png" width="800" alt="uNexus Desktop"/>
 
   <br/><br/>
 
-  <img src="assets/demo/MP4PEDOS.gif" width="800" alt="PED OS Demo"/>
+  <img src="assets/demo/unexus-demo.gif" width="800" alt="uNexus Demo"/>
 </div>
 
 ---
@@ -23,13 +23,13 @@
 
 > "Gaming on Linux should be effortless. No tweaking. No struggling. Just play."
 
-PED OS is built around one goal: make Linux gaming feel immediate, focused, and polished out of the box.
+uNexus is built around one goal: make Linux gaming feel immediate, focused, and polished out of the box.
 
 ---
 
 ## Current State
 
-PED OS Shell is currently running natively on **Arch Linux + Hyprland** on real hardware.
+uNexus Shell is currently running natively on **Arch Linux + Hyprland** on real hardware.
 
 The current prototype manages:
 
@@ -37,10 +37,10 @@ The current prototype manages:
 - login screen;
 - system and gaming side docks;
 - app launcher with search and install status;
-- PED Files file manager MVP;
+- uNexus Files file manager MVP;
 - right-click desktop context menu;
 - notifications;
-- PED Settings and Game Settings panels;
+- uNexus Settings and Game Settings panels;
 - first-run setup checklist;
 - PT-BR / English interface language selection;
 - CPU/GPU/RAM stats overlay;
@@ -50,7 +50,7 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 
 ---
 
-## Why PED OS?
+## Why uNexus?
 
 - **Game-first workflow**: Steam, Lutris, Heroic and Bottles are first-class launcher targets.
 - **Hyprland-native control**: window focus and close actions use `hyprctl` when available.
@@ -84,10 +84,10 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 | Installed/not installed detection for gaming apps | Done |
 | Flatpak fallback for gaming apps | Done |
 | MangoHud/GameMode launch path for gaming apps | Done |
-| PED Settings panel | Done |
+| uNexus Settings panel | Done |
 | Game Settings panel | Done |
 | First Setup panel | Done |
-| PED Files file manager MVP | Done |
+| uNexus Files file manager MVP | Done |
 | PT-BR / English language selection in Settings | Done |
 | Persistent user settings through `QSettings` | Done |
 | Notification system | Done |
@@ -104,16 +104,16 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 <div align="center">
 
 ### Login Screen
-<img src="assets/screenshots/tela_de_login.png" width="800" alt="PED OS Login Screen"/>
+<img src="assets/screenshots/tela_de_login.png" width="800" alt="uNexus Login Screen"/>
 
 ### Desktop
-<img src="assets/screenshots/desktop.png" width="800" alt="PED OS Desktop"/>
+<img src="assets/screenshots/desktop.png" width="800" alt="uNexus Desktop"/>
 
 ### Launcher
-<img src="assets/screenshots/laucher.png" width="800" alt="PED OS Launcher"/>
+<img src="assets/screenshots/laucher.png" width="800" alt="uNexus Launcher"/>
 
 ### Context Menu
-<img src="assets/screenshots/menu_de_contexto.png" width="800" alt="PED OS Context Menu"/>
+<img src="assets/screenshots/menu_de_contexto.png" width="800" alt="uNexus Context Menu"/>
 
 </div>
 
@@ -139,17 +139,17 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 
 | Path | Description |
 |---|---|
-| `packages/ped-shell` | Main Qt/QML desktop shell |
-| `packages/ped-shell/src` | C++ system integration backends |
-| `packages/ped-shell/include` | C++ headers exposed to Qt/QML |
-| `packages/ped-shell/qml` | Shell UI, docks, launcher, settings and overlays |
+| `packages/unexus-shell` | Main Qt/QML desktop shell |
+| `packages/unexus-shell/src` | C++ system integration backends |
+| `packages/unexus-shell/include` | C++ headers exposed to Qt/QML |
+| `packages/unexus-shell/qml` | Shell UI, docks, launcher, settings and overlays |
 | `docs` | Architecture, build guide, roadmap and contribution docs |
 | `assets` | Screenshots and demo media |
 | `scripts` | Project helper scripts |
 
 ---
 
-## ped-shell Components
+## unexus-shell Components
 
 | Component | File(s) | Description |
 |---|---|---|
@@ -159,10 +159,10 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 | Notifications | `qml/NotificationCenter.qml` | Toast notifications |
 | Desktop menu | `qml/ContextMenu.qml` | Right-click desktop actions |
 | Stats overlay | `qml/FpsOverlay.qml`, `systemstats.cpp` | CPU, GPU, RAM and temperature overlay |
-| PED Settings | `qml/SettingsPanel.qml`, `usersettings.cpp` | Appearance and shell preferences |
+| uNexus Settings | `qml/SettingsPanel.qml`, `usersettings.cpp` | Appearance and shell preferences |
 | Game Settings | `qml/GameSettingsPanel.qml` | MangoHud, GameMode and gaming launchers |
 | First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and install commands |
-| PED Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, open, create folder, rename and trash |
+| uNexus Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, open, create folder, rename and trash |
 | System info | `systeminfo.cpp` | Battery and network data |
 | App launcher | `applauncher.cpp` | Launch, focus, close, Flatpak and MangoHud helpers |
 | Game Mode | `gamemode.cpp` | Game Mode state and integration |
@@ -183,10 +183,10 @@ sudo pacman -S git cmake qt6-base qt6-declarative base-devel wget noto-fonts-emo
 Build:
 
 ```bash
-cd packages/ped-shell
+cd packages/unexus-shell
 cmake -B build
 cmake --build build
-./build/ped-shell
+./build/unexus-shell
 ```
 
 Default login password: `1234` or blank.
@@ -201,8 +201,8 @@ Current near-term focus:
 
 - refine GPU stats on more hardware;
 - validate MangoHud with real games;
-- improve PED Settings and localization coverage;
-- continue evolving PED Files into a richer file manager;
+- improve uNexus Settings and localization coverage;
+- continue evolving uNexus Files into a richer file manager;
 - prepare Arch packaging;
 - start the bootable ISO path with `archiso`.
 

@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("userSettings", &userSettings);
     engine.rootContext()->setContextProperty("fileManager", &fileManager);
 
-    engine.load(QUrl(QStringLiteral("qrc:/PedShell/qml/Main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/UNexusShell/qml/Main.qml")));
 
     if (engine.rootObjects().isEmpty())
         return -1;

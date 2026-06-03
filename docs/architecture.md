@@ -1,14 +1,14 @@
-# PED OS Architecture
+# uNexus Architecture
 
-This document describes the current technical architecture of PED OS.
+This document describes the current technical architecture of uNexus.
 
 ---
 
 ## Overview
 
-PED OS is a Linux gaming desktop shell built on top of Wayland and Hyprland.
+uNexus is a Linux gaming desktop shell built on top of Wayland and Hyprland.
 
-The current prototype is `ped-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats and persistent user settings.
+The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats and persistent user settings.
 
 ---
 
@@ -19,7 +19,7 @@ The current prototype is `ped-shell`, a Qt6/QML application with C++ backends fo
 | Games and gaming launchers           |
 | Steam, Lutris, Heroic, Bottles        |
 +--------------------------------------+
-| PED Shell UI                         |
+| uNexus Shell UI                         |
 | Main, docks, launcher, settings      |
 +--------------------------------------+
 | Qt6 / QML                            |
@@ -70,14 +70,14 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - desktop context menu;
 - notifications;
 - stats overlay;
-- PED Settings;
+- uNexus Settings;
 - Game Settings;
 - First Setup.
-- PED Files.
+- uNexus Files.
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
-Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as PED Files, PED Settings, Game Settings and First Setup report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
+Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus Settings, Game Settings and First Setup report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
 
 ---
 
@@ -176,7 +176,7 @@ Current settings:
 - stats overlay visibility;
 - first setup completion state.
 
-These values are restored when `ped-shell` starts.
+These values are restored when `unexus-shell` starts.
 
 ## Localization
 
@@ -192,7 +192,7 @@ The first localized target is PT-BR. English remains the source/fallback languag
 
 The language selector is available in `SettingsPanel.qml`.
 
-## PED Files
+## uNexus Files
 
 `FileManager` provides the backend for `FilesPanel.qml`.
 
@@ -206,7 +206,7 @@ Current responsibilities:
 - rename files/folders;
 - move files/folders to trash through `gio trash` when available.
 
-PED Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property.
+uNexus Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property.
 
 ---
 
@@ -230,12 +230,12 @@ It shows install status and copies install commands for the user to run.
 
 | Component | Current status |
 |---|---|
-| `ped-shell` | Implemented as the main Qt/QML app |
-| `ped-dock` | Implemented through `SideDock.qml` and `DockButton.qml` |
-| `ped-launcher` | Implemented in `Launcher.qml` |
-| `ped-settings` | Implemented as `SettingsPanel.qml` and `GameSettingsPanel.qml` |
-| `ped-store` | Planned |
-| `ped-files` | MVP embedded as `FilesPanel.qml` backed by `FileManager` |
+| `unexus-shell` | Implemented as the main Qt/QML app |
+| `unexus-dock` | Implemented through `SideDock.qml` and `DockButton.qml` |
+| `unexus-launcher` | Implemented in `Launcher.qml` |
+| `unexus-settings` | Implemented as `SettingsPanel.qml` and `GameSettingsPanel.qml` |
+| `unexus-store` | Planned |
+| `unexus-files` | MVP embedded as `FilesPanel.qml` backed by `FileManager` |
 
 ---
 
@@ -257,12 +257,12 @@ Future versions may add D-Bus or direct compositor protocols where needed.
 Near-term architecture work:
 
 - move repeated app metadata into a model or config file;
-- package `ped-shell` for Arch;
+- package `unexus-shell` for Arch;
 - start an `archiso` profile;
 - eventually replace ad hoc command wrappers with stronger service APIs.
 
-Long term, PED OS may grow beyond a Hyprland-based shell toward a custom compositor/window manager tailored for gaming.
+Long term, uNexus may grow beyond a Hyprland-based shell toward a custom compositor/window manager tailored for gaming.
 
 ---
 
-<sub>Architecture is a living document. It evolves as PED OS grows.</sub>
+<sub>Architecture is a living document. It evolves as uNexus grows.</sub>

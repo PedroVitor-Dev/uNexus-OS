@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to PED OS will be documented in this file.
+All notable changes to uNexus will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
@@ -9,13 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- PED Files MVP with local directory navigation, places sidebar, file opening, folder creation, rename and move-to-trash actions.
+- uNexus Files MVP with local directory navigation, places sidebar, file opening, folder creation, rename and move-to-trash actions.
 - System and gaming side dock app states for open, minimized/hidden and closed apps.
-- PT-BR interface localization with English/PT-BR language selection in PED Settings.
+- PT-BR interface localization with English/PT-BR language selection in uNexus Settings.
 - Persistent language preference through `QSettings`.
 
 ### Changed
-- Launcher, dock, settings, game settings, first setup, context menu, login, stats overlay and PED Files now route user-facing text through the shell localization helper.
+- Launcher, dock, settings, game settings, first setup, context menu, login, stats overlay and uNexus Files now route user-facing text through the shell localization helper.
 - Internal panel dock state is recalculated when panels open/close so closed internal apps no longer remain visually active.
 
 ### Planned
@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Controller support out of the box
 - Per-game performance profiles
 - Close window via hyprctl
-- Auto-start PED OS Shell on login
+- Auto-start uNexus Shell on login
 
 ---
 
@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Dual boot Arch Linux + Hyprland on real hardware
-- PED OS Shell running natively on Hyprland
+- uNexus Shell running natively on Hyprland
 - AppLauncher C++ class with real app detection
 - `isWindowOpen` via hyprctl and wmctrl fallback
 - `isProcessRunning` via pgrep
@@ -70,7 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Real battery indicator via C++ (`SystemInfo` class)
 - Real network indicator via C++ (`SystemInfo` class)
 - Login screen with avatar, clock and password field
-- PED Launcher with search and categories (All, System, Media)
+- uNexus Launcher with search and categories (All, System, Media)
 - Right-click context menu on desktop
 - Notification system with auto-dismiss (4s)
 - Active app indicator on dock (blue dot)
@@ -85,7 +85,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Initial monorepo structure
-- `ped-shell` component with CMake + Qt6 build system
+- `unexus-shell` component with CMake + Qt6 build system
 - Top bar with live clock and date
 - Minimalist floating dock with 5 app slots
 - Dock hover zoom effect
@@ -102,4 +102,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-<sub>PED OS — built for gamers. Powered by Linux.</sub>
+<sub>uNexus — built for gamers. Powered by Linux.</sub>

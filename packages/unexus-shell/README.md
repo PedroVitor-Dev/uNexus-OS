@@ -1,6 +1,6 @@
-# ped-shell
+# unexus-shell
 
-Main desktop interface of PED OS.
+Main desktop interface of uNexus.
 
 ## Build
 

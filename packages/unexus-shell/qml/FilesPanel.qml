@@ -132,10 +132,10 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: root.tr("PED Files")
+                        text: root.tr("uNexus Files")
                         color: "#ffffff"
                         font.pixelSize: 22
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         font.bold: true
                     }
 
@@ -143,7 +143,7 @@ Item {
                         text: root.tr("Local files, game folders and quick system places")
                         color: "#8ea4bd"
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
 
@@ -184,7 +184,7 @@ Item {
                         color: "#ffffff"
                         selectionColor: root.themeAccent
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         clip: true
                         onAccepted: filesPanel.loadPath(text)
                     }
@@ -231,7 +231,7 @@ Item {
                         text: filesPanel.mode === "rename" ? root.tr("Rename") : root.tr("New folder")
                         color: root.themeAccent
                         font.pixelSize: 11
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         font.bold: true
                     }
 
@@ -251,7 +251,7 @@ Item {
                             color: "#ffffff"
                             selectionColor: root.themeAccent
                             font.pixelSize: 12
-                            font.family: root.pedFont
+                            font.family: root.uiFont
                             onAccepted: filesPanel.submitAction()
                         }
                     }
@@ -290,7 +290,7 @@ Item {
                             text: root.tr("PLACES")
                             color: root.themeAccent
                             font.pixelSize: 10
-                            font.family: root.pedFont
+                            font.family: root.uiFont
                             font.bold: true
                             opacity: 0.9
                         }
@@ -331,7 +331,7 @@ Item {
                                 text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
                                 color: "#8ea4bd"
                                 font.pixelSize: 11
-                                font.family: root.pedFont
+                                font.family: root.uiFont
                             }
 
                             Row {
@@ -426,7 +426,7 @@ Item {
             text: toolButton.label
             color: "#ffffff"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
             font.bold: true
         }
 
@@ -457,7 +457,7 @@ Item {
             text: action.label
             color: action.danger ? "#ff9a9a" : "#b7ddff"
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         MouseArea {
@@ -486,7 +486,7 @@ Item {
             text: placeRow.icon
             color: root.themeAccent
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
             font.bold: true
         }
 
@@ -499,7 +499,7 @@ Item {
             text: placeRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
             elide: Text.ElideRight
         }
 
@@ -544,7 +544,7 @@ Item {
                 text: fileRow.icon
                 color: fileRow.isDir ? root.themeAccent : "#8ea4bd"
                 font.pixelSize: 9
-                font.family: root.pedFont
+                font.family: root.uiFont
                 font.bold: true
             }
         }
@@ -558,7 +558,7 @@ Item {
             text: fileRow.name
             color: "#ffffff"
             font.pixelSize: 13
-            font.family: root.pedFont
+            font.family: root.uiFont
             elide: Text.ElideRight
         }
 
@@ -571,7 +571,7 @@ Item {
             text: root.tr(fileRow.kind)
             color: "#8ea4bd"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
             elide: Text.ElideRight
         }
 
@@ -584,7 +584,7 @@ Item {
             text: fileRow.size
             color: "#8ea4bd"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
         }
@@ -598,7 +598,7 @@ Item {
             text: fileRow.modified
             color: "#526a83"
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
             horizontalAlignment: Text.AlignRight
         }
 

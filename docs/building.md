@@ -1,6 +1,6 @@
-# Building PED OS
+# Building uNexus
 
-This guide explains how to build and run PED OS Shell from source.
+This guide explains how to build and run uNexus Shell from source.
 
 ---
 
@@ -61,26 +61,26 @@ fc-cache -fv
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/PedroVitor-Dev/Ped-Os.git
-cd Ped-Os
+git clone https://github.com/PedroVitor-Dev/uNexus.git
+cd uNexus
 ```
 
 ---
 
-## Build ped-shell
+## Build unexus-shell
 
 ```bash
-cd packages/ped-shell
+cd packages/unexus-shell
 cmake -B build
 cmake --build build
 ```
 
 ---
 
-## Run ped-shell
+## Run unexus-shell
 
 ```bash
-./build/ped-shell
+./build/unexus-shell
 ```
 
 Default password: `1234` or blank.
@@ -92,11 +92,11 @@ Default password: `1234` or blank.
 Use a clean rebuild after C++ or CMake changes:
 
 ```bash
-cd ~/Ped-Os/packages/ped-shell
+cd ~/uNexus/packages/unexus-shell
 rm -rf build
 cmake -B build
 cmake --build build
-./build/ped-shell
+./build/unexus-shell
 ```
 
 ---
@@ -108,7 +108,7 @@ Add an `exec-once` line to your Hyprland config.
 Example:
 
 ```ini
-exec-once = /home/<user>/Ped-Os/packages/ped-shell/build/ped-shell
+exec-once = /home/<user>/uNexus/packages/unexus-shell/build/unexus-shell
 ```
 
 The shell currently relies on Hyprland for the best window-management behavior.
@@ -154,7 +154,7 @@ command -v mangohud
 command -v gamemoderun
 ```
 
-For Steam games, PED OS can copy this launch option:
+For Steam games, uNexus can copy this launch option:
 
 ```bash
 mangohud gamemoderun %command%
@@ -224,7 +224,7 @@ On a lightweight Arch + Hyprland session, low RAM usage can be correct. Compare 
 free -h
 ```
 
-**`./build/ped-shell: No such file or directory`**
+**`./build/unexus-shell: No such file or directory`**
 
 The build failed. Run:
 

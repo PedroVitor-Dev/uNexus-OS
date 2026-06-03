@@ -6,10 +6,10 @@ Window {
     visible: true
     width: 1280
     height: 720
-    title: root.tr("PED OS Shell")
+    title: root.tr("uNexus Shell")
     color: "#0a0a0a"
 
-    property string pedFont: "Exo 2"
+    property string uiFont: "Exo 2"
     property int themeIndex: 0
     property string themeName: "Neon Blue"
     property color themeBgTop: "#04050d"
@@ -22,9 +22,9 @@ Window {
     property int localeVersion: 0
 
     property var ptBr: ({
-        "PED Files": "Arquivos PED",
+        "uNexus Files": "Arquivos uNexus",
         "Browser": "Navegador",
-        "PED Settings": "Configurações PED",
+        "uNexus Settings": "Configurações uNexus",
         "Terminal": "Terminal",
         "First Setup": "Configuração Inicial",
         "Steam": "Steam",
@@ -46,7 +46,7 @@ Window {
         "App not found": "App não encontrado",
         "{app} is not installed.": "{app} não está instalado.",
         "Welcome back!": "Bem-vindo de volta!",
-        "PED OS is ready.": "PED OS está pronto.",
+        "uNexus is ready.": "uNexus está pronto.",
         "Game Mode ON": "Modo Jogo ligado",
         "Performance optimized for gaming.": "Desempenho otimizado para jogos.",
         "MangoHud missing": "MangoHud ausente",
@@ -65,7 +65,7 @@ Window {
         "Appearance": "Aparência",
         "Theme": "Tema",
         "Font": "Fonte",
-        "PED Stats Overlay": "Overlay de estatísticas PED",
+        "uNexus Stats Overlay": "Overlay de estatísticas uNexus",
         "Visible on desktop": "Visível na área de trabalho",
         "Hidden": "Oculto",
         "System": "Sistema",
@@ -81,7 +81,7 @@ Window {
         "License": "Licença",
         "Copy repository URL": "Copiar URL do repositório",
         "Repository copied": "Repositório copiado",
-        "PED OS repository URL copied.": "URL do repositório do PED OS copiada.",
+        "uNexus repository URL copied.": "URL do repositório do uNexus copiada.",
         "Search apps...": "Buscar apps...",
         "All": "Tudo",
         "Gaming": "Jogos",
@@ -90,7 +90,7 @@ Window {
         "installed": "instalado",
         "not installed": "não instalado",
         "Copy opts": "Copiar opções",
-        "PED Files subtitle": "Arquivos locais, pastas de jogos e atalhos do sistema",
+        "uNexus Files subtitle": "Arquivos locais, pastas de jogos e atalhos do sistema",
         "Local files, game folders and quick system places": "Arquivos locais, pastas de jogos e atalhos do sistema",
         "PLACES": "LOCAIS",
         "{count} items": "{count} itens",
@@ -136,14 +136,14 @@ Window {
         "missing": "ausente",
         "ready": "pronto",
         "Setup complete": "Configuração concluída",
-        "PED OS gaming setup is ready.": "A configuração de jogos do PED OS está pronta.",
-        "Check gaming essentials and prepare PED OS for play": "Confira os essenciais de jogos e prepare o PED OS",
+        "uNexus gaming setup is ready.": "A configuração de jogos do uNexus está pronta.",
+        "Check gaming essentials and prepare uNexus for play": "Confira os essenciais de jogos e prepare o uNexus",
         "Runtime": "Execução",
         "Recommended": "Recomendado",
-        "Install Flatpak apps from Flathub for consistent game launcher support across PED OS builds.": "Instale apps Flatpak pelo Flathub para manter os launchers de jogos consistentes nas builds do PED OS.",
+        "Install Flatpak apps from Flathub for consistent game launcher support across uNexus builds.": "Instale apps Flatpak pelo Flathub para manter os launchers de jogos consistentes nas builds do uNexus.",
         "Copy Flathub setup": "Copiar setup do Flathub",
         "Game Launchers": "Launchers de jogos",
-        "You can reopen this checklist later from PED Settings.": "Você pode reabrir esta checklist depois pelas Configurações PED.",
+        "You can reopen this checklist later from uNexus Settings.": "Você pode reabrir esta checklist depois pelas Configurações uNexus.",
         "Finish setup": "Finalizar setup",
         "Command copied": "Comando copiado",
         "{label} copied.": "{label} copiado.",
@@ -172,8 +172,8 @@ Window {
         "Archive": "Arquivo compactado",
         "Executable": "Executável",
         "File": "Arquivo",
-        "PED OS Shell": "Shell PED OS",
-        "PED STATS": "ESTATÍSTICAS PED"
+        "uNexus Shell": "Shell uNexus",
+        "uNexus STATS": "ESTATÍSTICAS uNexus"
     })
 
     function tr(text) {
@@ -255,9 +255,9 @@ Window {
         }
     }
     property var systemDockApps: [
-        { icon: "F", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "PED Files", internalAction: "files" },
+        { icon: "F", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
         { icon: "W", iconNames: ["firefox", "org.mozilla.firefox"], label: "Browser", command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
-        { icon: "S", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "PED Settings", internalAction: "settings" },
+        { icon: "S", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "uNexus Settings", internalAction: "settings" },
         { icon: ">_", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] },
         { icon: "OK", iconNames: ["preferences-system-symbolic", "emblem-default"], label: "First Setup", internalAction: "firstSetup" }
     ]
@@ -295,10 +295,10 @@ Window {
             return ""
 
         if (app.internalAction === "files")
-            return panelDockState(pedFiles, stateVersion)
+            return panelDockState(unexusFiles, stateVersion)
 
         if (app.internalAction === "settings")
-            return panelDockState(pedSettings, stateVersion)
+            return panelDockState(unexusSettings, stateVersion)
 
         if (app.internalAction === "gameSettings")
             return panelDockState(gameSettings, stateVersion)
@@ -311,12 +311,12 @@ Window {
 
     function launchDesktopApp(app) {
     if (app.internalAction === "settings") {
-        pedSettings.show()
+        unexusSettings.show()
         return
     }
 
     if (app.internalAction === "files") {
-        pedFiles.show()
+        unexusFiles.show()
         return
     }
 
@@ -369,14 +369,14 @@ Window {
 
     function closeDesktopApp(app) {
         if (app.internalAction === "settings") {
-            pedSettings.hide()
+            unexusSettings.hide()
             root.panelStateVersion++
             root.dockStateVersion++
             return
         }
 
         if (app.internalAction === "files") {
-            pedFiles.hide()
+            unexusFiles.hide()
             root.panelStateVersion++
             root.dockStateVersion++
             return
@@ -559,11 +559,11 @@ Window {
             Text {
                 id: logoText
                 anchors.centerIn: parent
-                text: "PED OS"
+                text: "uNexus"
                 color: "#ffffff"
                 font.pixelSize: 12
                 font.letterSpacing: 4
-                font.family: root.pedFont
+                font.family: root.uiFont
                 opacity: 0.7
             }
 
@@ -574,10 +574,10 @@ Window {
                 cursorShape: Qt.PointingHandCursor
 
                 onClicked: {
-                    if (pedLauncher.visible)
-                        pedLauncher.hide()
+                    if (unexusLauncher.visible)
+                        unexusLauncher.hide()
                     else
-                        pedLauncher.show()
+                        unexusLauncher.show()
                 }
             }
         }
@@ -587,7 +587,7 @@ Window {
             anchors.centerIn: parent
             color: "#ffffff"
             font.pixelSize: 13
-            font.family: root.pedFont
+            font.family: root.uiFont
             opacity: 0.8
 
             Timer {
@@ -661,7 +661,7 @@ Window {
                 text: systemInfo.batteryLevel + "%"
                 color: systemInfo.batteryLevel < 20 ? "#ff4d4d" : "#ffffff"
                 font.pixelSize: 12
-                font.family: root.pedFont
+                font.family: root.uiFont
                 opacity: 0.7
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -670,7 +670,7 @@ Window {
                 id: dateText
                 color: "#ffffff"
                 font.pixelSize: 12
-                font.family: root.pedFont
+                font.family: root.uiFont
                 opacity: 0.5
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -707,11 +707,11 @@ Window {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "PED OS"
+            text: "uNexus"
             color: "#ffffff"
             font.pixelSize: 48
             font.letterSpacing: 8
-            font.family: root.pedFont
+            font.family: root.uiFont
             opacity: 0.9
         }
 
@@ -721,7 +721,7 @@ Window {
             color: root.themeAccent
             font.pixelSize: 14
             font.letterSpacing: 2
-            font.family: root.pedFont
+            font.family: root.uiFont
             opacity: 0.7
         }
     }
@@ -733,7 +733,7 @@ Window {
         apps: root.systemDockApps
         accentColor: root.themeAccent
         panelColor: "#111111"
-        fontFamily: root.pedFont
+        fontFamily: root.uiFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
         localeVersion: root.localeVersion
@@ -757,7 +757,7 @@ Window {
         apps: root.gameDockApps
         accentColor: "#ff8a3d"
         panelColor: "#16110e"
-        fontFamily: root.pedFont
+        fontFamily: root.uiFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion
         localeVersion: root.localeVersion
@@ -822,7 +822,7 @@ Window {
                     text: root.tr("Open / Focus")
                     color: "#ffffff"
                     font.pixelSize: 12
-                    font.family: root.pedFont
+                    font.family: root.uiFont
                 }
 
                 MouseArea {
@@ -851,7 +851,7 @@ Window {
                     text: root.tr("Close")
                     color: "#ff8a8a"
                     font.pixelSize: 12
-                    font.family: root.pedFont
+                    font.family: root.uiFont
                 }
 
                 MouseArea {
@@ -881,7 +881,7 @@ Window {
                     text: root.tr("Copy Options")
                     color: "#ffbd7a"
                     font.pixelSize: 12
-                    font.family: root.pedFont
+                    font.family: root.uiFont
                 }
 
                 MouseArea {
@@ -900,19 +900,19 @@ Window {
     }
 
     Launcher {
-        id: pedLauncher
+        id: unexusLauncher
         anchors.fill: parent
         z: 100
-        settingsPanel: pedSettings
+        settingsPanel: unexusSettings
         gameSettingsPanel: gameSettings
-        filesPanel: pedFiles
+        filesPanel: unexusFiles
     }
 
     ContextMenu {
         id: contextMenu
         anchors.fill: parent
         z: 150
-        onOpenSettingsRequested: pedSettings.show()
+        onOpenSettingsRequested: unexusSettings.show()
     }
 
 MouseArea {
@@ -941,7 +941,7 @@ MouseArea {
 
         onLoginSuccess: {
             loginScreen.destroy()
-            notifCenter.send(root.tr("Welcome back!"), root.tr("PED OS is ready."), "👋")
+            notifCenter.send(root.tr("Welcome back!"), root.tr("uNexus is ready."), "👋")
 
             if (!userSettings.firstSetupCompleted)
                 firstSetup.show()
@@ -954,7 +954,7 @@ MouseArea {
     }
 
     SettingsPanel {
-        id: pedSettings
+        id: unexusSettings
         anchors.fill: parent
         z: 190
         onDockActiveChanged: {
@@ -974,7 +974,7 @@ MouseArea {
     }
 
     FilesPanel {
-        id: pedFiles
+        id: unexusFiles
         anchors.fill: parent
         z: 192
         onDockActiveChanged: {

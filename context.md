@@ -1,4 +1,4 @@
-# PED OS Project Context
+# uNexus Project Context
 
 Last updated: 2026-06-03
 
@@ -8,14 +8,14 @@ This file is a handoff note for another AI/chat/dev session. It captures the cur
 
 ## Project Summary
 
-PED OS is a gaming-focused Linux desktop shell project. The current implementation is `ped-shell`, a Qt6/QML shell running on Arch Linux + Hyprland real hardware.
+uNexus is a gaming-focused Linux desktop shell project. The current implementation is `unexus-shell`, a Qt6/QML shell running on Arch Linux + Hyprland real hardware.
 
 The product direction is a clean, fast, game-first Linux experience where Steam, Lutris, Heroic, Bottles, GameMode, MangoHud and basic desktop tasks are integrated into one polished shell.
 
 Current development truth:
 
 - Target runtime: Arch Linux + Hyprland + Wayland.
-- Main app: `packages/ped-shell`.
+- Main app: `packages/unexus-shell`.
 - UI: Qt6/QML.
 - System integration: C++ context objects exposed to QML.
 - Build system: CMake.
@@ -60,10 +60,10 @@ Important preferences from the project owner:
 
 | Path | Purpose |
 |---|---|
-| `packages/ped-shell` | Main Qt/QML shell |
-| `packages/ped-shell/qml` | Shell UI: main surface, docks, launcher, panels, overlays |
-| `packages/ped-shell/src` | C++ backends |
-| `packages/ped-shell/include` | Backend headers |
+| `packages/unexus-shell` | Main Qt/QML shell |
+| `packages/unexus-shell/qml` | Shell UI: main surface, docks, launcher, panels, overlays |
+| `packages/unexus-shell/src` | C++ backends |
+| `packages/unexus-shell/include` | Backend headers |
 | `docs` | Architecture, roadmap, build and contribution docs |
 | `assets` | Screenshots/demo media |
 | `scripts` | Helper scripts |
@@ -74,9 +74,9 @@ Important QML files:
 - `SideDock.qml`: left/right side dock container.
 - `DockButton.qml`: dock item visuals, tooltip, active/minimized state.
 - `Launcher.qml`: app launcher with search, categories and install status.
-- `SettingsPanel.qml`: PED Settings, including language selector and theme/stats settings.
+- `SettingsPanel.qml`: uNexus Settings, including language selector and theme/stats settings.
 - `GameSettingsPanel.qml`: GameMode, MangoHud and gaming launcher checks.
-- `FilesPanel.qml`: PED Files MVP.
+- `FilesPanel.qml`: uNexus Files MVP.
 - `FirstSetupPanel.qml`: first-run checklist and copied install commands.
 - `ContextMenu.qml`: desktop right-click menu.
 - `LoginScreen.qml`: login flow.
@@ -107,7 +107,7 @@ Core shell:
 Dock:
 
 - Separate left system dock and right gaming dock.
-- System side: PED Files, Browser, PED Settings, Terminal, First Setup.
+- System side: uNexus Files, Browser, uNexus Settings, Terminal, First Setup.
 - Gaming side: Steam, Lutris, Heroic, Bottles, Game Settings.
 - Auto-hide side dock behavior.
 - Original application icons are resolved when possible through icon names.
@@ -135,7 +135,7 @@ Stats:
 - Shell stats overlay shows CPU, GPU, TEMP and RAM.
 - Missing GPU metrics show `N/A`.
 
-PED Files:
+uNexus Files:
 
 - Embedded file manager panel, not a standalone process yet.
 - Common places sidebar.
@@ -149,7 +149,7 @@ Localization:
 
 - English is the source/fallback language.
 - PT-BR localization is implemented.
-- Language can be selected in PED Settings.
+- Language can be selected in uNexus Settings.
 - `UserSettings.languageCode` persists `en` or `pt-BR`.
 - QML uses `root.tr(...)`, `root.trAppMessage(...)` and `root.trLabelMessage(...)`.
 
@@ -161,7 +161,7 @@ Localization:
 - `3da4335 fix(dock): recalculate internal app state`
 - `9d7d4af fix(dock): clear internal panel state`
 - `9113bea feat(dock): add app window states`
-- `dbb81b7 feat(files): add ped files mvp`
+- `dbb81b7 feat(files): add uNexus files mvp`
 - `a3761db feat(dock): extract side dock components`
 - `5300a24 feat(dock): polish side dock behavior`
 - `21ad426 docs: expand roadmap into detailed product plan`
@@ -175,11 +175,11 @@ The most recent work added project-wide PT-BR localization:
 - `UserSettings` gained `languageCode`.
 - `SettingsPanel.qml` gained language selection.
 - `Main.qml` owns the current translation dictionary and helper functions.
-- Main shell, dock, launcher, settings, game settings, first setup, PED Files, context menu, login and stats overlay now route visible text through localization helpers.
+- Main shell, dock, launcher, settings, game settings, first setup, uNexus Files, context menu, login and stats overlay now route visible text through localization helpers.
 
 Docs were then updated to reflect:
 
-- PED Files MVP.
+- uNexus Files MVP.
 - Dock open/minimized/closed state work.
 - PT-BR localization.
 - Arch + Hyprland as the real test target.
@@ -193,7 +193,7 @@ Docs were then updated to reflect:
 - Real validation should happen on Arch + Hyprland.
 - Localization is currently a simple QML dictionary, not Qt `.ts/.qm` translation files.
 - English strings are still the stable source keys, so changing English display text can break PT-BR lookup unless dictionary keys are updated too.
-- PED Files is an MVP and does not yet have copy/cut/paste, sorting, breadcrumbs, preview, delete confirmation or multi-select.
+- uNexus Files is an MVP and does not yet have copy/cut/paste, sorting, breadcrumbs, preview, delete confirmation or multi-select.
 - Some icons are still text/emoji fallbacks when the original app icon cannot be found.
 - GameMode/MangoHud integration needs more real-game validation.
 - Install flows copy commands; they do not yet run privileged or Flatpak installs directly.
@@ -206,12 +206,12 @@ Docs were then updated to reflect:
 Recommended next priorities:
 
 1. Test the PT-BR selector on Arch + Hyprland:
-   - Open PED Settings.
+   - Open uNexus Settings.
    - Switch to Português.
-   - Confirm dock, launcher, panels, notifications and PED Files update.
+   - Confirm dock, launcher, panels, notifications and uNexus Files update.
    - Restart shell and confirm language persists.
 
-2. Continue PED Files toward a real `ped-files`:
+2. Continue uNexus Files toward a real `unexus-files`:
    - Breadcrumb navigation.
    - Sorting by name/type/date/size.
    - Copy/cut/paste.
@@ -245,20 +245,20 @@ Recommended next priorities:
 Build:
 
 ```bash
-cd packages/ped-shell
+cd packages/unexus-shell
 cmake -B build
 cmake --build build
-./build/ped-shell
+./build/unexus-shell
 ```
 
 Clean rebuild:
 
 ```bash
-cd packages/ped-shell
+cd packages/unexus-shell
 rm -rf build
 cmake -B build
 cmake --build build
-./build/ped-shell
+./build/unexus-shell
 ```
 
 Check Hyprland clients:

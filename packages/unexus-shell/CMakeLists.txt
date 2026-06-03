@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(ped-shell VERSION 0.1.0 LANGUAGES CXX)
+project(unexus-shell VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 
-qt_add_executable(ped-shell
+qt_add_executable(unexus-shell
     src/main.cpp
     src/systeminfo.cpp
     src/gamemode.cpp
@@ -24,8 +24,8 @@ qt_add_executable(ped-shell
     include/filemanager.h
 )
 
-qt_add_qml_module(ped-shell
-    URI PedShell
+qt_add_qml_module(unexus-shell
+    URI UNexusShell
     VERSION 1.0
     QML_FILES
         qml/Main.qml
@@ -42,9 +42,9 @@ qt_add_qml_module(ped-shell
         qml/FilesPanel.qml
 )
 
-target_include_directories(ped-shell PRIVATE include)
+target_include_directories(unexus-shell PRIVATE include)
 
-target_link_libraries(ped-shell PRIVATE
+target_link_libraries(unexus-shell PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Qml

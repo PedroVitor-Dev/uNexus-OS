@@ -2,7 +2,7 @@
 
 UserSettings::UserSettings(QObject *parent)
     : QObject(parent)
-    , m_settings("PED OS", "ped-shell")
+    , m_settings("uNexus", "unexus-shell")
 {
     m_themeIndex = m_settings.value("appearance/themeIndex", 0).toInt();
     m_languageCode = m_settings.value("locale/languageCode", "en").toString();

@@ -1,4 +1,4 @@
-# Contributing to PED OS
+# Contributing to uNexus
 
 First off, thanks for taking the time to contribute!
 
@@ -24,7 +24,7 @@ Open an issue with:
 
 Open an issue with the `enhancement` label and describe:
 - The problem it solves
-- How it fits PED OS philosophy
+- How it fits uNexus philosophy
 
 ### Submitting Code
 

@@ -29,7 +29,7 @@ Item {
             spacing: 6
 
             Text {
-                text: root.tr("PED STATS")
+                text: root.tr("uNexus STATS")
                 color: "#4d9eff"
                 font.pixelSize: 10
                 font.letterSpacing: 2

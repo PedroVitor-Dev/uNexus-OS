@@ -1,6 +1,6 @@
-# PED OS Roadmap
+# uNexus Roadmap
 
-This roadmap is organized around one goal: make PED OS feel like a beautiful gaming-first desktop shell while steadily turning it into a real bootable operating system.
+This roadmap is organized around one goal: make uNexus feel like a beautiful gaming-first desktop shell while steadily turning it into a real bootable operating system.
 
 The order matters. Each stage balances three tracks:
 
@@ -12,7 +12,7 @@ The order matters. Each stage balances three tracks:
 
 ## Current Snapshot
 
-PED OS currently has a working Qt6/QML shell running on Arch Linux + Hyprland real hardware.
+uNexus currently has a working Qt6/QML shell running on Arch Linux + Hyprland real hardware.
 
 ### Done
 
@@ -34,10 +34,10 @@ PED OS currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] MangoHud and GameMode launch helpers
 - [x] CPU/GPU/RAM/TEMP shell stats overlay
 - [x] Missing GPU metrics displayed as `N/A`
-- [x] PED Settings prototype
+- [x] uNexus Settings prototype
 - [x] Game Settings prototype
 - [x] First Setup checklist
-- [x] PED Files MVP
+- [x] uNexus Files MVP
 - [x] English/PT-BR language selection
 - [x] Persistent user settings through `QSettings`
 - [x] Auto-start through Hyprland `exec-once`
@@ -63,7 +63,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 
 ### Visual and UX
 
-- [ ] Design the official PED OS logo
+- [ ] Design the official uNexus logo
 - [ ] Define the core visual language: spacing, shadows, borders, motion and typography
 - [ ] Create the first official wallpaper set
 - [ ] Replace temporary text/icon fallbacks with consistent visual app icons
@@ -79,28 +79,28 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [x] Add dock visual states for open, minimized/hidden and closed apps
 - [x] Keep Open / Focus behavior on dock and launcher
 - [x] Keep Close behavior available from the dock action menu
-- [x] Add PED Files MVP with local directory navigation
-- [x] Add PT-BR interface localization selectable from PED Settings
+- [x] Add uNexus Files MVP with local directory navigation
+- [x] Add PT-BR interface localization selectable from uNexus Settings
 - [ ] Add keyboard shortcuts for Launcher, Settings, Game Settings and stats overlay
-- [ ] Add a visible shortcut help panel inside PED Settings
+- [ ] Add a visible shortcut help panel inside uNexus Settings
 - [ ] Add quick toggles for stats overlay, Game Mode and theme
 - [ ] Add notification actions where useful instead of passive messages only
 - [ ] Improve the desktop context menu with real actions
-- [ ] Continue PED Files with copy/cut/paste, delete confirmations, sorting, breadcrumbs and richer previews
+- [ ] Continue uNexus Files with copy/cut/paste, delete confirmations, sorting, breadcrumbs and richer previews
 
 ### Real OS Foundation
 
 - [x] Shell runs on Arch + Hyprland real hardware
 - [x] Shell can auto-start through Hyprland config
-- [ ] Create a clean `.desktop` entry for `ped-shell`
-- [ ] Create a dedicated Hyprland session file for PED OS Shell
+- [ ] Create a clean `.desktop` entry for `unexus-shell`
+- [ ] Create a dedicated Hyprland session file for uNexus Shell
 - [ ] Document exact Hyprland config needed for daily testing
 - [ ] Add a simple health check screen for missing dependencies
 - [ ] Keep all runtime assumptions documented in `docs/building.md`
 
 ### Exit Criteria
 
-- [ ] A user can boot into Hyprland, see PED OS Shell, open apps, close apps and understand the interface without reading code
+- [ ] A user can boot into Hyprland, see uNexus Shell, open apps, close apps and understand the interface without reading code
 - [ ] The shell has a recognizable visual identity beyond "Qt prototype"
 - [ ] The current feature set works after a clean clone/build on the target Arch machine
 
@@ -108,11 +108,11 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 
 ## Stage 2 - Settings That Actually Control the System
 
-Goal: make PED Settings and Game Settings useful, not just informational.
+Goal: make uNexus Settings and Game Settings useful, not just informational.
 
 ### Visual and UX
 
-- [x] PED Settings panel exists
+- [x] uNexus Settings panel exists
 - [x] Game Settings panel exists
 - [x] First Setup panel exists
 - [ ] Redesign Settings as a real control center with sections and persistent state
@@ -128,7 +128,7 @@ Goal: make PED Settings and Game Settings useful, not just informational.
 - [x] Stats overlay visibility persists through `QSettings`
 - [x] First Setup completion persists through `QSettings`
 - [x] Game Settings can copy Steam launch options
-- [x] PED Files can open files, create folders, rename items and move items to trash
+- [x] uNexus Files can open files, create folders, rename items and move items to trash
 - [ ] Add real install actions for Flatpak apps instead of only copying commands
 - [ ] Add Flatpak remote detection and Flathub setup status
 - [ ] Add MangoHud configuration status
@@ -142,14 +142,14 @@ Goal: make PED Settings and Game Settings useful, not just informational.
 
 - [ ] Decide which settings are user-level and which require admin privileges
 - [ ] Add a safe privileged-action strategy instead of running random shell commands
-- [ ] Define where PED OS stores user config
-- [ ] Define where PED OS stores system config
+- [ ] Define where uNexus stores user config
+- [ ] Define where uNexus stores system config
 - [ ] Add config migration rules for future versions
 - [ ] Add documentation for every setting that changes system behavior
 
 ### Exit Criteria
 
-- [ ] PED Settings can change real shell preferences safely
+- [ ] uNexus Settings can change real shell preferences safely
 - [ ] Game Settings can prepare a gaming environment without manual guessing
 - [ ] First Setup can guide a clean machine toward a usable gaming setup
 
@@ -157,7 +157,7 @@ Goal: make PED Settings and Game Settings useful, not just informational.
 
 ## Stage 3 - Gaming Core That Feels Real
 
-Goal: make PED OS genuinely useful for launching, configuring and monitoring games.
+Goal: make uNexus genuinely useful for launching, configuring and monitoring games.
 
 ### Visual and UX
 
@@ -189,7 +189,7 @@ Goal: make PED OS genuinely useful for launching, configuring and monitoring gam
 
 ### Real OS Foundation
 
-- [ ] Define default gaming packages for PED OS
+- [ ] Define default gaming packages for uNexus
 - [ ] Define Flatpak vs native package policy
 - [ ] Define Steam, Lutris, Heroic and Bottles defaults
 - [ ] Add Vulkan driver verification
@@ -200,7 +200,7 @@ Goal: make PED OS genuinely useful for launching, configuring and monitoring gam
 
 ### Exit Criteria
 
-- [ ] A user can install/open Steam, Lutris, Heroic and Bottles from PED OS flows
+- [ ] A user can install/open Steam, Lutris, Heroic and Bottles from uNexus flows
 - [ ] At least one real game can be launched with MangoHud + GameMode
 - [ ] The system can explain what is missing when a game environment is incomplete
 
@@ -235,24 +235,24 @@ Goal: make the shell behave less like an overlay and more like an operating-syst
 
 ### Real OS Foundation
 
-- [ ] Decide whether PED OS will remain a Hyprland shell or fork deeper behavior
-- [ ] Document required Hyprland rules for PED Shell
-- [ ] Add default Hyprland config for PED OS
+- [ ] Decide whether uNexus will remain a Hyprland shell or fork deeper behavior
+- [ ] Document required Hyprland rules for uNexus Shell
+- [ ] Add default Hyprland config for uNexus
 - [ ] Add session environment variables
 - [ ] Add startup order for shell, portals, notifications and services
 - [ ] Add xdg-desktop-portal setup for Wayland apps
 
 ### Exit Criteria
 
-- [ ] The user can manage normal desktop windows from PED OS without relying on external bars
+- [ ] The user can manage normal desktop windows from uNexus without relying on external bars
 - [ ] Workspace behavior is understandable and stable
-- [ ] The Hyprland config required by PED OS is reproducible
+- [ ] The Hyprland config required by uNexus is reproducible
 
 ---
 
 ## Stage 5 - Packaging and Installable Shell
 
-Goal: stop treating PED OS Shell as a manually built project and make it installable.
+Goal: stop treating uNexus Shell as a manually built project and make it installable.
 
 ### Visual and UX
 
@@ -267,13 +267,13 @@ Goal: stop treating PED OS Shell as a manually built project and make it install
 - [ ] Add install target in CMake
 - [ ] Install binary, QML files and assets to correct system paths
 - [ ] Add `.desktop` launcher file
-- [ ] Add PED OS session file
+- [ ] Add uNexus session file
 - [ ] Add version display in Settings
 - [ ] Add changelog display or release notes link
 
 ### Real OS Foundation
 
-- [ ] Create Arch `PKGBUILD` for `ped-shell`
+- [ ] Create Arch `PKGBUILD` for `unexus-shell`
 - [ ] Package Qt/QML dependencies correctly
 - [ ] Package runtime assets correctly
 - [ ] Add a clean uninstall path
@@ -283,15 +283,15 @@ Goal: stop treating PED OS Shell as a manually built project and make it install
 
 ### Exit Criteria
 
-- [ ] A clean Arch machine can install PED Shell without manually running CMake
+- [ ] A clean Arch machine can install uNexus Shell without manually running CMake
 - [ ] The installed shell can launch from a session or desktop entry
 - [ ] Versioned releases are possible
 
 ---
 
-## Stage 6 - Bootable PED OS Prototype
+## Stage 6 - Bootable uNexus Prototype
 
-Goal: create the first bootable USB image that launches into a PED OS session.
+Goal: create the first bootable USB image that launches into a uNexus session.
 
 ### Visual and UX
 
@@ -303,7 +303,7 @@ Goal: create the first bootable USB image that launches into a PED OS session.
 
 ### Features
 
-- [ ] Include PED Shell by default
+- [ ] Include uNexus Shell by default
 - [ ] Include Hyprland by default
 - [ ] Include Flatpak and Flathub setup
 - [ ] Include MangoHud and GameMode
@@ -326,8 +326,8 @@ Goal: create the first bootable USB image that launches into a PED OS session.
 
 ### Exit Criteria
 
-- [ ] PED OS boots from USB on real hardware
-- [ ] User reaches PED Shell without manual terminal work
+- [ ] uNexus boots from USB on real hardware
+- [ ] User reaches uNexus Shell without manual terminal work
 - [ ] Basic apps launch
 - [ ] Game setup checklist is visible and useful
 
@@ -347,7 +347,7 @@ Goal: turn the bootable prototype into something testers can install and report 
 
 ### Features
 
-- [ ] Install PED OS to disk
+- [ ] Install uNexus to disk
 - [ ] Create user account
 - [ ] Configure bootloader
 - [ ] Configure Hyprland session
@@ -368,14 +368,14 @@ Goal: turn the bootable prototype into something testers can install and report 
 
 ### Exit Criteria
 
-- [ ] External testers can install PED OS
+- [ ] External testers can install uNexus
 - [ ] Testers can play at least one common game path
 - [ ] Bugs can be reported and reproduced
 - [ ] The project has a repeatable release process
 
 ---
 
-## Stage 8 - PED OS 1.0 Direction
+## Stage 8 - uNexus 1.0 Direction
 
 Goal: mature from a promising gaming shell into a reliable gaming-focused Linux OS.
 
@@ -412,7 +412,7 @@ Goal: mature from a promising gaming shell into a reliable gaming-focused Linux 
 
 ## Guiding Rules
 
-- PED OS should look original, not like a theme pasted on top of another desktop.
+- uNexus should look original, not like a theme pasted on top of another desktop.
 - Every visual element should make gaming setup feel simpler or the desktop feel calmer.
 - Every feature should move toward a real OS, not just a mock shell.
 - If a feature requires system privileges, design the permission model before making the UI pretty.
@@ -422,4 +422,4 @@ Goal: mature from a promising gaming shell into a reliable gaming-focused Linux 
 
 ---
 
-<sub>Roadmap is updated as PED OS evolves from shell prototype to bootable gaming OS.</sub>
+<sub>Roadmap is updated as uNexus evolves from shell prototype to bootable gaming OS.</sub>

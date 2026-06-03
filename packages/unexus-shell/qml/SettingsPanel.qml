@@ -79,10 +79,10 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: root.tr("PED Settings")
+                        text: root.tr("uNexus Settings")
                         color: "#ffffff"
                         font.pixelSize: 22
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                         font.bold: true
                     }
 
@@ -90,7 +90,7 @@ Item {
                         text: root.tr("System preferences, language, shell status and about")
                         color: "#8ea4bd"
                         font.pixelSize: 12
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
                 }
 
@@ -108,7 +108,7 @@ Item {
                         text: "X"
                         color: "#ffffff"
                         font.pixelSize: 13
-                        font.family: root.pedFont
+                        font.family: root.uiFont
                     }
 
                     MouseArea {
@@ -211,12 +211,12 @@ Item {
                         SettingsOptionRow {
                             width: parent.width
                             label: root.tr("Font")
-                            value: root.pedFont
+                            value: root.uiFont
                         }
 
                         SettingsToggle {
                             width: parent.width
-                            label: root.tr("PED Stats Overlay")
+                            label: root.tr("uNexus Stats Overlay")
                             detail: systemStats.visible ? root.tr("Visible on desktop") : root.tr("Hidden")
                             checked: systemStats.visible
                             onClicked: systemStats.visible = !systemStats.visible
@@ -256,7 +256,7 @@ Item {
                                 text: root.tr("Open First Setup")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
-                                font.family: root.pedFont
+                                font.family: root.uiFont
                             }
 
                             MouseArea {
@@ -275,13 +275,13 @@ Item {
                         SettingsOptionRow {
                             width: parent.width
                             label: root.tr("Name")
-                            value: "PED OS"
+                            value: "uNexus"
                         }
 
                         SettingsOptionRow {
                             width: parent.width
                             label: root.tr("Shell")
-                            value: "ped-shell 0.1.0"
+                            value: "unexus-shell 0.1.0"
                         }
 
                         SettingsOptionRow {
@@ -303,7 +303,7 @@ Item {
                                 text: root.tr("Copy repository URL")
                                 color: "#b7ddff"
                                 font.pixelSize: 12
-                                font.family: root.pedFont
+                                font.family: root.uiFont
                             }
 
                             MouseArea {
@@ -311,8 +311,8 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 onClicked: {
-                                    appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/Ped-Os")
-                                    notifCenter.send(root.tr("Repository copied"), root.tr("PED OS repository URL copied."), "INFO")
+                                    appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/uNexus")
+                                    notifCenter.send(root.tr("Repository copied"), root.tr("uNexus repository URL copied."), "INFO")
                                 }
                             }
                         }
@@ -345,7 +345,7 @@ Item {
                 text: section.title
                 color: root.themeAccent
                 font.pixelSize: 11
-                font.family: root.pedFont
+                font.family: root.uiFont
                 font.letterSpacing: 1
             }
         }
@@ -367,7 +367,7 @@ Item {
             text: optionRow.label
             color: "#ffffff"
             font.pixelSize: 12
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
 
         Text {
@@ -377,7 +377,7 @@ Item {
             text: optionRow.value
             color: "#8ea4bd"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
         }
     }
 
@@ -401,7 +401,7 @@ Item {
             text: hintRow.text
             color: "#8ea4bd"
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
             wrapMode: Text.WordWrap
         }
     }
@@ -439,7 +439,7 @@ Item {
             text: themeButton.label
             color: themeButton.active ? "#ffffff" : "#8ea4bd"
             font.pixelSize: 10
-            font.family: root.pedFont
+            font.family: root.uiFont
             elide: Text.ElideRight
         }
 
@@ -469,7 +469,7 @@ Item {
             text: languageButton.label
             color: languageButton.active ? "#ffffff" : "#8ea4bd"
             font.pixelSize: 11
-            font.family: root.pedFont
+            font.family: root.uiFont
             elide: Text.ElideRight
         }
 
@@ -504,14 +504,14 @@ Item {
                 text: toggleRow.label
                 color: "#ffffff"
                 font.pixelSize: 13
-                font.family: root.pedFont
+                font.family: root.uiFont
             }
 
             Text {
                 text: toggleRow.detail
                 color: "#8ea4bd"
                 font.pixelSize: 10
-                font.family: root.pedFont
+                font.family: root.uiFont
                 elide: Text.ElideRight
                 width: parent.width
             }
