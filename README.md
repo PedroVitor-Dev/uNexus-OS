@@ -37,10 +37,12 @@ The current prototype manages:
 - login screen;
 - system and gaming side docks;
 - app launcher with search and install status;
+- PED Files file manager MVP;
 - right-click desktop context menu;
 - notifications;
 - PED Settings and Game Settings panels;
 - first-run setup checklist;
+- PT-BR / English interface language selection;
 - CPU/GPU/RAM stats overlay;
 - real app launch/focus/close through C++ and `hyprctl`.
 
@@ -72,6 +74,7 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 | System side dock | Done |
 | Gaming side dock | Done |
 | Dock hover, tooltip, bounce and active indicator | Done |
+| Dock open, minimized and closed app states | Done |
 | Real app launch through C++ | Done |
 | Focus running apps before opening duplicates | Done |
 | Close apps through `hyprctl` / process fallback | Done |
@@ -84,6 +87,8 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 | PED Settings panel | Done |
 | Game Settings panel | Done |
 | First Setup panel | Done |
+| PED Files file manager MVP | Done |
+| PT-BR / English language selection in Settings | Done |
 | Persistent user settings through `QSettings` | Done |
 | Notification system | Done |
 | Desktop context menu | Done |
@@ -157,9 +162,11 @@ The shell can auto-start from `hyprland.conf` through `exec-once`.
 | PED Settings | `qml/SettingsPanel.qml`, `usersettings.cpp` | Appearance and shell preferences |
 | Game Settings | `qml/GameSettingsPanel.qml` | MangoHud, GameMode and gaming launchers |
 | First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and install commands |
+| PED Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, open, create folder, rename and trash |
 | System info | `systeminfo.cpp` | Battery and network data |
 | App launcher | `applauncher.cpp` | Launch, focus, close, Flatpak and MangoHud helpers |
 | Game Mode | `gamemode.cpp` | Game Mode state and integration |
+| Localization | `qml/Main.qml`, `usersettings.cpp` | English/PT-BR text mapping and persisted language preference |
 
 ---
 
@@ -194,7 +201,8 @@ Current near-term focus:
 
 - refine GPU stats on more hardware;
 - validate MangoHud with real games;
-- improve PED Settings;
+- improve PED Settings and localization coverage;
+- continue evolving PED Files into a richer file manager;
 - prepare Arch packaging;
 - start the bootable ISO path with `archiso`.
 

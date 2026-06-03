@@ -17,6 +17,8 @@ The active development target is:
 
 Ubuntu/Debian can still be used for early testing, but Hyprland features such as window focus/close are expected to work best on the Arch + Hyprland setup.
 
+Windows is currently used only as a coding/editing environment in this workflow. Do not expect local Windows builds to work unless CMake and Qt6 are installed there; real build and runtime validation should happen on the Arch + Hyprland machine.
+
 ---
 
 ## Arch Linux Setup

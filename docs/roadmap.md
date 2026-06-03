@@ -37,6 +37,8 @@ PED OS currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] PED Settings prototype
 - [x] Game Settings prototype
 - [x] First Setup checklist
+- [x] PED Files MVP
+- [x] English/PT-BR language selection
 - [x] Persistent user settings through `QSettings`
 - [x] Auto-start through Hyprland `exec-once`
 - [x] Project docs updated for the current shell state
@@ -48,6 +50,7 @@ PED OS currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [ ] No bootable ISO yet
 - [ ] No real installer yet
 - [ ] No dedicated app/library data model yet
+- [ ] No full file manager feature set yet
 - [ ] No complete GPU driver manager yet
 - [ ] No per-game profile system yet
 - [ ] No controller management yet
@@ -77,11 +80,13 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [x] Keep Open / Focus behavior on dock and launcher
 - [x] Keep Close behavior available from the dock action menu
 - [x] Add PED Files MVP with local directory navigation
+- [x] Add PT-BR interface localization selectable from PED Settings
 - [ ] Add keyboard shortcuts for Launcher, Settings, Game Settings and stats overlay
 - [ ] Add a visible shortcut help panel inside PED Settings
 - [ ] Add quick toggles for stats overlay, Game Mode and theme
 - [ ] Add notification actions where useful instead of passive messages only
 - [ ] Improve the desktop context menu with real actions
+- [ ] Continue PED Files with copy/cut/paste, delete confirmations, sorting, breadcrumbs and richer previews
 
 ### Real OS Foundation
 
@@ -119,6 +124,7 @@ Goal: make PED Settings and Game Settings useful, not just informational.
 ### Features
 
 - [x] Theme index persists through `QSettings`
+- [x] Language selection persists through `QSettings`
 - [x] Stats overlay visibility persists through `QSettings`
 - [x] First Setup completion persists through `QSettings`
 - [x] Game Settings can copy Steam launch options
@@ -130,6 +136,7 @@ Goal: make PED Settings and Game Settings useful, not just informational.
 - [ ] Add a reset settings action
 - [ ] Add theme preview before applying a theme
 - [ ] Add per-user preferences for dock behavior
+- [ ] Add per-user preferences for file manager behavior
 
 ### Real OS Foundation
 

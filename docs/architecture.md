@@ -48,6 +48,7 @@ The current prototype is `ped-shell`, a Qt6/QML application with C++ backends fo
 | `appLauncher` | `AppLauncher` | Launch, focus, close and detect apps |
 | `systemStats` | `SystemStats` | CPU, GPU, RAM and temperature stats |
 | `userSettings` | `UserSettings` | Persistent shell preferences |
+| `fileManager` | `FileManager` | Local file navigation and file actions |
 
 The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `SettingsPanel.qml`, `GameSettingsPanel.qml`, `FirstSetupPanel.qml` and `FpsOverlay.qml`.
 
@@ -58,6 +59,7 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 `qml/Main.qml` coordinates the shell:
 
 - theme selection and persistence;
+- English/PT-BR localization state;
 - wallpaper and particles;
 - top bar;
 - login flow;
@@ -71,8 +73,11 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - PED Settings;
 - Game Settings;
 - First Setup.
+- PED Files.
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
+
+Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as PED Files, PED Settings, Game Settings and First Setup report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
 
 ---
 
@@ -167,10 +172,41 @@ If GPU metrics are unavailable, QML displays `N/A` instead of stale values.
 Current settings:
 
 - selected theme index;
+- selected interface language (`en` or `pt-BR`);
 - stats overlay visibility;
 - first setup completion state.
 
 These values are restored when `ped-shell` starts.
+
+## Localization
+
+The current localization layer lives in `Main.qml`.
+
+QML uses:
+
+- `root.tr("English string")` for direct interface strings;
+- `root.trAppMessage(...)` and `root.trLabelMessage(...)` for small templated notifications;
+- `userSettings.languageCode` to persist the selected language.
+
+The first localized target is PT-BR. English remains the source/fallback language, so internal app metadata and logic can continue using stable English keys while display text is translated at render time.
+
+The language selector is available in `SettingsPanel.qml`.
+
+## PED Files
+
+`FileManager` provides the backend for `FilesPanel.qml`.
+
+Current responsibilities:
+
+- expose the home path and common places;
+- list readable directory entries;
+- classify files by kind;
+- open files through `QDesktopServices`;
+- create folders;
+- rename files/folders;
+- move files/folders to trash through `gio trash` when available.
+
+PED Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property.
 
 ---
 

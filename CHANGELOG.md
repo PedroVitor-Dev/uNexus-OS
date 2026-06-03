@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- PED Files MVP with local directory navigation, places sidebar, file opening, folder creation, rename and move-to-trash actions.
+- System and gaming side dock app states for open, minimized/hidden and closed apps.
+- PT-BR interface localization with English/PT-BR language selection in PED Settings.
+- Persistent language preference through `QSettings`.
+
+### Changed
+- Launcher, dock, settings, game settings, first setup, context menu, login, stats overlay and PED Files now route user-facing text through the shell localization helper.
+- Internal panel dock state is recalculated when panels open/close so closed internal apps no longer remain visually active.
+
 ### Planned
 - Game Mode (auto performance boost)
 - GPU driver manager
