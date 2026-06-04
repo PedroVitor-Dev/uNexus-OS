@@ -59,6 +59,19 @@ Item {
         notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", label), "SYS")
     }
 
+    function cycleTheme() {
+        root.applyTheme((root.themeIndex + 1) % 4, true)
+    }
+
+    function toggleGameModeQuick() {
+        gameMode.toggle()
+        if (gameMode.active) {
+            notifCenter.send(root.tr("Game Mode ON"), root.tr("Performance optimized for gaming."), "GAME")
+        } else {
+            notifCenter.send(root.tr("Game Mode OFF"), root.tr("System back to normal."), "IDLE")
+        }
+    }
+
     ParallelAnimation {
         id: showAnim
         NumberAnimation { target: settingsPanel; property: "opacity"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
@@ -215,6 +228,35 @@ Item {
                         width: parent.width
                         collapsed: settingsPanel.activeSection !== "system"
                         title: root.tr("System")
+
+                        Row {
+                            width: parent.width
+                            spacing: 8
+
+                            QuickToggle {
+                                width: Math.floor((parent.width - 16) / 3)
+                                label: root.tr("Stats Overlay")
+                                active: systemStats.visible
+                                value: systemStats.visible ? root.tr("ON") : root.tr("OFF")
+                                onClicked: systemStats.visible = !systemStats.visible
+                            }
+
+                            QuickToggle {
+                                width: Math.floor((parent.width - 16) / 3)
+                                label: root.tr("Game Mode")
+                                active: gameMode.active
+                                value: gameMode.active ? root.tr("ON") : root.tr("OFF")
+                                onClicked: settingsPanel.toggleGameModeQuick()
+                            }
+
+                            QuickToggle {
+                                width: parent.width - Math.floor((parent.width - 16) / 3) * 2 - 16
+                                label: root.tr("Theme")
+                                active: true
+                                value: root.themeName
+                                onClicked: settingsPanel.cycleTheme()
+                            }
+                        }
 
                         SettingsOptionRow { width: parent.width; label: root.tr("Network"); value: systemInfo.networkConnected ? root.tr("Online") : root.tr("Offline") }
                         SettingsOptionRow { width: parent.width; label: root.tr("Battery"); value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : root.tr("Not available") }
@@ -641,6 +683,53 @@ Item {
                 font.family: root.uiFont
                 font.bold: true
             }
+        }
+    }
+
+    component QuickToggle: Rectangle {
+        id: quickToggle
+        property string label: ""
+        property string value: ""
+        property bool active: false
+        signal clicked()
+
+        height: 54
+        radius: 8
+        color: quickMouse.containsMouse ? "#1b2a40" : "#172233"
+        border.color: active ? root.themeAccent : "#223247"
+        border.width: active ? 2 : 1
+
+        Column {
+            anchors.fill: parent
+            anchors.margins: 9
+            spacing: 3
+
+            Text {
+                text: quickToggle.label
+                color: root.textMuted
+                font.pixelSize: 10
+                font.family: root.uiFont
+                font.bold: true
+                elide: Text.ElideRight
+                width: parent.width
+            }
+
+            Text {
+                text: quickToggle.value
+                color: quickToggle.active ? root.themeAccent : root.textPrimary
+                font.pixelSize: 13
+                font.family: root.uiFont
+                font.bold: true
+                elide: Text.ElideRight
+                width: parent.width
+            }
+        }
+
+        MouseArea {
+            id: quickMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: quickToggle.clicked()
         }
     }
 
