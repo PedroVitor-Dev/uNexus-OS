@@ -10,13 +10,20 @@ Item {
     property bool dockActive: false
 
     function show() {
+        hideAnim.stop()
         visible = true
         dockActive = true
+        opacity = 0.0
+        panel.scale = 0.985
+        panelSlide.y = 14
         toolsRefresh = !toolsRefresh
         showAnim.start()
     }
 
     function hide() {
+        if (!visible)
+            return
+        showAnim.stop()
         dockActive = false
         hideAnim.start()
     }
@@ -30,25 +37,19 @@ Item {
         }
     }
 
-    NumberAnimation {
+    ParallelAnimation {
         id: showAnim
-        target: settingsPanel
-        property: "opacity"
-        from: 0.0
-        to: 1.0
-        duration: 180
-        easing.type: Easing.OutCubic
+        NumberAnimation { target: settingsPanel; property: "opacity"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
+        NumberAnimation { target: panel; property: "scale"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
+        NumberAnimation { target: panelSlide; property: "y"; to: 0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
     }
 
     SequentialAnimation {
         id: hideAnim
-        NumberAnimation {
-            target: settingsPanel
-            property: "opacity"
-            from: 1.0
-            to: 0.0
-            duration: 140
-            easing.type: Easing.InCubic
+        ParallelAnimation {
+            NumberAnimation { target: settingsPanel; property: "opacity"; to: 0.0; duration: root.motionBase; easing.type: Easing.InCubic }
+            NumberAnimation { target: panel; property: "scale"; to: 0.985; duration: root.motionBase; easing.type: Easing.InCubic }
+            NumberAnimation { target: panelSlide; property: "y"; to: 10; duration: root.motionBase; easing.type: Easing.InCubic }
         }
         ScriptAction { script: settingsPanel.visible = false }
     }
@@ -73,6 +74,7 @@ Item {
         color: "#0e1520"
         border.color: "#2d5f8f"
         border.width: 1
+        transform: Translate { id: panelSlide; y: 0 }
 
         MouseArea { anchors.fill: parent }
 

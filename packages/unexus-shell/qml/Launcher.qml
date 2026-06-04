@@ -100,7 +100,11 @@ function launchApp(app) {
 }
 
     function show() {
+        hideAnim.stop()
         launcher.visible = true
+        launcher.opacity = 0.0
+        panel.scale = 0.98
+        panelSlide.y = -12
         searchInput.text = ""
         searchText = ""
         activeCategory = "All"
@@ -109,28 +113,25 @@ function launchApp(app) {
     }
 
     function hide() {
+        if (!launcher.visible)
+            return
+        showAnim.stop()
         hideAnim.start()
     }
 
-    NumberAnimation {
+    ParallelAnimation {
         id: showAnim
-        target: launcher
-        property: "opacity"
-        from: 0.0
-        to: 1.0
-        duration: 200
-        easing.type: Easing.OutCubic
+        NumberAnimation { target: launcher; property: "opacity"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
+        NumberAnimation { target: panel; property: "scale"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
+        NumberAnimation { target: panelSlide; property: "y"; to: 0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
     }
 
     SequentialAnimation {
         id: hideAnim
-        NumberAnimation {
-            target: launcher
-            property: "opacity"
-            from: 1.0
-            to: 0.0
-            duration: 150
-            easing.type: Easing.InCubic
+        ParallelAnimation {
+            NumberAnimation { target: launcher; property: "opacity"; to: 0.0; duration: root.motionBase; easing.type: Easing.InCubic }
+            NumberAnimation { target: panel; property: "scale"; to: 0.98; duration: root.motionBase; easing.type: Easing.InCubic }
+            NumberAnimation { target: panelSlide; property: "y"; to: -8; duration: root.motionBase; easing.type: Easing.InCubic }
         }
         ScriptAction { script: launcher.visible = false }
     }
@@ -152,6 +153,7 @@ function launchApp(app) {
         color: "#0e1520"
         border.color: "#4d9eff"
         border.width: 1
+        transform: Translate { id: panelSlide; y: 0 }
 
         Rectangle {
             anchors.fill: parent
