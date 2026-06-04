@@ -66,15 +66,14 @@ Item {
 
     // Login minimalista na parte inferior
     Column {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 86
-        spacing: 18
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: 82
+        spacing: 24
 
         // Logo
         Image {
-            width: 180
-            height: 128
+            width: 260
+            height: 184
             anchors.horizontalCenter: parent.horizontalCenter
             source: root.brandLogoSource
             fillMode: Image.PreserveAspectFit
@@ -83,7 +82,7 @@ Item {
 
         // Campo de senha
         Item {
-            width: 280
+            width: 300
             height: 40
             anchors.horizontalCenter: parent.horizontalCenter
 
