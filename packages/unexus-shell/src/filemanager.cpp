@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
@@ -101,6 +102,69 @@ QVariantMap place(const QString &label, const QString &path, const QString &icon
     result.insert(QStringLiteral("path"), path);
     result.insert(QStringLiteral("icon"), icon);
     return result;
+}
+
+QString uniqueTargetPath(const QString &targetDirectory, const QString &baseName)
+{
+    QDir targetDir(targetDirectory);
+    QString candidate = targetDir.absoluteFilePath(baseName);
+
+    if (!QFileInfo::exists(candidate))
+        return candidate;
+
+    const QFileInfo baseInfo(baseName);
+    const QString stem = baseInfo.completeBaseName().isEmpty() ? baseName : baseInfo.completeBaseName();
+    const QString suffix = baseInfo.suffix();
+
+    for (int i = 1; i < 1000; ++i) {
+        const QString numberedName = suffix.isEmpty()
+            ? QStringLiteral("%1 copy %2").arg(stem).arg(i)
+            : QStringLiteral("%1 copy %2.%3").arg(stem).arg(i).arg(suffix);
+        candidate = targetDir.absoluteFilePath(numberedName);
+
+        if (!QFileInfo::exists(candidate))
+            return candidate;
+    }
+
+    return QString();
+}
+
+bool copyRecursively(const QString &sourcePath, const QString &targetPath)
+{
+    const QFileInfo sourceInfo(sourcePath);
+
+    if (!sourceInfo.exists())
+        return false;
+
+    if (sourceInfo.isDir()) {
+        QDir targetDir;
+        if (!targetDir.mkpath(targetPath))
+            return false;
+
+        const QDir sourceDir(sourcePath);
+        const QFileInfoList children = sourceDir.entryInfoList(
+            QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System,
+            QDir::DirsFirst | QDir::Name
+        );
+
+        for (const QFileInfo &child : children) {
+            if (!copyRecursively(child.absoluteFilePath(), QDir(targetPath).absoluteFilePath(child.fileName())))
+                return false;
+        }
+
+        return true;
+    }
+
+    return QFile::copy(sourceInfo.absoluteFilePath(), targetPath);
+}
+
+bool isInsideDirectory(const QString &path, const QString &directory)
+{
+    const QString cleanSource = QDir::cleanPath(path);
+    const QString cleanDirectory = QDir::cleanPath(directory);
+
+    return cleanDirectory == cleanSource ||
+           cleanDirectory.startsWith(cleanSource + QLatin1Char('/'));
 }
 }
 
@@ -238,4 +302,124 @@ bool FileManager::moveToTrash(const QString &path) const
 
     const int result = QProcess::execute(QStringLiteral("gio"), {QStringLiteral("trash"), info.absoluteFilePath()});
     return result == 0;
+}
+
+bool FileManager::movePathsToTrash(const QStringList &paths) const
+{
+    if (paths.isEmpty())
+        return false;
+
+    bool movedAny = false;
+
+    for (const QString &path : paths) {
+        if (moveToTrash(path))
+            movedAny = true;
+    }
+
+    return movedAny;
+}
+
+bool FileManager::copyPaths(const QStringList &paths, const QString &targetDirectory) const
+{
+    const QFileInfo targetInfo(cleanPath(targetDirectory));
+    if (!targetInfo.exists() || !targetInfo.isDir() || paths.isEmpty())
+        return false;
+
+    for (const QString &path : paths) {
+        const QFileInfo sourceInfo(cleanPath(path));
+        if (!sourceInfo.exists())
+            return false;
+
+        if (sourceInfo.isDir() && isInsideDirectory(sourceInfo.absoluteFilePath(), targetInfo.absoluteFilePath()))
+            return false;
+
+        const QString targetPath = uniqueTargetPath(targetInfo.absoluteFilePath(), sourceInfo.fileName());
+        if (targetPath.isEmpty() || !copyRecursively(sourceInfo.absoluteFilePath(), targetPath))
+            return false;
+    }
+
+    return true;
+}
+
+bool FileManager::movePaths(const QStringList &paths, const QString &targetDirectory) const
+{
+    const QFileInfo targetInfo(cleanPath(targetDirectory));
+    if (!targetInfo.exists() || !targetInfo.isDir() || paths.isEmpty())
+        return false;
+
+    for (const QString &path : paths) {
+        const QFileInfo sourceInfo(cleanPath(path));
+        if (!sourceInfo.exists())
+            return false;
+
+        if (sourceInfo.absolutePath() == targetInfo.absoluteFilePath())
+            continue;
+
+        if (sourceInfo.isDir() && isInsideDirectory(sourceInfo.absoluteFilePath(), targetInfo.absoluteFilePath()))
+            return false;
+
+        const QString targetPath = uniqueTargetPath(targetInfo.absoluteFilePath(), sourceInfo.fileName());
+        if (targetPath.isEmpty())
+            return false;
+
+        if (!QFile::rename(sourceInfo.absoluteFilePath(), targetPath)) {
+            if (!copyRecursively(sourceInfo.absoluteFilePath(), targetPath))
+                return false;
+
+            if (sourceInfo.isDir()) {
+                QDir sourceDir(sourceInfo.absoluteFilePath());
+                if (!sourceDir.removeRecursively())
+                    return false;
+            } else if (!QFile::remove(sourceInfo.absoluteFilePath())) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+QVariantMap FileManager::previewInfo(const QString &path) const
+{
+    QVariantMap result;
+    const QFileInfo info(cleanPath(path));
+
+    if (!info.exists())
+        return result;
+
+    const QString kind = kindForFile(info);
+    result.insert(QStringLiteral("name"), info.fileName());
+    result.insert(QStringLiteral("path"), info.absoluteFilePath());
+    result.insert(QStringLiteral("kind"), kind);
+    result.insert(QStringLiteral("icon"), iconForKind(kind));
+    result.insert(QStringLiteral("isDir"), info.isDir());
+    result.insert(QStringLiteral("size"), info.isDir() ? QStringLiteral("-") : formatSize(info.size()));
+    result.insert(QStringLiteral("modified"), info.lastModified().toString(QStringLiteral("yyyy-MM-dd hh:mm")));
+    result.insert(QStringLiteral("created"), info.birthTime().isValid() ? info.birthTime().toString(QStringLiteral("yyyy-MM-dd hh:mm")) : QStringLiteral("-"));
+    result.insert(QStringLiteral("readable"), info.isReadable());
+    result.insert(QStringLiteral("writable"), info.isWritable());
+    result.insert(QStringLiteral("executable"), info.isExecutable());
+    result.insert(QStringLiteral("extension"), info.suffix().isEmpty() ? QStringLiteral("-") : info.suffix().toUpper());
+    result.insert(QStringLiteral("parent"), info.absolutePath());
+    result.insert(QStringLiteral("previewSource"), kind == QStringLiteral("Image") ? QStringLiteral("file://") + info.absoluteFilePath() : QString());
+
+    if (info.isDir()) {
+        const QDir dir(info.absoluteFilePath());
+        const QFileInfoList children = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Readable);
+        int folders = 0;
+        int files = 0;
+
+        for (const QFileInfo &child : children) {
+            if (child.isDir())
+                ++folders;
+            else
+                ++files;
+        }
+
+        result.insert(QStringLiteral("childSummary"), QStringLiteral("%1 folders, %2 files").arg(folders).arg(files));
+    } else {
+        result.insert(QStringLiteral("childSummary"), QString());
+    }
+
+    return result;
 }

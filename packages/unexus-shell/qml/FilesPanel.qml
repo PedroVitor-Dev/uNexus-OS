@@ -10,6 +10,10 @@ Item {
     property string selectedPath: ""
     property string selectedName: ""
     property bool selectedIsDir: false
+    property var selectedPaths: []
+    property var selectedEntries: []
+    property var clipboardPaths: []
+    property string clipboardMode: ""
     property var entries: []
     property var places: []
     property string sortKey: "name"
@@ -20,6 +24,7 @@ Item {
     property string errorMessage: ""
     property string unavailableMessage: ""
     property string trashConfirmPath: ""
+    property string deleteConfirmToken: ""
 
     function show(path) {
         hideAnim.stop()
@@ -39,12 +44,96 @@ Item {
         showAnim.stop()
         dockActive = false
         trashConfirmPath = ""
+        deleteConfirmToken = ""
         trashConfirmTimer.stop()
         hideAnim.start()
     }
 
+    function selectionCount() {
+        return selectedPaths.length
+    }
+
+    function clearSelection() {
+        selectedPath = ""
+        selectedName = ""
+        selectedIsDir = false
+        selectedPaths = []
+        selectedEntries = []
+        trashConfirmPath = ""
+        deleteConfirmToken = ""
+    }
+
+    function selectOnly(entry) {
+        selectedPath = entry.path
+        selectedName = entry.name
+        selectedIsDir = entry.isDir
+        selectedPaths = [entry.path]
+        selectedEntries = [entry]
+    }
+
+    function toggleSelection(entry) {
+        var paths = selectedPaths.slice()
+        var selected = selectedEntries.slice()
+        var index = paths.indexOf(entry.path)
+
+        if (index >= 0) {
+            paths.splice(index, 1)
+            selected.splice(index, 1)
+        } else {
+            paths.push(entry.path)
+            selected.push(entry)
+        }
+
+        selectedPaths = paths
+        selectedEntries = selected
+
+        if (selected.length > 0) {
+            var last = selected[selected.length - 1]
+            selectedPath = last.path
+            selectedName = last.name
+            selectedIsDir = last.isDir
+        } else {
+            selectedPath = ""
+            selectedName = ""
+            selectedIsDir = false
+        }
+    }
+
+    function handleEntryClick(entry, modifiers) {
+        if (modifiers & Qt.ControlModifier || modifiers & Qt.ShiftModifier)
+            toggleSelection(entry)
+        else
+            selectOnly(entry)
+    }
+
+    function selectionLabel() {
+        if (selectionCount() === 0)
+            return root.tr("No selection")
+        if (selectionCount() === 1)
+            return selectedName
+        return root.tr("{count} selected").replace("{count}", selectionCount())
+    }
+
+    function currentPreview() {
+        if (selectionCount() !== 1)
+            return ({})
+        return fileManager.previewInfo(selectedPath)
+    }
+
+    function stringList(paths) {
+        var result = []
+        for (var i = 0; i < paths.length; i++)
+            result.push(String(paths[i]))
+        return result
+    }
+
     function requestTrashSelected() {
-        if (trashConfirmPath !== selectedPath) {
+        if (selectionCount() === 0)
+            return
+
+        var token = selectedPaths.join("|")
+        if (deleteConfirmToken !== token) {
+            deleteConfirmToken = token
             trashConfirmPath = selectedPath
             trashConfirmTimer.restart()
             return
@@ -52,8 +141,9 @@ Item {
 
         trashConfirmTimer.stop()
         trashConfirmPath = ""
-        if (fileManager.moveToTrash(selectedPath)) {
-            notifCenter.send(root.tr("Moved to trash"), selectedName, "FILES")
+        deleteConfirmToken = ""
+        if (fileManager.movePathsToTrash(stringList(selectedPaths))) {
+            notifCenter.send(root.tr("Moved to trash"), selectionLabel(), "FILES")
             refresh()
         } else {
             notifCenter.send(root.tr("Trash failed"), root.tr("Install gio or check permissions."), "FILES")
@@ -64,7 +154,10 @@ Item {
         id: trashConfirmTimer
         interval: 2600
         repeat: false
-        onTriggered: filesPanel.trashConfirmPath = ""
+        onTriggered: {
+            filesPanel.trashConfirmPath = ""
+            filesPanel.deleteConfirmToken = ""
+        }
     }
 
     function displayNameForPath(path) {
@@ -156,22 +249,58 @@ Item {
 
         currentPath = path
         pathInput.text = currentPath
-        selectedPath = ""
-        selectedName = ""
-        selectedIsDir = false
+        clearSelection()
         mode = "browse"
         entries = sortedEntries(fileManager.listDirectory(currentPath))
         loading = false
     }
 
     function openSelected() {
-        if (selectedPath.length === 0)
+        if (selectionCount() !== 1 || selectedPath.length === 0)
             return
 
         if (selectedIsDir) {
             loadPath(selectedPath)
         } else if (!fileManager.openPath(selectedPath)) {
             notifCenter.send(root.tr("Open failed"), root.tr("No app handled this file."), "FILES")
+        }
+    }
+
+    function copySelected() {
+        if (selectionCount() === 0)
+            return
+
+        clipboardPaths = selectedPaths.slice()
+        clipboardMode = "copy"
+        notifCenter.send(root.tr("Copied"), selectionLabel(), "FILES")
+    }
+
+    function cutSelected() {
+        if (selectionCount() === 0)
+            return
+
+        clipboardPaths = selectedPaths.slice()
+        clipboardMode = "cut"
+        notifCenter.send(root.tr("Cut"), selectionLabel(), "FILES")
+    }
+
+    function pasteClipboard() {
+        if (clipboardPaths.length === 0)
+            return
+
+        var ok = clipboardMode === "cut"
+            ? fileManager.movePaths(stringList(clipboardPaths), currentPath)
+            : fileManager.copyPaths(stringList(clipboardPaths), currentPath)
+
+        if (ok) {
+            notifCenter.send(root.tr("Pasted"), root.tr("{count} items").replace("{count}", clipboardPaths.length), "FILES")
+            if (clipboardMode === "cut") {
+                clipboardPaths = []
+                clipboardMode = ""
+            }
+            refresh()
+        } else {
+            notifCenter.send(root.tr("Paste failed"), root.tr("Could not paste selected items."), "FILES")
         }
     }
 
@@ -483,61 +612,71 @@ Item {
                     Column {
                         anchors.fill: parent
                         anchors.margins: 10
+                        anchors.rightMargin: previewPane.visible ? 230 : 10
                         spacing: 8
 
-                        Row {
+                        Column {
                             width: parent.width
-                            height: 24
-
-                            Text {
-                                width: Math.max(120, parent.width - selectedActions.width - sortActions.width - 8)
-                                text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
-                                color: "#8ea4bd"
-                                font.pixelSize: 11
-                                font.family: root.uiFont
-                            }
+                            height: 52
+                            spacing: 4
 
                             Row {
-                                id: sortActions
-                                width: childrenRect.width
-                                height: parent.height
-                                spacing: 6
+                                width: parent.width
+                                height: 24
 
-                                MiniAction {
-                                    label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("name", "Name") }
-                                    onClicked: filesPanel.sortBy("name")
+                                Text {
+                                    width: Math.max(120, parent.width - sortActions.width - 8)
+                                    text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
+                                    color: "#8ea4bd"
+                                    font.pixelSize: 11
+                                    font.family: root.uiFont
                                 }
 
-                                MiniAction {
-                                    label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("kind", "Type") }
-                                    onClicked: filesPanel.sortBy("kind")
-                                }
+                                Row {
+                                    id: sortActions
+                                    width: childrenRect.width
+                                    height: parent.height
+                                    spacing: 6
 
-                                MiniAction {
-                                    label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("modified", "Date") }
-                                    onClicked: filesPanel.sortBy("modified")
-                                }
+                                    MiniAction {
+                                        label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("name", "Name") }
+                                        onClicked: filesPanel.sortBy("name")
+                                    }
 
-                                MiniAction {
-                                    label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("size", "Size") }
-                                    onClicked: filesPanel.sortBy("size")
+                                    MiniAction {
+                                        label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("kind", "Type") }
+                                        onClicked: filesPanel.sortBy("kind")
+                                    }
+
+                                    MiniAction {
+                                        label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("modified", "Date") }
+                                        onClicked: filesPanel.sortBy("modified")
+                                    }
+
+                                    MiniAction {
+                                        label: { filesPanel.sortKey; filesPanel.sortAscending; return filesPanel.sortLabel("size", "Size") }
+                                        onClicked: filesPanel.sortBy("size")
+                                    }
                                 }
                             }
 
                             Row {
                                 id: selectedActions
-                                width: visible ? childrenRect.width : 0
-                                height: parent.height
+                                width: parent.width
+                                height: 24
                                 spacing: 6
-                                visible: filesPanel.selectedPath.length > 0
 
                                 MiniAction {
                                     label: root.tr("Open")
+                                    enabled: filesPanel.selectionCount() === 1
+                                    opacity: enabled ? 1.0 : 0.45
                                     onClicked: filesPanel.openSelected()
                                 }
 
                                 MiniAction {
                                     label: root.tr("Rename")
+                                    enabled: filesPanel.selectionCount() === 1
+                                    opacity: enabled ? 1.0 : 0.45
                                     onClicked: {
                                         filesPanel.mode = "rename"
                                         actionInput.text = filesPanel.selectedName
@@ -547,7 +686,30 @@ Item {
                                 }
 
                                 MiniAction {
-                                    label: filesPanel.trashConfirmPath === filesPanel.selectedPath ? root.tr("Confirm trash") : root.tr("Trash")
+                                    label: root.tr("Copy")
+                                    enabled: filesPanel.selectionCount() > 0
+                                    opacity: enabled ? 1.0 : 0.45
+                                    onClicked: filesPanel.copySelected()
+                                }
+
+                                MiniAction {
+                                    label: root.tr("Cut")
+                                    enabled: filesPanel.selectionCount() > 0
+                                    opacity: enabled ? 1.0 : 0.45
+                                    onClicked: filesPanel.cutSelected()
+                                }
+
+                                MiniAction {
+                                    label: root.tr("Paste")
+                                    enabled: filesPanel.clipboardPaths.length > 0
+                                    opacity: enabled ? 1.0 : 0.45
+                                    onClicked: filesPanel.pasteClipboard()
+                                }
+
+                                MiniAction {
+                                    label: filesPanel.deleteConfirmToken === filesPanel.selectedPaths.join("|") && filesPanel.selectionCount() > 0 ? root.tr("Confirm trash") : root.tr("Trash")
+                                    enabled: filesPanel.selectionCount() > 0
+                                    opacity: enabled ? 1.0 : 0.45
                                     danger: true
                                     onClicked: filesPanel.requestTrashSelected()
                                 }
@@ -558,7 +720,7 @@ Item {
 
                         PanelStateView {
                             width: parent.width
-                            height: parent.height - 34
+                            height: parent.height - 62
                             visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
                                      filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
                             state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
@@ -579,7 +741,7 @@ Item {
                         ListView {
                             id: filesList
                             width: parent.width
-                            height: parent.height - 34
+                            height: parent.height - 62
                             visible: !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
                                      filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
                             clip: true
@@ -595,20 +757,28 @@ Item {
                                 size: modelData.size
                                 modified: modelData.modified
                                 isDir: modelData.isDir
-                                selected: modelData.path === filesPanel.selectedPath
-                                onClicked: {
-                                    filesPanel.selectedPath = path
-                                    filesPanel.selectedName = name
-                                    filesPanel.selectedIsDir = isDir
-                                }
+                                selected: filesPanel.selectedPaths.indexOf(modelData.path) >= 0
+                                cutMarked: filesPanel.clipboardMode === "cut" && filesPanel.clipboardPaths.indexOf(modelData.path) >= 0
+                                onClicked: function(modifiers) { filesPanel.handleEntryClick(modelData, modifiers) }
                                 onOpenRequested: {
-                                    filesPanel.selectedPath = path
-                                    filesPanel.selectedName = name
-                                    filesPanel.selectedIsDir = isDir
+                                    filesPanel.selectOnly(modelData)
                                     filesPanel.openSelected()
                                 }
                             }
                         }
+                    }
+
+                    PreviewPane {
+                        id: previewPane
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 10
+                        width: 214
+                        visible: filesPanel.selectionCount() > 0
+                        preview: filesPanel.currentPreview()
+                        selectedCount: filesPanel.selectionCount()
+                        selectionText: filesPanel.selectionLabel()
                     }
                 }
             }
@@ -699,6 +869,7 @@ Item {
         MouseArea {
             id: actionMouse
             anchors.fill: parent
+            enabled: action.enabled
             hoverEnabled: true
             onClicked: action.clicked()
         }
@@ -757,12 +928,14 @@ Item {
         property string modified: ""
         property bool isDir: false
         property bool selected: false
-        signal clicked()
+        property bool cutMarked: false
+        signal clicked(var modifiers)
         signal openRequested()
 
         height: 42
         radius: 8
         color: selected ? "#1e2d45" : (fileMouse.containsMouse ? "#172233" : "transparent")
+        opacity: cutMarked ? 0.5 : 1.0
 
         Rectangle {
             anchors.left: parent.left
@@ -865,8 +1038,153 @@ Item {
             id: fileMouse
             anchors.fill: parent
             hoverEnabled: true
-            onClicked: fileRow.clicked()
+            onClicked: function(mouse) { fileRow.clicked(mouse.modifiers) }
             onDoubleClicked: fileRow.openRequested()
+        }
+    }
+
+    component PreviewPane: Rectangle {
+        id: previewPaneRoot
+        property var preview: ({})
+        property int selectedCount: 0
+        property string selectionText: ""
+
+        radius: 10
+        color: "#111a28"
+        border.color: "#223247"
+        border.width: 1
+
+        Column {
+            anchors.fill: parent
+            anchors.margins: 10
+            spacing: 8
+
+            Text {
+                width: parent.width
+                text: root.tr("Preview")
+                color: root.themeAccent
+                font.pixelSize: 10
+                font.family: root.uiFont
+                font.bold: true
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 142
+                radius: 9
+                color: "#0e1520"
+                border.color: "#223247"
+                border.width: 1
+                clip: true
+
+                Image {
+                    anchors.fill: parent
+                    anchors.margins: 6
+                    visible: previewPaneRoot.selectedCount === 1 && previewPaneRoot.preview.previewSource && previewPaneRoot.preview.previewSource.length > 0
+                    source: visible ? previewPaneRoot.preview.previewSource : ""
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                }
+
+                Column {
+                    anchors.centerIn: parent
+                    width: parent.width - 20
+                    spacing: 8
+                    visible: previewPaneRoot.selectedCount !== 1 || !previewPaneRoot.preview.previewSource || previewPaneRoot.preview.previewSource.length === 0
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: previewPaneRoot.selectedCount === 1 ? (previewPaneRoot.preview.icon || "DOC") : previewPaneRoot.selectedCount
+                        color: root.themeAccent
+                        font.pixelSize: previewPaneRoot.selectedCount === 1 ? 24 : 32
+                        font.family: root.uiFont
+                        font.bold: true
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: previewPaneRoot.selectedCount === 1 ? root.tr(previewPaneRoot.preview.kind || "File") : root.tr("{count} selected").replace("{count}", previewPaneRoot.selectedCount)
+                        color: root.textMuted
+                        font.pixelSize: 11
+                        font.family: root.uiFont
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
+            Text {
+                width: parent.width
+                text: previewPaneRoot.selectionText
+                color: root.textPrimary
+                font.pixelSize: 13
+                font.family: root.uiFont
+                font.bold: true
+                wrapMode: Text.WordWrap
+                maximumLineCount: 2
+                elide: Text.ElideRight
+            }
+
+            Column {
+                width: parent.width
+                spacing: 6
+                visible: previewPaneRoot.selectedCount === 1
+
+                PreviewInfoRow { width: parent.width; label: root.tr("Type"); value: root.tr(previewPaneRoot.preview.kind || "-") }
+                PreviewInfoRow { width: parent.width; label: root.tr("Size"); value: previewPaneRoot.preview.size || "-" }
+                PreviewInfoRow { width: parent.width; label: root.tr("Date"); value: previewPaneRoot.preview.modified || "-" }
+                PreviewInfoRow { width: parent.width; label: root.tr("Created"); value: previewPaneRoot.preview.created || "-" }
+                PreviewInfoRow { width: parent.width; label: root.tr("Extension"); value: previewPaneRoot.preview.extension || "-" }
+                PreviewInfoRow {
+                    width: parent.width
+                    visible: previewPaneRoot.preview.childSummary && previewPaneRoot.preview.childSummary.length > 0
+                    label: root.tr("Contains")
+                    value: previewPaneRoot.preview.childSummary || "-"
+                }
+            }
+
+            Column {
+                width: parent.width
+                spacing: 6
+                visible: previewPaneRoot.selectedCount > 1
+
+                PreviewInfoRow { width: parent.width; label: root.tr("Selected"); value: previewPaneRoot.selectedCount }
+                PreviewInfoRow { width: parent.width; label: root.tr("Clipboard"); value: filesPanel.clipboardPaths.length > 0 ? root.tr(filesPanel.clipboardMode === "cut" ? "Cut" : "Copy") : "-" }
+            }
+        }
+    }
+
+    component PreviewInfoRow: Rectangle {
+        id: infoRow
+        property string label: ""
+        property string value: ""
+
+        height: 30
+        radius: 7
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            text: infoRow.label
+            color: root.textMuted
+            font.pixelSize: 10
+            font.family: root.uiFont
+        }
+
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+            anchors.left: parent.left
+            anchors.leftMargin: 74
+            anchors.verticalCenter: parent.verticalCenter
+            text: infoRow.value
+            color: root.textPrimary
+            font.pixelSize: 10
+            font.family: root.uiFont
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideRight
         }
     }
 }
