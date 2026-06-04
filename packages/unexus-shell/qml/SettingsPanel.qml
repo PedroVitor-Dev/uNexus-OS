@@ -192,6 +192,7 @@ Item {
                         spacing: 6
 
                         ControlNavButton { width: parent.width; label: root.tr("System"); value: "system"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
+                        ControlNavButton { width: parent.width; label: root.tr("Shortcuts"); value: "shortcuts"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("Appearance"); value: "appearance"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("Language"); value: "language"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("About"); value: "about"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
@@ -337,6 +338,17 @@ Item {
                             ready: settingsPanel.hasAnyTool(["powerprofilesctl", "tlp", "nmcli"])
                             command: "sudo pacman -S power-profiles-daemon tlp networkmanager"
                         }
+                    }
+
+                    SettingsSection {
+                        width: parent.width
+                        collapsed: settingsPanel.activeSection !== "shortcuts"
+                        title: root.tr("Keyboard Shortcuts")
+
+                        ShortcutRow { width: parent.width; label: root.tr("Launcher"); keys: "Super + Space / Super + S" }
+                        ShortcutRow { width: parent.width; label: root.tr("Settings"); keys: "Super + I" }
+                        ShortcutRow { width: parent.width; label: root.tr("Game Settings"); keys: "Super + G" }
+                        ShortcutRow { width: parent.width; label: root.tr("Stats Overlay"); keys: "Super + Alt + G" }
                     }
 
                     SettingsSection {
@@ -583,6 +595,52 @@ Item {
             accentColor: root.themeAccent
             motionDuration: root.motionQuick
             onClicked: settingsPanel.copyProvisionCommand(provisionRow.label, provisionRow.command)
+        }
+    }
+
+    component ShortcutRow: Rectangle {
+        id: shortcutRow
+        property string label: ""
+        property string keys: ""
+
+        height: 42
+        radius: 8
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: keyBadge.left
+            anchors.rightMargin: 10
+            text: shortcutRow.label
+            color: root.textPrimary
+            font.pixelSize: 12
+            font.family: root.uiFont
+            elide: Text.ElideRight
+        }
+
+        Rectangle {
+            id: keyBadge
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: keyText.width + 18
+            height: 24
+            radius: 7
+            color: "#101927"
+            border.color: root.themeAccent
+            border.width: 1
+
+            Text {
+                id: keyText
+                anchors.centerIn: parent
+                text: shortcutRow.keys
+                color: "#b7ddff"
+                font.pixelSize: 10
+                font.family: root.uiFont
+                font.bold: true
+            }
         }
     }
 

@@ -11,7 +11,8 @@ UserSettings::UserSettings(QObject *parent)
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
     m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
     m_controlCenterSection = m_settings.value("controlCenter/section", "system").toString();
-    if (m_controlCenterSection != "system" && m_controlCenterSection != "appearance" &&
+    if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" &&
+        m_controlCenterSection != "appearance" &&
         m_controlCenterSection != "language" && m_controlCenterSection != "about")
         m_controlCenterSection = "system";
 }
@@ -67,7 +68,8 @@ void UserSettings::setFirstSetupCompleted(bool completed)
 void UserSettings::setControlCenterSection(const QString &section)
 {
     QString normalizedSection = section;
-    if (normalizedSection != "system" && normalizedSection != "appearance" &&
+    if (normalizedSection != "system" && normalizedSection != "shortcuts" &&
+        normalizedSection != "appearance" &&
         normalizedSection != "language" && normalizedSection != "about")
         normalizedSection = "system";
 
