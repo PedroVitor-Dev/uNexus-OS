@@ -262,30 +262,17 @@ Item {
                             running: gameMode.active
                         }
 
-                        Rectangle {
+                        ControlButton {
                             width: parent.width
                             height: 34
-                            radius: 7
-                            color: copyMouse.containsMouse ? "#254160" : "#172233"
-                            border.color: "#2d5f8f"
-                            border.width: 1
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: root.tr("Copy Steam launch options")
-                                color: "#b7ddff"
-                                font.pixelSize: 12
-                                font.family: root.uiFont
-                            }
-
-                            MouseArea {
-                                id: copyMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME")
-                                }
+                            label: root.tr("Copy Steam launch options")
+                            variant: "subtle"
+                            fontFamily: root.uiFont
+                            accentColor: root.themeAccent
+                            motionDuration: root.motionQuick
+                            onClicked: {
+                                appLauncher.copyToClipboard("mangohud gamemoderun %command%")
+                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME")
                             }
                         }
                     }

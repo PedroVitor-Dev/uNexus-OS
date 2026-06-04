@@ -256,41 +256,20 @@ function launchApp(app) {
             }
         }
 
-        Row {
+        SegmentedControl {
             id: categoryRow
             anchors.top: searchBox.bottom
             anchors.left: parent.left
             anchors.leftMargin: root.panelPadding
             anchors.topMargin: root.spaceSm
-            spacing: root.spaceSm
-
-            Repeater {
-                model: ["All", "Gaming", "System", "Media"]
-
-                delegate: Rectangle {
-                    width: catText.width + 20
-                    height: 28
-                    radius: 8
-                    color: launcher.activeCategory === modelData ? "#4d9eff" : "#1a2030"
-
-                    Behavior on color {
-                        ColorAnimation { duration: root.motionQuick }
-                    }
-
-                    Text {
-                        id: catText
-                        anchors.centerIn: parent
-                        text: root.tr(modelData)
-                        color: launcher.activeCategory === modelData ? "#ffffff" : "#aaaaaa"
-                        font.pixelSize: 12
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: launcher.activeCategory = modelData
-                    }
-                }
-            }
+            width: Math.min(360, parent.width - root.panelPadding * 2)
+            values: ["All", "Gaming", "System", "Media"]
+            currentValue: launcher.activeCategory
+            fontFamily: root.uiFont
+            accentColor: root.themeAccent
+            motionDuration: root.motionQuick
+            labelProvider: function(value) { return root.tr(value) }
+            onSelected: function(value) { launcher.activeCategory = value }
         }
 
         Column {
@@ -407,8 +386,28 @@ function launchApp(app) {
                         }
                     }
 
-                    Rectangle {
+                    ControlButton {
                         visible: modelData.category === "Gaming" && !modelData.internalAction
+                        z: 2
+                        anchors.right: parent.right
+                        anchors.rightMargin: appStatusChip.width + 28
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 92
+                        height: 22
+                        label: root.tr("Copy opts")
+                        variant: "subtle"
+                        fontFamily: root.uiFont
+                        accentColor: root.themeAccent
+                        motionDuration: root.motionQuick
+                        onClicked: {
+                            appLauncher.copyToClipboard("mangohud gamemoderun %command%")
+                            if (notifCenter)
+                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "ðŸŽ®")
+                        }
+                    }
+
+                    Rectangle {
+                        visible: false
                         z: 2
                         anchors.right: parent.right
                         anchors.rightMargin: appStatusChip.width + 28

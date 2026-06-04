@@ -44,6 +44,8 @@ qt_add_qml_module(unexus-shell
         qml/FilesPanel.qml
         qml/PanelStateView.qml
         qml/StatusChip.qml
+        qml/ControlButton.qml
+        qml/SegmentedControl.qml
 )
 
 qt_add_resources(unexus-shell "unexus_brand_assets"

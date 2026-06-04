@@ -294,30 +294,16 @@ Item {
                     }
                 }
 
-                Rectangle {
+                ControlButton {
                     id: doneButton
                     width: 160
                     height: 38
-                    radius: 8
-                    color: doneMouse.containsMouse ? root.themeAccent : "#172f49"
-                    border.color: root.themeAccent
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: firstSetup.finishConfirming ? root.tr("Confirm finish") : root.tr("Finish setup")
-                        color: "#ffffff"
-                        font.pixelSize: 12
-                        font.family: root.uiFont
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        id: doneMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: firstSetup.requestComplete()
-                    }
+                    label: firstSetup.finishConfirming ? root.tr("Confirm finish") : root.tr("Finish setup")
+                    variant: firstSetup.finishConfirming ? "danger" : "primary"
+                    fontFamily: root.uiFont
+                    accentColor: root.themeAccent
+                    motionDuration: root.motionQuick
+                    onClicked: firstSetup.requestComplete()
                 }
             }
         }
@@ -417,33 +403,18 @@ Item {
         }
     }
 
-    component SetupCommandButton: Rectangle {
+    component SetupCommandButton: ControlButton {
         id: commandButton
-        property string label: ""
         property string command: ""
 
         height: 34
-        radius: 7
-        color: commandMouse.containsMouse ? "#254160" : "#172233"
-        border.color: root.themeAccent
-        border.width: 1
-
-        Text {
-            anchors.centerIn: parent
-            text: root.tr(commandButton.label)
-            color: "#b7ddff"
-            font.pixelSize: 12
-            font.family: root.uiFont
-        }
-
-        MouseArea {
-            id: commandMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                appLauncher.copyToClipboard(commandButton.command)
-                notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP")
-            }
+        variant: "subtle"
+        fontFamily: root.uiFont
+        accentColor: root.themeAccent
+        motionDuration: root.motionQuick
+        onClicked: {
+            appLauncher.copyToClipboard(commandButton.command)
+            notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP")
         }
     }
 

@@ -302,32 +302,13 @@ Item {
         }
     }
 
-    component SettingsActionButton: Rectangle {
+    component SettingsActionButton: ControlButton {
         id: actionButton
-        property string label: ""
-        signal clicked()
-
         height: 34
-        radius: 7
-        color: actionMouse.containsMouse ? "#254160" : "#172233"
-        border.color: root.themeAccent
-        border.width: 1
-
-        Text {
-            anchors.centerIn: parent
-            text: actionButton.label
-            color: "#b7ddff"
-            font.pixelSize: 12
-            font.family: root.uiFont
-            font.bold: true
-        }
-
-        MouseArea {
-            id: actionMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: actionButton.clicked()
-        }
+        variant: "subtle"
+        fontFamily: root.uiFont
+        accentColor: root.themeAccent
+        motionDuration: root.motionQuick
     }
 
     component SettingsSection: Rectangle {
