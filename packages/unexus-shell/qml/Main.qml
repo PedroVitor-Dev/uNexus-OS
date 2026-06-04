@@ -209,9 +209,14 @@ Window {
         "Store": "Loja",
         "Camera": "Câmera",
         "Notes": "Notas",
+        "Open Files": "Abrir arquivos",
         "Paste": "Colar",
         "Refresh": "Atualizar",
+        "Refresh Shell": "Atualizar shell",
+        "Copy Game Options": "Copiar opcoes de jogo",
         "Open Terminal": "Abrir Terminal",
+        "Shell refreshed": "Shell atualizado",
+        "Desktop state refreshed.": "Estado da area de trabalho atualizado.",
         "Password": "Senha",
         "Wrong password. Try again.": "Senha incorreta. Tente de novo.",
         "UP": "SUBIR",
@@ -386,6 +391,14 @@ Window {
 
     function toggleStatsOverlay() {
         systemStats.visible = !systemStats.visible
+    }
+
+    function refreshDesktopState() {
+        dockStateVersion++
+        panelStateVersion++
+        wallpaperLines.requestPaint()
+        diagonalGrid.requestPaint()
+        notifCenter.send(root.tr("Shell refreshed"), root.tr("Desktop state refreshed."), "SYS")
     }
 
     Shortcut {
@@ -1107,7 +1120,22 @@ Window {
         id: contextMenu
         anchors.fill: parent
         z: 150
+        onOpenFilesRequested: unexusFiles.show()
         onOpenSettingsRequested: unexusSettings.show()
+        onOpenGameSettingsRequested: gameSettings.show()
+        onOpenTerminalRequested: {
+            if (!appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"]))
+                notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", "Terminal"), "TERM", root.tr("Open First Setup"), function() {
+                    firstSetup.show()
+                })
+        }
+        onCopyGameOptionsRequested: {
+            appLauncher.copyToClipboard("mangohud gamemoderun %command%")
+            notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME", root.tr("Open Game Settings"), function() {
+                gameSettings.show()
+            })
+        }
+        onRefreshShellRequested: root.refreshDesktopState()
     }
 
 MouseArea {
