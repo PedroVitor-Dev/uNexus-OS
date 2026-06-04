@@ -408,19 +408,18 @@ Window {
     }
 
     property var systemDockApps: [
-        { icon: "F", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
-        { icon: "W", iconNames: ["firefox", "org.mozilla.firefox"], label: "Browser", command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
-        { icon: "S", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "uNexus Settings", internalAction: "settings" },
-        { icon: ">_", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] },
-        { icon: "OK", iconNames: ["preferences-system-symbolic", "emblem-default"], label: "First Setup", internalAction: "firstSetup" }
+        { icon: "files", fallbackIcon: "files", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
+        { icon: "browser", fallbackIcon: "browser", iconNames: ["firefox", "org.mozilla.firefox"], label: "Browser", command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
+        { icon: "settings", fallbackIcon: "settings", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "uNexus Settings", internalAction: "settings" },
+        { icon: "terminal", fallbackIcon: "terminal", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] }
     ]
 
     property var gameDockApps: [
-        { icon: "ST", iconNames: ["steam", "com.valvesoftware.Steam"], label: "Steam", command: "steam", args: [], flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"], processNames: ["steam", "steamwebhelper"], gaming: true },
-        { icon: "LU", iconNames: ["lutris", "net.lutris.Lutris"], label: "Lutris", command: "lutris", args: [], flatpakId: "net.lutris.Lutris", windowClasses: ["lutris", "Lutris"], processNames: ["lutris"], gaming: true },
-        { icon: "HE", iconNames: ["com.heroicgameslauncher.hgl", "heroic", "heroicgameslauncher"], label: "Heroic", command: "heroic", args: [], flatpakId: "com.heroicgameslauncher.hgl", windowClasses: ["heroic", "Heroic", "com.heroicgameslauncher.hgl"], processNames: ["heroic", "heroicgameslauncher"], gaming: true },
-        { icon: "BO", iconNames: ["com.usebottles.bottles", "bottles"], label: "Bottles", command: "bottles", args: [], flatpakId: "com.usebottles.bottles", windowClasses: ["bottles", "Bottles", "com.usebottles.bottles"], processNames: ["bottles"], gaming: true },
-        { icon: "GS", iconNames: ["applications-games", "input-gaming"], label: "Game Settings", internalAction: "gameSettings" }
+        { icon: "steam", fallbackIcon: "steam", iconNames: ["steam", "com.valvesoftware.Steam"], label: "Steam", command: "steam", args: [], flatpakId: "com.valvesoftware.Steam", windowClasses: ["steam", "Steam"], processNames: ["steam", "steamwebhelper"], gaming: true },
+        { icon: "lutris", fallbackIcon: "lutris", iconNames: ["lutris", "net.lutris.Lutris"], label: "Lutris", command: "lutris", args: [], flatpakId: "net.lutris.Lutris", windowClasses: ["lutris", "Lutris"], processNames: ["lutris"], gaming: true },
+        { icon: "heroic", fallbackIcon: "heroic", iconNames: ["com.heroicgameslauncher.hgl", "heroic", "heroicgameslauncher"], label: "Heroic", command: "heroic", args: [], flatpakId: "com.heroicgameslauncher.hgl", windowClasses: ["heroic", "Heroic", "com.heroicgameslauncher.hgl"], processNames: ["heroic", "heroicgameslauncher"], gaming: true },
+        { icon: "bottles", fallbackIcon: "bottles", iconNames: ["com.usebottles.bottles", "bottles"], label: "Bottles", command: "bottles", args: [], flatpakId: "com.usebottles.bottles", windowClasses: ["bottles", "Bottles", "com.usebottles.bottles"], processNames: ["bottles"], gaming: true },
+        { icon: "game-settings", fallbackIcon: "game-settings", iconNames: ["applications-games", "input-gaming", "preferences-desktop-gaming"], label: "Game Settings", internalAction: "gameSettings" }
     ]
     property int dockStateVersion: 0
     property int panelStateVersion: 0
@@ -908,8 +907,8 @@ Window {
         side: "right"
         title: root.tr("GAMES")
         apps: root.gameDockApps
-        accentColor: "#ff8a3d"
-        panelColor: "#16110e"
+        accentColor: root.themeAccent
+        panelColor: root.surfacePanel
         fontFamily: root.uiFont
         dockStateVersion: root.dockStateVersion
         appStateVersion: root.panelStateVersion

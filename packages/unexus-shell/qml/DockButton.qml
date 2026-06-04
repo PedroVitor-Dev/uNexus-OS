@@ -14,6 +14,7 @@ Rectangle {
     property bool hovered: false
     property string appStateOverride: ""
     property string resolvedIcon: app.iconNames ? appLauncher.findIcon(app.iconNames) : ""
+    property string fallbackIcon: app.fallbackIcon || app.icon || "app"
     property string appState: {
         dockStateVersion
         var override = appStateOverride
@@ -102,14 +103,181 @@ Rectangle {
         visible: status === Image.Ready
     }
 
-    Text {
+    Item {
+        id: fallbackArtwork
         anchors.centerIn: parent
-        text: app.icon || "?"
-        color: "#ffffff"
-        font.pixelSize: dockButton.hovered ? 18 : root.textUi
-        font.family: dockButton.fontFamily
-        font.bold: true
+        width: dockButton.hovered ? 34 : 30
+        height: width
         visible: appIcon.status !== Image.Ready
+
+        Rectangle {
+            visible: dockButton.fallbackIcon === "steam"
+            anchors.centerIn: parent
+            width: parent.width * 0.84
+            height: width
+            radius: width / 2
+            color: "transparent"
+            border.color: "#ffffff"
+            border.width: 2
+            opacity: 0.92
+
+            Rectangle {
+                width: parent.width * 0.26
+                height: width
+                radius: width / 2
+                color: "#ffffff"
+                anchors.left: parent.left
+                anchors.leftMargin: parent.width * 0.16
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: parent.height * 0.16
+            }
+
+            Rectangle {
+                width: parent.width * 0.38
+                height: 2
+                rotation: -28
+                color: "#ffffff"
+                anchors.centerIn: parent
+            }
+
+            Rectangle {
+                width: parent.width * 0.3
+                height: width
+                radius: width / 2
+                color: "transparent"
+                border.color: "#ffffff"
+                border.width: 2
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width * 0.1
+                anchors.top: parent.top
+                anchors.topMargin: parent.height * 0.12
+            }
+        }
+
+        Canvas {
+            id: lineIcon
+            anchors.fill: parent
+            visible: dockButton.fallbackIcon !== "steam"
+            opacity: 0.94
+
+            onPaint: {
+                var ctx = getContext("2d")
+                ctx.clearRect(0, 0, width, height)
+                ctx.strokeStyle = "#ffffff"
+                ctx.fillStyle = "#ffffff"
+                ctx.lineWidth = Math.max(2, width * 0.075)
+                ctx.lineCap = "round"
+                ctx.lineJoin = "round"
+
+                if (dockButton.fallbackIcon === "lutris") {
+                    ctx.beginPath()
+                    ctx.arc(width * 0.5, height * 0.5, width * 0.32, 0, Math.PI * 2)
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.32, height * 0.38)
+                    ctx.lineTo(width * 0.68, height * 0.62)
+                    ctx.moveTo(width * 0.68, height * 0.38)
+                    ctx.lineTo(width * 0.32, height * 0.62)
+                    ctx.stroke()
+                } else if (dockButton.fallbackIcon === "heroic") {
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.5, height * 0.12)
+                    ctx.lineTo(width * 0.78, height * 0.38)
+                    ctx.lineTo(width * 0.62, height * 0.82)
+                    ctx.lineTo(width * 0.38, height * 0.82)
+                    ctx.lineTo(width * 0.22, height * 0.38)
+                    ctx.closePath()
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.38, height * 0.45)
+                    ctx.lineTo(width * 0.62, height * 0.45)
+                    ctx.moveTo(width * 0.5, height * 0.25)
+                    ctx.lineTo(width * 0.5, height * 0.72)
+                    ctx.stroke()
+                } else if (dockButton.fallbackIcon === "bottles") {
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.42, height * 0.12)
+                    ctx.lineTo(width * 0.58, height * 0.12)
+                    ctx.lineTo(width * 0.58, height * 0.34)
+                    ctx.quadraticCurveTo(width * 0.74, height * 0.46, width * 0.72, height * 0.76)
+                    ctx.quadraticCurveTo(width * 0.72, height * 0.9, width * 0.5, height * 0.9)
+                    ctx.quadraticCurveTo(width * 0.28, height * 0.9, width * 0.28, height * 0.76)
+                    ctx.quadraticCurveTo(width * 0.26, height * 0.46, width * 0.42, height * 0.34)
+                    ctx.closePath()
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.35, height * 0.62)
+                    ctx.lineTo(width * 0.65, height * 0.62)
+                    ctx.stroke()
+                } else if (dockButton.fallbackIcon === "game-settings") {
+                    var x = width * 0.16
+                    var y = height * 0.32
+                    var w = width * 0.68
+                    var h = height * 0.38
+                    var r = width * 0.14
+                    ctx.beginPath()
+                    ctx.moveTo(x + r, y)
+                    ctx.lineTo(x + w - r, y)
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+                    ctx.lineTo(x + w, y + h - r)
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+                    ctx.lineTo(x + r, y + h)
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+                    ctx.lineTo(x, y + r)
+                    ctx.quadraticCurveTo(x, y, x + r, y)
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.32, height * 0.51)
+                    ctx.lineTo(width * 0.46, height * 0.51)
+                    ctx.moveTo(width * 0.39, height * 0.44)
+                    ctx.lineTo(width * 0.39, height * 0.58)
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.arc(width * 0.62, height * 0.49, width * 0.035, 0, Math.PI * 2)
+                    ctx.arc(width * 0.72, height * 0.55, width * 0.035, 0, Math.PI * 2)
+                    ctx.fill()
+                } else if (dockButton.fallbackIcon === "files") {
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.16, height * 0.28)
+                    ctx.lineTo(width * 0.38, height * 0.28)
+                    ctx.lineTo(width * 0.46, height * 0.38)
+                    ctx.lineTo(width * 0.84, height * 0.38)
+                    ctx.lineTo(width * 0.84, height * 0.78)
+                    ctx.lineTo(width * 0.16, height * 0.78)
+                    ctx.closePath()
+                    ctx.stroke()
+                } else if (dockButton.fallbackIcon === "settings") {
+                    ctx.beginPath()
+                    ctx.arc(width * 0.5, height * 0.5, width * 0.25, 0, Math.PI * 2)
+                    ctx.stroke()
+                    for (var i = 0; i < 8; i++) {
+                        var a = i * Math.PI / 4
+                        ctx.beginPath()
+                        ctx.moveTo(width * 0.5 + Math.cos(a) * width * 0.32, height * 0.5 + Math.sin(a) * width * 0.32)
+                        ctx.lineTo(width * 0.5 + Math.cos(a) * width * 0.43, height * 0.5 + Math.sin(a) * width * 0.43)
+                        ctx.stroke()
+                    }
+                } else if (dockButton.fallbackIcon === "terminal") {
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.2, height * 0.3)
+                    ctx.lineTo(width * 0.4, height * 0.5)
+                    ctx.lineTo(width * 0.2, height * 0.7)
+                    ctx.moveTo(width * 0.48, height * 0.7)
+                    ctx.lineTo(width * 0.78, height * 0.7)
+                    ctx.stroke()
+                } else {
+                    ctx.beginPath()
+                    ctx.arc(width * 0.5, height * 0.5, width * 0.3, 0, Math.PI * 2)
+                    ctx.stroke()
+                }
+            }
+
+            Connections {
+                target: dockButton
+                function onFallbackIconChanged() { lineIcon.requestPaint() }
+                function onHoveredChanged() { lineIcon.requestPaint() }
+            }
+        }
     }
 
     Rectangle {
