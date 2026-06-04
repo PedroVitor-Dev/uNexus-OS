@@ -116,28 +116,11 @@ Item {
 
             Row {
                 width: parent.width
-                height: 44
-                spacing: root.panelGap
-
-                Rectangle {
-                    width: 42
-                    height: 42
-                    radius: 11
-                    color: "#172233"
-                    border.color: root.themeAccent
-                    border.width: 1
-
-                    Image {
-                        anchors.fill: parent
-                        anchors.margins: 6
-                        source: root.brandLogoSource
-                        fillMode: Image.PreserveAspectFit
-                        smooth: true
-                    }
-                }
+                height: 38
+                spacing: 0
 
                 Column {
-                    width: parent.width - 52
+                    width: parent.width
                     spacing: 2
 
                     Text {
