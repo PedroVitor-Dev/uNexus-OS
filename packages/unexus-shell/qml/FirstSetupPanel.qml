@@ -185,6 +185,7 @@ Item {
                             width: parent.width
                             label: "GameMode"
                             ready: firstSetup.refreshToken ? appLauncher.isGameModeRunInstalled() : appLauncher.isGameModeRunInstalled()
+                            needsRestart: ready && !gameMode.active
                             command: "sudo pacman -S gamemode lib32-gamemode"
                         }
                     }
@@ -331,6 +332,7 @@ Item {
         id: setupRow
         property string label: ""
         property bool ready: false
+        property bool needsRestart: false
         property string command: ""
 
         height: 42
@@ -351,26 +353,37 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            width: setupRow.ready ? statusLabel.width + 14 : 92
+            width: setupRow.ready || setupRow.needsRestart ? setupStatus.width : 92
             height: 22
             radius: 7
-            color: setupRow.ready ? "#0d3020" : (copyMouse.containsMouse ? "#254160" : "#172f49")
-            border.color: setupRow.ready ? "transparent" : root.themeAccent
-            border.width: setupRow.ready ? 0 : 1
+            color: setupRow.ready || setupRow.needsRestart ? "transparent" : (copyMouse.containsMouse ? "#254160" : "#172f49")
+            border.color: setupRow.ready || setupRow.needsRestart ? "transparent" : root.themeAccent
+            border.width: setupRow.ready || setupRow.needsRestart ? 0 : 1
 
             Text {
                 id: statusLabel
                 anchors.centerIn: parent
-                text: setupRow.ready ? root.tr("ready") : root.tr("Copy install")
-                color: setupRow.ready ? "#00ff88" : "#b7ddff"
+                visible: !setupRow.ready && !setupRow.needsRestart
+                text: root.tr("Copy install")
+                color: "#b7ddff"
                 font.pixelSize: 10
                 font.family: root.uiFont
+            }
+
+            StatusChip {
+                id: setupStatus
+                visible: setupRow.ready || setupRow.needsRestart
+                anchors.centerIn: parent
+                status: setupRow.needsRestart ? "needs-restart" : "ready"
+                label: setupRow.needsRestart ? root.tr("needs restart") : root.tr("ready")
+                fontFamily: root.uiFont
+                accentColor: root.themeAccent
             }
 
             MouseArea {
                 id: copyMouse
                 anchors.fill: parent
-                enabled: !setupRow.ready && setupRow.command.length > 0
+                enabled: !setupRow.ready && !setupRow.needsRestart && setupRow.command.length > 0
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(setupRow.command)

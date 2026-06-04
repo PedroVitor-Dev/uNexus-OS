@@ -181,6 +181,8 @@ Window {
         "{app} Flatpak command copied.": "Comando Flatpak do {app} copiado.",
         "{app} command copied.": "Comando do {app} copiado.",
         "missing": "ausente",
+        "running": "em execucao",
+        "needs restart": "precisa reiniciar",
         "ready": "pronto",
         "Setup complete": "Configuração concluída",
         "uNexus gaming setup is ready.": "A configuração de jogos do uNexus está pronta.",

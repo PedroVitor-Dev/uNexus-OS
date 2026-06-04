@@ -41,6 +41,38 @@ Item {
         })
     }
 
+    function appInstalled(app) {
+        if (app.internalAction)
+            return true
+        return appLauncher.isInstalled(app.command || "") ||
+               appLauncher.isFlatpakInstalled(app.flatpakId || "")
+    }
+
+    function appRunning(app) {
+        if (!app.windowClasses || app.windowClasses.length === 0)
+            return false
+        return appLauncher.isWindowOpen(app.windowClasses) ||
+               appLauncher.isProcessRunning(app.windowClasses)
+    }
+
+    function appStatus(app) {
+        if (app.internalAction)
+            return "panel"
+        if (appRunning(app))
+            return "running"
+        return appInstalled(app) ? "installed" : "missing"
+    }
+
+    function appStatusLabel(app) {
+        if (app.internalAction)
+            return root.tr("panel")
+        if (appRunning(app))
+            return root.tr("running")
+        if (app.category !== "Gaming")
+            return appInstalled(app) ? root.tr(app.category) : root.tr("missing")
+        return appInstalled(app) ? root.tr("installed") : root.tr("missing")
+    }
+
 function launchApp(app) {
     if (app.internalAction === "settings") {
         launcher.hide()
@@ -327,7 +359,19 @@ function launchApp(app) {
                         }
                     }
 
+                    StatusChip {
+                        id: appStatusChip
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        status: launcher.appStatus(modelData)
+                        label: launcher.appStatusLabel(modelData)
+                        fontFamily: root.uiFont
+                        accentColor: root.themeAccent
+                    }
+
                     Rectangle {
+                        visible: false
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -367,7 +411,7 @@ function launchApp(app) {
                         visible: modelData.category === "Gaming" && !modelData.internalAction
                         z: 2
                         anchors.right: parent.right
-                        anchors.rightMargin: statusText.width + 28
+                        anchors.rightMargin: appStatusChip.width + 28
                         anchors.verticalCenter: parent.verticalCenter
                         width: copyOptsText.width + 16
                         height: 22

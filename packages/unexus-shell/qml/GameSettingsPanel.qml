@@ -259,6 +259,7 @@ Item {
                             width: parent.width
                             label: "GameModeRun"
                             installed: settingsPanel.toolsRefresh ? appLauncher.isGameModeRunInstalled() : appLauncher.isGameModeRunInstalled()
+                            running: gameMode.active
                         }
 
                         Rectangle {
@@ -302,6 +303,7 @@ Item {
                             width: parent.width
                             label: "Steam"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) : (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam"))
+                            running: appLauncher.isWindowOpen(["steam", "Steam"]) || appLauncher.isProcessRunning(["steam"])
                             installCommand: "flatpak install -y flathub com.valvesoftware.Steam"
                         }
 
@@ -309,6 +311,7 @@ Item {
                             width: parent.width
                             label: "Lutris"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) : (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris"))
+                            running: appLauncher.isWindowOpen(["lutris", "Lutris"]) || appLauncher.isProcessRunning(["lutris"])
                             installCommand: "flatpak install -y flathub net.lutris.Lutris"
                         }
 
@@ -316,6 +319,7 @@ Item {
                             width: parent.width
                             label: "Heroic"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) : (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl"))
+                            running: appLauncher.isWindowOpen(["heroic", "Heroic", "com.heroicgameslauncher.hgl"]) || appLauncher.isProcessRunning(["heroic", "heroicgameslauncher"])
                             installCommand: "flatpak install -y flathub com.heroicgameslauncher.hgl"
                         }
 
@@ -323,6 +327,7 @@ Item {
                             width: parent.width
                             label: "Bottles"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles")) : (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
+                            running: appLauncher.isWindowOpen(["bottles", "Bottles", "com.usebottles.bottles"]) || appLauncher.isProcessRunning(["bottles"])
                             installCommand: "flatpak install -y flathub com.usebottles.bottles"
                         }
                     }
@@ -496,6 +501,8 @@ Item {
         id: statusRow
         property string label: ""
         property bool installed: false
+        property bool running: false
+        property bool needsRestart: false
 
         height: 36
         radius: 8
@@ -511,23 +518,14 @@ Item {
             font.family: root.uiFont
         }
 
-        Rectangle {
+        StatusChip {
             anchors.right: parent.right
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            width: statusLabel.width + 14
-            height: 20
-            radius: 7
-            color: statusRow.installed ? "#0d3020" : "#2a1010"
-
-            Text {
-                id: statusLabel
-                anchors.centerIn: parent
-                text: statusRow.installed ? root.tr("installed") : root.tr("missing")
-                color: statusRow.installed ? "#00ff88" : "#ff6b6b"
-                font.pixelSize: 10
-                font.family: root.uiFont
-            }
+            status: statusRow.running ? "running" : (statusRow.needsRestart ? "needs-restart" : (statusRow.installed ? "installed" : "missing"))
+            label: statusRow.running ? root.tr("running") : (statusRow.needsRestart ? root.tr("needs restart") : (statusRow.installed ? root.tr("installed") : root.tr("missing")))
+            fontFamily: root.uiFont
+            accentColor: root.themeAccent
         }
     }
 
@@ -535,6 +533,8 @@ Item {
         id: installRow
         property string label: ""
         property bool installed: false
+        property bool running: false
+        property bool needsRestart: false
         property string installCommand: ""
 
         height: 42
@@ -556,26 +556,37 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            width: installRow.installed ? installedLabel.width + 14 : 92
+            width: installRow.installed || installRow.running || installRow.needsRestart ? installStatus.width : 92
             height: 22
             radius: 7
-            color: installRow.installed ? "#0d3020" : (installMouse.containsMouse ? "#254160" : "#172f49")
-            border.color: installRow.installed ? "transparent" : "#2d5f8f"
-            border.width: installRow.installed ? 0 : 1
+            color: installRow.installed || installRow.running || installRow.needsRestart ? "transparent" : (installMouse.containsMouse ? "#254160" : "#172f49")
+            border.color: installRow.installed || installRow.running || installRow.needsRestart ? "transparent" : "#2d5f8f"
+            border.width: installRow.installed || installRow.running || installRow.needsRestart ? 0 : 1
 
             Text {
                 id: installedLabel
                 anchors.centerIn: parent
-                text: installRow.installed ? root.tr("installed") : root.tr("Copy install")
-                color: installRow.installed ? "#00ff88" : "#b7ddff"
+                visible: !installRow.installed && !installRow.running && !installRow.needsRestart
+                text: root.tr("Copy install")
+                color: "#b7ddff"
                 font.pixelSize: 10
                 font.family: root.uiFont
+            }
+
+            StatusChip {
+                id: installStatus
+                visible: installRow.installed || installRow.running || installRow.needsRestart
+                anchors.centerIn: parent
+                status: installRow.running ? "running" : (installRow.needsRestart ? "needs-restart" : "installed")
+                label: installRow.running ? root.tr("running") : (installRow.needsRestart ? root.tr("needs restart") : root.tr("installed"))
+                fontFamily: root.uiFont
+                accentColor: root.themeAccent
             }
 
             MouseArea {
                 id: installMouse
                 anchors.fill: parent
-                enabled: !installRow.installed && installRow.installCommand.length > 0
+                enabled: !installRow.installed && !installRow.running && !installRow.needsRestart && installRow.installCommand.length > 0
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(installRow.installCommand)
