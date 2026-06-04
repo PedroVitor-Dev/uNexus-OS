@@ -16,6 +16,9 @@ Item {
     property bool sortAscending: true
     property string mode: "browse"
     property bool dockActive: false
+    property bool loading: false
+    property string errorMessage: ""
+    property string unavailableMessage: ""
 
     function show(path) {
         visible = true
@@ -107,6 +110,16 @@ Item {
     }
 
     function loadPath(path) {
+        loading = true
+        errorMessage = ""
+        unavailableMessage = ""
+        if (!path || path.length === 0) {
+            loading = false
+            unavailableMessage = root.tr("No folder selected.")
+            entries = []
+            return
+        }
+
         currentPath = path
         pathInput.text = currentPath
         selectedPath = ""
@@ -114,6 +127,7 @@ Item {
         selectedIsDir = false
         mode = "browse"
         entries = sortedEntries(fileManager.listDirectory(currentPath))
+        loading = false
     }
 
     function openSelected() {
@@ -402,6 +416,19 @@ Item {
                             opacity: 0.9
                         }
 
+                        PanelStateView {
+                            width: parent.width
+                            height: 104
+                            visible: filesPanel.places.length === 0
+                            state: "unavailable"
+                            title: root.tr("Places unavailable")
+                            message: root.tr("Common folders could not be loaded.")
+                            fontFamily: root.uiFont
+                            accentColor: root.themeAccent
+                            primaryTextColor: root.textPrimary
+                            secondaryTextColor: root.textMuted
+                        }
+
                         Repeater {
                             model: filesPanel.places
 
@@ -507,10 +534,32 @@ Item {
 
                         Rectangle { width: parent.width; height: 1; color: "#223247" }
 
+                        PanelStateView {
+                            width: parent.width
+                            height: parent.height - 34
+                            visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
+                                     filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
+                            state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
+                            title: filesPanel.loading ? root.tr("Loading folder") :
+                                   (filesPanel.errorMessage.length > 0 ? root.tr("Folder error") :
+                                   (filesPanel.unavailableMessage.length > 0 ? root.tr("Folder unavailable") : root.tr("Folder is empty")))
+                            message: filesPanel.loading ? root.tr("Reading local files.") :
+                                     (filesPanel.errorMessage.length > 0 ? filesPanel.errorMessage :
+                                     (filesPanel.unavailableMessage.length > 0 ? filesPanel.unavailableMessage : root.tr("Create a folder or choose another place.")))
+                            actionLabel: filesPanel.loading ? "" : root.tr("Refresh")
+                            fontFamily: root.uiFont
+                            accentColor: root.themeAccent
+                            primaryTextColor: root.textPrimary
+                            secondaryTextColor: root.textMuted
+                            onActionRequested: filesPanel.refresh()
+                        }
+
                         ListView {
                             id: filesList
                             width: parent.width
                             height: parent.height - 34
+                            visible: !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
+                                     filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
                             clip: true
                             spacing: 2
                             model: filesPanel.entries

@@ -6,11 +6,17 @@ Item {
     visible: false
     opacity: 0.0
     property bool dockActive: false
+    property bool loading: false
+    property string errorMessage: ""
+    property string unavailableMessage: ""
 
     function show() {
         hideAnim.stop()
         visible = true
         dockActive = true
+        loading = false
+        errorMessage = ""
+        unavailableMessage = appLauncher.isInstalled("flatpak") ? "" : root.tr("Flatpak is unavailable, so launcher installs may not work yet.")
         opacity = 0.0
         panel.scale = 0.985
         panelSlide.y = 14
@@ -33,6 +39,17 @@ Item {
     }
 
     property bool refreshToken: false
+
+    function setupCompleteReady() {
+        refreshToken
+        return appLauncher.isInstalled("flatpak") &&
+               appLauncher.isMangoHudInstalled() &&
+               appLauncher.isGameModeRunInstalled() &&
+               (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) &&
+               (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) &&
+               (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) &&
+               (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
+    }
 
     ParallelAnimation {
         id: showAnim
@@ -118,9 +135,28 @@ Item {
 
             Rectangle { width: parent.width; height: 1; color: "#26384d" }
 
+            PanelStateView {
+                id: firstSetupStateView
+                width: parent.width
+                height: visible ? 78 : 0
+                visible: firstSetup.loading || firstSetup.errorMessage.length > 0 ||
+                         firstSetup.unavailableMessage.length > 0 || firstSetup.setupCompleteReady()
+                state: firstSetup.loading ? "loading" : (firstSetup.errorMessage.length > 0 ? "error" : (firstSetup.unavailableMessage.length > 0 ? "unavailable" : "empty"))
+                title: firstSetup.loading ? root.tr("Loading setup") :
+                       (firstSetup.errorMessage.length > 0 ? root.tr("Setup error") :
+                       (firstSetup.unavailableMessage.length > 0 ? root.tr("Setup partially unavailable") : root.tr("No setup steps pending")))
+                message: firstSetup.loading ? root.tr("Checking gaming essentials.") :
+                         (firstSetup.errorMessage.length > 0 ? firstSetup.errorMessage :
+                         (firstSetup.unavailableMessage.length > 0 ? firstSetup.unavailableMessage : root.tr("Your gaming essentials are ready.")))
+                fontFamily: root.uiFont
+                accentColor: root.themeAccent
+                primaryTextColor: root.textPrimary
+                secondaryTextColor: root.textMuted
+            }
+
             Row {
                 width: parent.width
-                height: parent.height - 116
+                height: parent.height - 116 - firstSetupStateView.height
                 spacing: 14
 
                 Column {

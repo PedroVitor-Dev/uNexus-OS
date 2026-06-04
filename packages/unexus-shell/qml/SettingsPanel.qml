@@ -6,11 +6,17 @@ Item {
     visible: false
     opacity: 0.0
     property bool dockActive: false
+    property bool loading: false
+    property string errorMessage: ""
+    property string unavailableMessage: ""
 
     function show() {
         hideAnim.stop()
         visible = true
         dockActive = true
+        loading = false
+        errorMessage = ""
+        unavailableMessage = systemInfo.hasBattery ? "" : root.tr("Battery data is unavailable on this device.")
         opacity = 0.0
         panel.scale = 0.985
         panelSlide.y = 14
@@ -124,9 +130,24 @@ Item {
 
             Rectangle { width: parent.width; height: 1; color: "#26384d" }
 
+            PanelStateView {
+                id: settingsStateView
+                width: parent.width
+                height: visible ? 78 : 0
+                visible: settingsPanel.loading || settingsPanel.errorMessage.length > 0 || settingsPanel.unavailableMessage.length > 0
+                state: settingsPanel.loading ? "loading" : (settingsPanel.errorMessage.length > 0 ? "error" : "unavailable")
+                title: settingsPanel.loading ? root.tr("Loading settings") : (settingsPanel.errorMessage.length > 0 ? root.tr("Settings error") : root.tr("Some system data is unavailable"))
+                message: settingsPanel.loading ? root.tr("Reading saved preferences.") :
+                         (settingsPanel.errorMessage.length > 0 ? settingsPanel.errorMessage : settingsPanel.unavailableMessage)
+                fontFamily: root.uiFont
+                accentColor: root.themeAccent
+                primaryTextColor: root.textPrimary
+                secondaryTextColor: root.textMuted
+            }
+
             Row {
                 width: parent.width
-                height: parent.height - 74
+                height: parent.height - 74 - settingsStateView.height
                 spacing: 14
 
                 Column {

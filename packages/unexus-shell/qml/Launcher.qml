@@ -28,6 +28,9 @@ Item {
     property var settingsPanel: null
     property var gameSettingsPanel: null
     property var filesPanel: null
+    property bool loading: false
+    property string errorMessage: ""
+    property string unavailableMessage: ""
 
     function filteredApps() {
         return allApps.filter(function(a) {
@@ -266,6 +269,29 @@ function launchApp(app) {
             anchors.topMargin: 8
             padding: 8
             spacing: 2
+
+            PanelStateView {
+                width: parent.width - 16
+                height: 132
+                visible: launcher.loading || launcher.errorMessage.length > 0 ||
+                         launcher.unavailableMessage.length > 0 || launcher.filteredApps().length === 0
+                state: launcher.loading ? "loading" : (launcher.errorMessage.length > 0 ? "error" : (launcher.unavailableMessage.length > 0 ? "unavailable" : "empty"))
+                title: launcher.loading ? root.tr("Loading apps") : (launcher.errorMessage.length > 0 ? root.tr("Launcher error") : (launcher.unavailableMessage.length > 0 ? root.tr("Launcher unavailable") : root.tr("No apps found")))
+                message: launcher.loading ? root.tr("Checking available apps and launchers.") :
+                         (launcher.errorMessage.length > 0 ? launcher.errorMessage :
+                         (launcher.unavailableMessage.length > 0 ? launcher.unavailableMessage : root.tr("Try another search or category.")))
+                actionLabel: root.tr("Reset search")
+                fontFamily: root.uiFont
+                accentColor: root.themeAccent
+                primaryTextColor: root.textPrimary
+                secondaryTextColor: root.textMuted
+                onActionRequested: {
+                    launcher.searchText = ""
+                    searchInput.text = ""
+                    launcher.activeCategory = "All"
+                    searchInput.forceActiveFocus()
+                }
+            }
 
             Repeater {
                 model: launcher.filteredApps()

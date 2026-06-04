@@ -42,6 +42,7 @@ qt_add_qml_module(unexus-shell
         qml/GameSettingsPanel.qml
         qml/FirstSetupPanel.qml
         qml/FilesPanel.qml
+        qml/PanelStateView.qml
 )
 
 qt_add_resources(unexus-shell "unexus_brand_assets"
