@@ -83,6 +83,7 @@ Window {
         "Close": "Fechar",
         "Confirm close": "Confirmar fechar",
         "Copy Options": "Copiar Opções",
+        "Copy": "Copiar",
         "Launch options copied": "Opções de inicialização copiadas",
         "Paste into Steam game launch options.": "Cole nas opções de inicialização do jogo na Steam.",
         "MangoHud not found": "MangoHud não encontrado",

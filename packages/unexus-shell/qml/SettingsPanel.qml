@@ -38,6 +38,27 @@ Item {
         userSettings.controlCenterSection = section
     }
 
+    function hasAnyTool(commands) {
+        for (var i = 0; i < commands.length; i++) {
+            if (appLauncher.isInstalled(commands[i]))
+                return true
+        }
+        return false
+    }
+
+    function hasAllTools(commands) {
+        for (var i = 0; i < commands.length; i++) {
+            if (!appLauncher.isInstalled(commands[i]))
+                return false
+        }
+        return true
+    }
+
+    function copyProvisionCommand(label, command) {
+        appLauncher.copyToClipboard(command)
+        notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", label), "SYS")
+    }
+
     ParallelAnimation {
         id: showAnim
         NumberAnimation { target: settingsPanel; property: "opacity"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
@@ -177,10 +198,17 @@ Item {
                     }
                 }
 
-                Column {
+                Flickable {
                     width: parent.width - (root.compactLayout ? 142 : 170) - root.panelGap
                     height: parent.height
-                    spacing: 10
+                    contentWidth: width
+                    contentHeight: contentColumn.height
+                    clip: true
+
+                    Column {
+                        id: contentColumn
+                        width: parent.width
+                        spacing: 10
 
                     SettingsSection {
                         width: parent.width
@@ -191,6 +219,124 @@ Item {
                         SettingsOptionRow { width: parent.width; label: root.tr("Battery"); value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : root.tr("Not available") }
                         SettingsToggle { width: parent.width; label: root.tr("uNexus Stats Overlay"); detail: systemStats.visible ? root.tr("Visible on desktop") : root.tr("Hidden"); checked: systemStats.visible; onClicked: systemStats.visible = !systemStats.visible }
                         SettingsActionButton { width: parent.width; label: root.tr("Open First Setup"); onClicked: firstSetup.show() }
+                    }
+
+                    SettingsSection {
+                        width: parent.width
+                        collapsed: settingsPanel.activeSection !== "system"
+                        title: "OS Provisioning"
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Global dark mode"
+                            detail: "GTK, Qt and terminal-friendly dark preference"
+                            ready: appLauncher.isInstalled("gsettings")
+                            command: "gsettings set org.gnome.desktop.interface color-scheme prefer-dark && gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Keyboard tiling workflow"
+                            detail: "Hyprland session with keyboard-first window control"
+                            ready: appLauncher.isInstalled("Hyprland")
+                            command: "mkdir -p ~/.config/hypr && cp /etc/xdg/hypr/hyprland.conf ~/.config/hypr/hyprland.conf"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Minimal status metrics"
+                            detail: "uNexus overlay for CPU, RAM and vital system state"
+                            ready: true
+                            command: "unexusctl session-info && unexusctl logs"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "GPU terminal"
+                            detail: "Kitty or Alacritty"
+                            ready: settingsPanel.hasAnyTool(["kitty", "alacritty"])
+                            command: "sudo pacman -S kitty alacritty"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Optimized shell"
+                            detail: "Zsh/Fish with highlighting and autosuggestions"
+                            ready: settingsPanel.hasAnyTool(["zsh", "fish"])
+                            command: "sudo pacman -S zsh fish zsh-syntax-highlighting zsh-autosuggestions"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Starship prompt"
+                            detail: "Directory, language version and Git status"
+                            ready: appLauncher.isInstalled("starship")
+                            command: "sudo pacman -S starship && echo 'eval \"$(starship init zsh)\"' >> ~/.zshrc"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Git SSH + GitHub CLI"
+                            detail: "SSH-first Git workflow with gh"
+                            ready: settingsPanel.hasAllTools(["git", "gh", "ssh"])
+                            command: "sudo pacman -S git github-cli openssh && gh auth login --git-protocol ssh"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Python venv + SQL clients"
+                            detail: "Isolated Python workspaces and lightweight local databases"
+                            ready: settingsPanel.hasAllTools(["python", "sqlite3"])
+                            command: "sudo pacman -S python python-pip python-virtualenv sqlite postgresql-libs"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Integrated editor"
+                            detail: "Neovim or VSCode ready for shortcuts"
+                            ready: settingsPanel.hasAnyTool(["nvim", "code"])
+                            command: "sudo pacman -S neovim code"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Dotfiles repository"
+                            detail: "Version-controlled system configuration backup"
+                            ready: appLauncher.isInstalled("git")
+                            command: "mkdir -p ~/dotfiles && cd ~/dotfiles && git init"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Post-install restore"
+                            detail: "Single-command environment restoration entry point"
+                            ready: appLauncher.isInstalled("unexusctl")
+                            command: "unexusctl backup && unexusctl update --yes"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Package cleanup"
+                            detail: "Clear orphaned packages and package cache"
+                            ready: appLauncher.isInstalled("pacman")
+                            command: "sudo pacman -Rns $(pacman -Qtdq) && sudo pacman -Sc"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Terminal resource monitor"
+                            detail: "btop or htop"
+                            ready: settingsPanel.hasAnyTool(["btop", "htop"])
+                            command: "sudo pacman -S btop htop"
+                        }
+
+                        ProvisionRow {
+                            width: parent.width
+                            label: "Power and network efficiency"
+                            detail: "Power profiles, TLP option and NetworkManager tools"
+                            ready: settingsPanel.hasAnyTool(["powerprofilesctl", "tlp", "nmcli"])
+                            command: "sudo pacman -S power-profiles-daemon tlp networkmanager"
+                        }
                     }
 
                     SettingsSection {
@@ -261,6 +407,7 @@ Item {
                                 notifCenter.send(root.tr("Repository copied"), root.tr("uNexus repository URL copied."), "INFO")
                             }
                         }
+                    }
                     }
                 }
             }
@@ -369,6 +516,73 @@ Item {
             color: "#8ea4bd"
             font.pixelSize: 11
             font.family: root.uiFont
+        }
+    }
+
+    component ProvisionRow: Rectangle {
+        id: provisionRow
+        property string label: ""
+        property string detail: ""
+        property bool ready: false
+        property string command: ""
+
+        height: 54
+        radius: 8
+        color: "#172233"
+
+        Column {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: rowStatus.left
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 2
+
+            Text {
+                text: provisionRow.label
+                color: root.textPrimary
+                font.pixelSize: 12
+                font.family: root.uiFont
+                font.bold: true
+                elide: Text.ElideRight
+                width: parent.width
+            }
+
+            Text {
+                text: provisionRow.detail
+                color: root.textMuted
+                font.pixelSize: 10
+                font.family: root.uiFont
+                elide: Text.ElideRight
+                width: parent.width
+            }
+        }
+
+        StatusChip {
+            id: rowStatus
+            anchors.right: actionButton.left
+            anchors.rightMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            status: provisionRow.ready ? "installed" : "missing"
+            label: provisionRow.ready ? root.tr("installed") : root.tr("missing")
+            fontFamily: root.uiFont
+            accentColor: root.themeAccent
+            motionDuration: root.motionQuick
+        }
+
+        ControlButton {
+            id: actionButton
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 84
+            height: 28
+            label: root.tr("Copy")
+            variant: provisionRow.ready ? "subtle" : "primary"
+            fontFamily: root.uiFont
+            accentColor: root.themeAccent
+            motionDuration: root.motionQuick
+            onClicked: settingsPanel.copyProvisionCommand(provisionRow.label, provisionRow.command)
         }
     }
 
