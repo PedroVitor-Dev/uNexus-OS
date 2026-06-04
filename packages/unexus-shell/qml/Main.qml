@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.15
 
 Window {
@@ -295,6 +296,70 @@ Window {
             userSettings.statsOverlayVisible = systemStats.visible
         }
     }
+
+    function toggleLauncher() {
+        dockActionMenu.hideMenu()
+
+        if (unexusLauncher.visible) {
+            unexusLauncher.hide()
+            return
+        }
+
+        unexusLauncher.show()
+    }
+
+    function toggleSettingsPanel() {
+        dockActionMenu.hideMenu()
+
+        if (unexusSettings.visible) {
+            unexusSettings.hide()
+        } else {
+            if (unexusLauncher.visible)
+                unexusLauncher.hide()
+            unexusSettings.show()
+        }
+    }
+
+    function toggleGameSettingsPanel() {
+        dockActionMenu.hideMenu()
+
+        if (gameSettings.visible) {
+            gameSettings.hide()
+        } else {
+            if (unexusLauncher.visible)
+                unexusLauncher.hide()
+            gameSettings.show()
+        }
+    }
+
+    function toggleStatsOverlay() {
+        systemStats.visible = !systemStats.visible
+    }
+
+    Shortcut {
+        sequences: ["Meta+S", "Meta+Space"]
+        enabled: !loginScreen || !loginScreen.visible
+        onActivated: root.toggleLauncher()
+    }
+
+    Shortcut {
+        sequence: "Meta+I"
+        enabled: !loginScreen || !loginScreen.visible
+        onActivated: root.toggleSettingsPanel()
+    }
+
+    Shortcut {
+        sequence: "Meta+G"
+        enabled: !loginScreen || !loginScreen.visible
+        onActivated: root.toggleGameSettingsPanel()
+    }
+
+    Shortcut {
+        sequence: "Meta+Alt+G"
+        enabled: !loginScreen || !loginScreen.visible
+        onActivated: root.toggleStatsOverlay()
+    }
+
     property var systemDockApps: [
         { icon: "F", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
         { icon: "W", iconNames: ["firefox", "org.mozilla.firefox"], label: "Browser", command: "firefox", args: [], windowClasses: ["firefox", "Firefox", "Navigator.firefox"], processNames: ["firefox"] },
