@@ -272,7 +272,9 @@ Item {
                             motionDuration: root.motionQuick
                             onClicked: {
                                 appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME")
+                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME", root.tr("Open Terminal"), function() {
+                                    appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
+                                })
                             }
                         }
                     }
@@ -577,7 +579,9 @@ Item {
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(installRow.installCommand)
-                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} Flatpak command copied.", installRow.label), "SETUP")
+                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} Flatpak command copied.", installRow.label), "SETUP", root.tr("Open Terminal"), function() {
+                        appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
+                    })
                 }
             }
         }

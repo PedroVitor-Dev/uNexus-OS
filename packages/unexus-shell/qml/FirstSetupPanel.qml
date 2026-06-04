@@ -380,7 +380,9 @@ Item {
                 hoverEnabled: enabled
                 onClicked: {
                     appLauncher.copyToClipboard(setupRow.command)
-                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} command copied.", setupRow.label), "SETUP")
+                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} command copied.", setupRow.label), "SETUP", root.tr("Open Terminal"), function() {
+                        appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
+                    })
                 }
             }
         }
@@ -397,7 +399,9 @@ Item {
         motionDuration: root.motionQuick
         onClicked: {
             appLauncher.copyToClipboard(commandButton.command)
-            notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP")
+            notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP", root.tr("Open Terminal"), function() {
+                appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
+            })
         }
     }
 

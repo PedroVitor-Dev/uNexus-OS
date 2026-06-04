@@ -100,10 +100,16 @@ function launchApp(app) {
 
     if (isGamingApp && gameMode.active) {
         if (!appLauncher.isMangoHudInstalled())
-            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️")
+            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️", root.tr("Open Game Settings"), function() {
+                if (gameSettingsPanel)
+                    gameSettingsPanel.show()
+            })
 
         if (!appLauncher.isGameModeRunInstalled())
-            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️")
+            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️", root.tr("Open Game Settings"), function() {
+                if (gameSettingsPanel)
+                    gameSettingsPanel.show()
+            })
 
         opened = appLauncher.focusOrLaunchGame(
             app.windowClasses || [],
@@ -129,7 +135,10 @@ function launchApp(app) {
     }
 
     if (!opened && notifCenter)
-        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.name), "⚠️")
+        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.name), "⚠️", root.tr("Open Game Settings"), function() {
+            if (gameSettingsPanel)
+                gameSettingsPanel.show()
+        })
 
     launcher.hide()
 }
@@ -402,7 +411,10 @@ function launchApp(app) {
                         onClicked: {
                             appLauncher.copyToClipboard("mangohud gamemoderun %command%")
                             if (notifCenter)
-                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "ðŸŽ®")
+                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "ðŸŽ®", root.tr("Open Game Settings"), function() {
+                                    if (gameSettingsPanel)
+                                        gameSettingsPanel.show()
+                                })
                         }
                     }
 
@@ -434,7 +446,10 @@ function launchApp(app) {
                             onClicked: {
                                 appLauncher.copyToClipboard("mangohud gamemoderun %command%")
                                 if (notifCenter)
-                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮")
+                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮", root.tr("Open Game Settings"), function() {
+                                        if (gameSettingsPanel)
+                                            gameSettingsPanel.show()
+                                    })
                             }
                         }
                     }

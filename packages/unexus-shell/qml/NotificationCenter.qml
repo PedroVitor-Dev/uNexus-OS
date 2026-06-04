@@ -8,11 +8,13 @@ Item {
     property var notifications: []
     property int maxNotifications: 4
 
-    function send(title, message, icon) {
+    function send(title, message, icon, actionLabel, actionCallback) {
         var n = {
             id: Date.now(),
             title: title,
             message: message,
+            actionLabel: actionLabel || "",
+            actionCallback: actionCallback || null,
             icon: icon || "🔔"
         }
         var list = notifications.slice()
@@ -128,11 +130,43 @@ Item {
                         wrapMode: Text.WordWrap
                         opacity: 0.8
                     }
+
+                    Rectangle {
+                        visible: modelData.actionLabel && modelData.actionLabel.length > 0
+                        width: actionText.width + root.spaceLg
+                        height: visible ? 26 : 0
+                        radius: root.radiusSm
+                        color: actionMouse.containsMouse ? root.surfaceHover : root.surfaceRaised
+                        border.color: root.themeAccent
+                        border.width: 1
+
+                        Text {
+                            id: actionText
+                            anchors.centerIn: parent
+                            text: modelData.actionLabel || ""
+                            color: "#b7ddff"
+                            font.pixelSize: root.textTiny
+                            font.family: root.uiFont
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            id: actionMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: {
+                                var callback = modelData.actionCallback
+                                notificationCenter.dismiss(index)
+                                if (callback)
+                                    callback()
+                            }
+                        }
+                    }
                 }
 
                 // Auto dismiss depois de 4s
                 Timer {
-                    interval: 4000
+                    interval: modelData.actionLabel && modelData.actionLabel.length > 0 ? 7000 : 4000
                     running: true
                     onTriggered: notificationCenter.dismiss(index)
                 }

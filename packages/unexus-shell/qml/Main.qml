@@ -124,6 +124,7 @@ Window {
         "Battery": "Bateria",
         "Not available": "Indisponível",
         "Open First Setup": "Abrir configuração inicial",
+        "Open Game Settings": "Abrir configurações de jogos",
         "About": "Sobre",
         "Name": "Nome",
         "Type": "Tipo",
@@ -491,10 +492,14 @@ Window {
 
     if (isGamingApp && gameMode.active) {
         if (!appLauncher.isMangoHudInstalled())
-            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️")
+            notifCenter.send(root.tr("MangoHud not found"), root.tr("Launching without MangoHud overlay."), "⚠️", root.tr("Open Game Settings"), function() {
+                gameSettings.show()
+            })
 
         if (!appLauncher.isGameModeRunInstalled())
-            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️")
+            notifCenter.send(root.tr("GameMode not found"), root.tr("Launching without gamemoderun."), "⚠️", root.tr("Open Game Settings"), function() {
+                gameSettings.show()
+            })
 
         opened = appLauncher.focusOrLaunchGame(
             app.windowClasses || [],
@@ -520,7 +525,9 @@ Window {
     }
 
     if (!opened)
-        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.label), "⚠️")
+        notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", app.label), "⚠️", root.tr("Open First Setup"), function() {
+            firstSetup.show()
+        })
 }
 
     function closeDesktopApp(app) {
@@ -787,9 +794,9 @@ Window {
                         if (gameMode.active) {
                             notifCenter.send(root.tr("Game Mode ON"), root.tr("Performance optimized for gaming."), "🎮")
                             if (!appLauncher.isMangoHudInstalled())
-                                notifCenter.send(root.tr("MangoHud missing"), root.tr("Install on Arch: sudo pacman -S mangohud lib32-mangohud"), "⚠️")
+                                notifCenter.send(root.tr("MangoHud missing"), root.tr("Install on Arch: sudo pacman -S mangohud lib32-mangohud"), "⚠️", root.tr("Open Game Settings"), function() { gameSettings.show() })
                             if (!appLauncher.isGameModeRunInstalled())
-                                notifCenter.send(root.tr("gamemoderun missing"), root.tr("Install on Arch: sudo pacman -S gamemode lib32-gamemode"), "⚠️")
+                                notifCenter.send(root.tr("gamemoderun missing"), root.tr("Install on Arch: sudo pacman -S gamemode lib32-gamemode"), "⚠️", root.tr("Open Game Settings"), function() { gameSettings.show() })
                         } else {
                             notifCenter.send(root.tr("Game Mode OFF"), root.tr("System back to normal."), "💤")
                         }
@@ -1077,7 +1084,9 @@ Window {
 
                     onClicked: {
                         appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                        notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮")
+                        notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮", root.tr("Open Game Settings"), function() {
+                            gameSettings.show()
+                        })
                         dockActionMenu.hideMenu()
                     }
                 }

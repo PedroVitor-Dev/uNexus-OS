@@ -56,7 +56,9 @@ Item {
 
     function copyProvisionCommand(label, command) {
         appLauncher.copyToClipboard(command)
-        notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", label), "SYS")
+        notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", label), "SYS", root.tr("Open Terminal"), function() {
+            appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
+        })
     }
 
     function cycleTheme() {
