@@ -51,16 +51,13 @@ Rectangle {
     height: hovered ? 56 : 48
     radius: root.radiusXl
     color: hovered ? root.surfaceHover : "transparent"
+    scale: hovered ? 1.025 : 1.0
 
     Behavior on width { NumberAnimation { duration: root.motionBase; easing.type: Easing.OutCubic } }
     Behavior on height { NumberAnimation { duration: root.motionBase; easing.type: Easing.OutCubic } }
+    Behavior on scale { NumberAnimation { duration: root.motionQuick; easing.type: Easing.OutCubic } }
 
     transform: Translate { id: dockBounce; y: 0 }
-
-    onActiveChanged: {
-        if (!active)
-            scale = 1.0
-    }
 
     onMinimizedChanged: {
         if (!minimized)
@@ -70,7 +67,6 @@ Rectangle {
     onClosedChanged: {
         if (closed) {
             hovered = false
-            scale = 1.0
             minimizedPill.scale = 1.0
         }
     }
@@ -78,13 +74,6 @@ Rectangle {
     onDockExpandedChanged: {
         if (!dockExpanded)
             hovered = false
-    }
-
-    SequentialAnimation on scale {
-        running: dockButton.active
-        loops: Animation.Infinite
-        NumberAnimation { to: 1.035; duration: 900; easing.type: Easing.InOutSine }
-        NumberAnimation { to: 1.0; duration: 900; easing.type: Easing.InOutSine }
     }
 
     SequentialAnimation {
@@ -151,12 +140,6 @@ Rectangle {
 
         Behavior on width { NumberAnimation { duration: root.motionExpressive; easing.type: Easing.OutCubic } }
         Behavior on opacity { NumberAnimation { duration: root.motionExpressive } }
-        SequentialAnimation on scale {
-            running: dockButton.minimized
-            loops: Animation.Infinite
-            NumberAnimation { to: 0.55; duration: 650; easing.type: Easing.InOutSine }
-            NumberAnimation { to: 1.0; duration: 650; easing.type: Easing.InOutSine }
-        }
     }
 
     Rectangle {

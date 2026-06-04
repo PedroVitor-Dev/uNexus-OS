@@ -31,10 +31,10 @@ Window {
     property int radiusXl: 14
     property int radiusDock: 16
     property int borderHairline: 1
-    property int motionQuick: 120
-    property int motionBase: 160
-    property int motionExpressive: 220
-    property int motionEntrance: 300
+    property int motionQuick: 90
+    property int motionBase: 140
+    property int motionExpressive: 180
+    property int motionEntrance: 240
     property int textMicro: 9
     property int textTiny: 10
     property int textSmall: 12

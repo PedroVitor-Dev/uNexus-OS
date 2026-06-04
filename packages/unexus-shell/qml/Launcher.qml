@@ -242,7 +242,7 @@ function launchApp(app) {
                     color: launcher.activeCategory === modelData ? "#4d9eff" : "#1a2030"
 
                     Behavior on color {
-                        ColorAnimation { duration: 150 }
+                        ColorAnimation { duration: root.motionQuick }
                     }
 
                     Text {
