@@ -64,103 +64,91 @@ Item {
         }
     }
 
-    // Conteúdo central
+    // Login minimalista na parte inferior
     Column {
-        anchors.centerIn: parent
-        spacing: 20
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 86
+        spacing: 18
 
-        // Avatar
-        Rectangle {
-            width: 96
-            height: 96
-            radius: 48
+        // Logo
+        Image {
+            width: 180
+            height: 128
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#1a2030"
-            border.color: root.themeAccent
-            border.width: 2
-
-            Image {
-                anchors.fill: parent
-                anchors.margins: 12
-                source: root.brandLogoSource
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-            }
-        }
-
-        // Nome do usuário
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Pedro"
-            color: "#ffffff"
-            font.pixelSize: 20
-            font.letterSpacing: 2
-            opacity: 0.9
+            source: root.brandLogoSource
+            fillMode: Image.PreserveAspectFit
+            smooth: true
         }
 
         // Campo de senha
-        Rectangle {
+        Item {
             width: 280
-            height: 44
-            radius: 10
+            height: 40
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#1a2030"
-            border.color: passwordInput.activeFocus ? root.themeAccent : "#2a3a55"
-            border.width: 1
 
-            Behavior on border.color {
-                ColorAnimation { duration: 150 }
-            }
-
-        TextInput {
-    id: passwordInput
-    anchors.left: parent.left
-    anchors.right: enterBtn.left
-    anchors.leftMargin: 16
-    anchors.rightMargin: 8
-    anchors.verticalCenter: parent.verticalCenter
-    color: "#ffffff"
-    font.pixelSize: 15
-    echoMode: TextInput.Password
-    passwordCharacter: "●"
-    focus: true
-
-    Keys.onReturnPressed: doLogin()
-    Keys.onEnterPressed: doLogin()
-}
-
-            Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.tr("Password")
-                color: "#ffffff"
-                font.pixelSize: 15
-                opacity: 0.3
-                visible: passwordInput.text.length === 0
-            }
-
-            // Botão entrar
             Rectangle {
-                id: enterBtn
-                width: 36
-                height: 36
-                radius: 8
-                anchors.right: parent.right
-                anchors.rightMargin: 4
-                anchors.verticalCenter: parent.verticalCenter
-                color: enterMouse.containsMouse ? root.themeAccent : "#1e2d45"
+                anchors.left: parent.left
+                anchors.right: enterBtn.left
+                anchors.rightMargin: 12
+                anchors.bottom: parent.bottom
+                height: 1
+                color: passwordInput.activeFocus ? root.themeAccent : "#ffffff"
+                opacity: passwordInput.activeFocus ? 0.75 : 0.24
 
                 Behavior on color {
                     ColorAnimation { duration: 150 }
                 }
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 150 }
+                }
+            }
+
+            TextInput {
+                id: passwordInput
+                anchors.left: parent.left
+                anchors.right: enterBtn.left
+                anchors.rightMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                color: "#ffffff"
+                font.pixelSize: 15
+                echoMode: TextInput.Password
+                passwordCharacter: "\u25cf"
+                focus: true
+
+                Keys.onReturnPressed: doLogin()
+                Keys.onEnterPressed: doLogin()
+            }
+
+            Text {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.tr("Password")
+                color: "#ffffff"
+                font.pixelSize: 15
+                opacity: 0.34
+                visible: passwordInput.text.length === 0
+            }
+
+            // Botão entrar
+            Item {
+                id: enterBtn
+                width: 36
+                height: 40
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
 
                 Text {
                     anchors.centerIn: parent
                     text: "→"
                     color: "#ffffff"
                     font.pixelSize: 18
-                    opacity: 0.9
+                    opacity: enterMouse.containsMouse ? 0.95 : 0.45
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
                 }
 
                 MouseArea {
