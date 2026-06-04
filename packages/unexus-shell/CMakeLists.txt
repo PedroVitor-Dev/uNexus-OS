@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+include(GNUInstallDirs)
+
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 
 qt_add_executable(unexus-shell
@@ -58,4 +60,29 @@ target_link_libraries(unexus-shell PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
+)
+
+install(TARGETS unexus-shell
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus-session"
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/io.github.PedroVitorDev.uNexusShell.desktop"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+)
+
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus.desktop"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/wayland-sessions
+)
+
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/4.png"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
+    RENAME unexus-shell.png
 )

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=uNexus
+Comment=Gaming-first shell session powered by Hyprland
+Exec=unexus-session
+Type=Application
+DesktopNames=uNexus;Hyprland

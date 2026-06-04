@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=uNexus Shell
+Comment=Gaming-first Linux desktop shell
+Exec=unexus-shell
+Icon=unexus-shell
+Terminal=false
+Categories=System;Utility;
+Keywords=uNexus;Shell;Gaming;Wayland;Hyprland;
+StartupNotify=false

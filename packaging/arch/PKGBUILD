@@ -1,0 +1,46 @@
+# Maintainer: Pedro Vitor <pedrovitor.dev>
+
+pkgname=unexus-shell
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Gaming-first Linux desktop shell for Arch, Hyprland and Wayland"
+arch=('x86_64')
+url='https://github.com/PedroVitor-Dev/uNexus-OS'
+license=('GPL-3.0-or-later')
+depends=(
+  'flatpak'
+  'gamemode'
+  'hyprland'
+  'mangohud'
+  'qt6-base'
+  'qt6-declarative'
+  'qt6-wayland'
+)
+makedepends=(
+  'cmake'
+  'git'
+  'ninja'
+)
+optdepends=(
+  'bottles: Bottles launcher integration'
+  'heroic-games-launcher: Heroic launcher integration'
+  'lutris: Lutris launcher integration'
+  'steam: Steam launcher integration'
+)
+source=("${pkgname}::git+${url}.git")
+sha256sums=('SKIP')
+
+build() {
+  cmake \
+    -S "${srcdir}/${pkgname}/packages/unexus-shell" \
+    -B "${srcdir}/build" \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+
+  cmake --build "${srcdir}/build"
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install "${srcdir}/build"
+}
