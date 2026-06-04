@@ -82,6 +82,12 @@ install(PROGRAMS
     RENAME unexus-doctor
 )
 
+install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/unexusctl.sh"
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    RENAME unexusctl
+)
+
 install(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/io.github.PedroVitorDev.uNexusShell.desktop"
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
