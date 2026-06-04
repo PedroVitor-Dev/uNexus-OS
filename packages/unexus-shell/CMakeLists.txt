@@ -72,7 +72,14 @@ install(TARGETS unexus-shell
 
 install(PROGRAMS
     "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus-session"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus-recovery-session"
     DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/unexus-doctor.sh"
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    RENAME unexus-doctor
 )
 
 install(FILES
@@ -82,6 +89,7 @@ install(FILES
 
 install(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus.desktop"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus-recovery.desktop"
     DESTINATION ${CMAKE_INSTALL_DATADIR}/wayland-sessions
 )
 

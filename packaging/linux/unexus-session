@@ -1,19 +1,31 @@
 #!/usr/bin/env sh
 set -eu
 
-if ! command -v Hyprland >/dev/null 2>&1; then
-    echo "uNexus session requires Hyprland in PATH." >&2
-    exit 1
-fi
+log() {
+    printf '[uNexus session] %s\n' "$*"
+}
 
-if ! command -v unexus-shell >/dev/null 2>&1; then
-    echo "uNexus session requires unexus-shell in PATH." >&2
+find_terminal() {
+    for terminal in foot kitty alacritty wezterm konsole gnome-terminal xterm; do
+        if command -v "$terminal" >/dev/null 2>&1; then
+            printf '%s\n' "$terminal"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+if ! command -v Hyprland >/dev/null 2>&1; then
+    log "Hyprland was not found in PATH."
     exit 1
 fi
 
 runtime_root="${XDG_RUNTIME_DIR:-/tmp}/unexus"
 session_config="$runtime_root/hyprland.conf"
+session_log="$runtime_root/session.log"
 user_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf"
+fallback_terminal="$(find_terminal || true)"
 
 mkdir -p "$runtime_root"
 
@@ -23,7 +35,16 @@ mkdir -p "$runtime_root"
     if [ -f "$user_config" ]; then
         printf 'source = %s\n' "$user_config"
     fi
-    echo "exec-once = unexus-shell"
+
+    if command -v unexus-shell >/dev/null 2>&1; then
+        printf 'exec-once = sh -lc %s\n' "'unexus-shell >>\"$session_log\" 2>&1 || ${fallback_terminal:-true}'"
+    elif [ -n "$fallback_terminal" ]; then
+        printf 'exec-once = %s\n' "$fallback_terminal"
+    fi
 } > "$session_config"
+
+if ! command -v unexus-shell >/dev/null 2>&1; then
+    log "unexus-shell was not found. Starting Hyprland with fallback terminal only."
+fi
 
 exec Hyprland -c "$session_config"

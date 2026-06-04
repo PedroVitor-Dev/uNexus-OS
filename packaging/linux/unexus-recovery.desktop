@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=uNexus Recovery
+Comment=Safe uNexus recovery session with Hyprland and terminal only
+Exec=unexus-recovery-session
+Type=Application
+DesktopNames=uNexus;Hyprland
