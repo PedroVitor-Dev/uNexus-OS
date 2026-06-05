@@ -108,10 +108,7 @@ Window {
         "down": "baixo",
         "center": "centro",
         "panel": "painel",
-        "Copy Options": "Copiar Opções",
         "Copy": "Copiar",
-        "Launch options copied": "Opções de inicialização copiadas",
-        "Paste into Steam game launch options.": "Cole nas opções de inicialização do jogo na Steam.",
         "MangoHud not found": "MangoHud não encontrado",
         "Launching without MangoHud overlay.": "Abrindo sem overlay do MangoHud.",
         "GameMode not found": "GameMode não encontrado",
@@ -168,7 +165,6 @@ Window {
         "panel": "painel",
         "installed": "instalado",
         "not installed": "não instalado",
-        "Copy opts": "Copiar opções",
         "uNexus Files subtitle": "Arquivos locais, pastas de jogos e atalhos do sistema",
         "Local files, game folders and quick system places": "Arquivos locais, pastas de jogos e atalhos do sistema",
         "PLACES": "LOCAIS",
@@ -220,7 +216,6 @@ Window {
         "CPU, RAM, GPU and temperature visible": "CPU, RAM, GPU e temperatura visíveis",
         "Overlay hidden": "Overlay oculto",
         "Runtime Tools": "Ferramentas de execução",
-        "Copy Steam launch options": "Copiar opções da Steam",
         "Gaming Launchers": "Launchers de jogos",
         "Copy install": "Copiar instalação",
         "Install command copied": "Comando de instalação copiado",
@@ -252,7 +247,6 @@ Window {
         "Paste": "Colar",
         "Refresh": "Atualizar",
         "Refresh Shell": "Atualizar shell",
-        "Copy Game Options": "Copiar opcoes de jogo",
         "Open Terminal": "Abrir Terminal",
         "Shell refreshed": "Shell atualizado",
         "Desktop state refreshed.": "Estado da area de trabalho atualizado.",
@@ -1382,37 +1376,6 @@ Window {
                     }
                 }
             }
-
-            Rectangle {
-                visible: dockActionMenu.currentApp !== null && dockActionMenu.currentApp.gaming === true
-                width: parent.width
-                height: 34
-                color: copyOptionsMouse.containsMouse ? "#2c2417" : "transparent"
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: root.spaceMd
-                    text: root.tr("Copy Options")
-                    color: "#ffbd7a"
-                    font.pixelSize: root.textSmall
-                    font.family: root.uiFont
-                }
-
-                MouseArea {
-                    id: copyOptionsMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onClicked: {
-                        appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                        notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮", root.tr("Open Game Settings"), function() {
-                            gameSettings.show()
-                        })
-                        dockActionMenu.hideMenu()
-                    }
-                }
-            }
         }
     }
 
@@ -1437,12 +1400,6 @@ Window {
                 notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", "Terminal"), "TERM", root.tr("Open First Setup"), function() {
                     firstSetup.show()
                 })
-        }
-        onCopyGameOptionsRequested: {
-            appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-            notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME", root.tr("Open Game Settings"), function() {
-                gameSettings.show()
-            })
         }
         onRefreshShellRequested: root.refreshDesktopState()
     }

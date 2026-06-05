@@ -188,7 +188,7 @@ function launchApp(app) {
 
     Rectangle {
         id: panel
-        width: Math.min(root.compactLayout ? 560 : 640, parent.width - root.panelMargin * 2)
+        width: Math.min(root.compactLayout ? 420 : 500, parent.width - root.panelMargin * 2)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: Math.min(root.panelTopMargin, Math.max(56, parent.height * 0.12))
@@ -225,7 +225,7 @@ function launchApp(app) {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: root.panelPadding
-            height: 48
+            height: 40
             radius: 10
             color: "#1a2030"
             border.color: "#2a3a55"
@@ -236,18 +236,18 @@ function launchApp(app) {
                 anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
                 text: "🔍"
-                font.pixelSize: 16
+                font.pixelSize: 14
             }
 
             TextInput {
                 id: searchInput
                 anchors.left: parent.left
-                anchors.leftMargin: 44
+                anchors.leftMargin: 40
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
                 color: "#ffffff"
-                font.pixelSize: 16
+                font.pixelSize: 14
                 selectionColor: "#4d9eff"
 
                 onTextChanged: launcher.searchText = text
@@ -259,7 +259,7 @@ function launchApp(app) {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.tr("Search apps...")
                 color: "#ffffff"
-                font.pixelSize: 16
+                font.pixelSize: 14
                 opacity: 0.3
                 visible: searchInput.text.length === 0
             }
@@ -271,7 +271,7 @@ function launchApp(app) {
             anchors.left: parent.left
             anchors.leftMargin: root.panelPadding
             anchors.topMargin: root.spaceSm
-            width: Math.min(360, parent.width - root.panelPadding * 2)
+            width: Math.min(300, parent.width - root.panelPadding * 2)
             values: ["All", "Gaming", "System", "Media"]
             currentValue: launcher.activeCategory
             fontFamily: root.uiFont
@@ -292,7 +292,7 @@ function launchApp(app) {
 
             PanelStateView {
                 width: parent.width - 16
-                height: 132
+                height: 112
                 visible: launcher.loading || launcher.errorMessage.length > 0 ||
                          launcher.unavailableMessage.length > 0 || launcher.filteredApps().length === 0
                 state: launcher.loading ? "loading" : (launcher.errorMessage.length > 0 ? "error" : (launcher.unavailableMessage.length > 0 ? "unavailable" : "empty"))
@@ -318,7 +318,7 @@ function launchApp(app) {
 
                 delegate: Rectangle {
                     width: resultsList.width - 16
-                    height: 48
+                    height: 40
                     radius: 8
                     color: itemMouse.containsMouse ? "#1e2d45" : "transparent"
 
@@ -334,14 +334,14 @@ function launchApp(app) {
 
                         Text {
                             text: modelData.icon
-                            font.pixelSize: 22
+                            font.pixelSize: 18
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
                         Text {
                             text: root.tr(modelData.name)
                             color: "#ffffff"
-                            font.pixelSize: 15
+                            font.pixelSize: 13
                             opacity: 0.9
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -392,65 +392,6 @@ function launchApp(app) {
                             }
                             font.pixelSize: 11
                             opacity: modelData.category !== "Gaming" ? 0.6 : 1.0
-                        }
-                    }
-
-                    ControlButton {
-                        visible: modelData.category === "Gaming" && !modelData.internalAction
-                        z: 2
-                        anchors.right: parent.right
-                        anchors.rightMargin: appStatusChip.width + 28
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 92
-                        height: 22
-                        label: root.tr("Copy opts")
-                        variant: "subtle"
-                        fontFamily: root.uiFont
-                        accentColor: root.themeAccent
-                        motionDuration: root.motionQuick
-                        onClicked: {
-                            appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                            if (notifCenter)
-                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "ðŸŽ®", root.tr("Open Game Settings"), function() {
-                                    if (gameSettingsPanel)
-                                        gameSettingsPanel.show()
-                                })
-                        }
-                    }
-
-                    Rectangle {
-                        visible: false
-                        z: 2
-                        anchors.right: parent.right
-                        anchors.rightMargin: appStatusChip.width + 28
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: copyOptsText.width + 16
-                        height: 22
-                        radius: 6
-                        color: copyOptsMouse.containsMouse ? "#254160" : "#172233"
-                        border.color: "#2d5f8f"
-                        border.width: 1
-
-                        Text {
-                            id: copyOptsText
-                            anchors.centerIn: parent
-                            text: root.tr("Copy opts")
-                            color: "#b7ddff"
-                            font.pixelSize: 11
-                        }
-
-                        MouseArea {
-                            id: copyOptsMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: {
-                                appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                if (notifCenter)
-                                    notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "🎮", root.tr("Open Game Settings"), function() {
-                                        if (gameSettingsPanel)
-                                            gameSettingsPanel.show()
-                                    })
-                            }
                         }
                     }
 

@@ -12,7 +12,6 @@ Item {
     signal openSettingsRequested()
     signal openGameSettingsRequested()
     signal openTerminalRequested()
-    signal copyGameOptionsRequested()
     signal refreshShellRequested()
 
     function show(x, y) {
@@ -99,7 +98,6 @@ Item {
                     { action: "files", label: "Open Files" },
                     { action: "settings", label: "Settings" },
                     { action: "game-settings", label: "Game Settings" },
-                    { action: "copy-game-options", label: "Copy Game Options" },
                     { action: "refresh", label: "Refresh Shell" }
                 ]
 
@@ -154,8 +152,6 @@ Item {
                                 contextMenu.openSettingsRequested()
                             else if (modelData.action === "game-settings")
                                 contextMenu.openGameSettingsRequested()
-                            else if (modelData.action === "copy-game-options")
-                                contextMenu.copyGameOptionsRequested()
                             else if (modelData.action === "refresh")
                                 contextMenu.refreshShellRequested()
 
@@ -233,9 +229,6 @@ Item {
                 ctx.arc(12, 9, 0.8, 0, Math.PI * 2)
                 ctx.arc(13.5, 11.5, 0.8, 0, Math.PI * 2)
                 ctx.stroke()
-            } else if (action === "copy-game-options") {
-                ctx.strokeRect(5, 4, 8, 10)
-                ctx.strokeRect(3, 6, 8, 10)
             } else if (action === "refresh") {
                 ctx.beginPath()
                 ctx.arc(9, 9, 5, 0.4, Math.PI * 1.7)

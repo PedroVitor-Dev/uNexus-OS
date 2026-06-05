@@ -261,22 +261,6 @@ Item {
                             installed: settingsPanel.toolsRefresh ? appLauncher.isGameModeRunInstalled() : appLauncher.isGameModeRunInstalled()
                             running: gameMode.active
                         }
-
-                        ControlButton {
-                            width: parent.width
-                            height: 34
-                            label: root.tr("Copy Steam launch options")
-                            variant: "subtle"
-                            fontFamily: root.uiFont
-                            accentColor: root.themeAccent
-                            motionDuration: root.motionQuick
-                            onClicked: {
-                                appLauncher.copyToClipboard("mangohud gamemoderun %command%")
-                                notifCenter.send(root.tr("Launch options copied"), root.tr("Paste into Steam game launch options."), "GAME", root.tr("Open Terminal"), function() {
-                                    appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
-                                })
-                            }
-                        }
                     }
                 }
 
