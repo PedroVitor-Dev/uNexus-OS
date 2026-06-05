@@ -139,6 +139,20 @@ The shell can be installed as a Wayland session through `scripts/setup.sh`.
 
 ---
 
+## Installer Direction
+
+uNexus targets a graphical, double-click installer experience.
+
+- `uNexus Installer` is planned as a Qt/QML visual installer.
+- Arch packages and `pacman` remain the native backend.
+- Flatpak can power friendly user-app installs.
+- `scripts/setup.sh` remains the development/local repair installer.
+- `archiso` + Calamares is the planned path for a future bootable uNexus OS image.
+
+See [docs/installer-technology.md](docs/installer-technology.md).
+
+---
+
 ## unexus-shell Components
 
 | Component | File(s) | Description |

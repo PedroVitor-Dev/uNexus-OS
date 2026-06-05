@@ -108,6 +108,20 @@ Use `uNexus Recovery` when the normal shell fails and you need terminal access.
 
 ---
 
+## Installer Direction
+
+The selected installer experience is graphical and double-click friendly:
+
+- build a Qt/QML `uNexus Installer` as the user-facing installer;
+- use `packaging/arch/PKGBUILD`, `makepkg` and `pacman` behind the installer;
+- use Flatpak behind the installer for user applications where appropriate;
+- keep `scripts/setup.sh` for development and local repair installs;
+- use `archiso` + Calamares later for the bootable uNexus OS image.
+
+See [installer-technology.md](installer-technology.md) for the decision record.
+
+---
+
 ## Build unexus-shell
 
 ```bash
