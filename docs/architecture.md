@@ -107,6 +107,8 @@ The base visual system starts in `qml/DesignTokens.qml`. `Main.qml` binds those 
 
 `qml/LiquidGlass.qml` is the first material layer for the long-term Liquid Glass direction. It gives docks, menus and notifications a shared translucent/depth treatment today, while leaving a stable QML API for future shader or compositor-backed blur/refraction.
 
+Motion is tokenized as well. Panel entrance/dismissal and dock interaction use QML spring physics for position, scale and size, while opacity stays on short timed fades. This keeps motion fast and tactile instead of decorative.
+
 `Main.qml` exposes a shared `brandLogoSource` property pointing at:
 
 ```qml
@@ -139,6 +141,11 @@ Current responsibilities:
 - copy helper commands to the clipboard;
 - focus existing windows before opening duplicate instances;
 - close windows through Hyprland when available;
+- maximize windows through Hyprland;
+- move windows to the next workspace;
+- minimize windows to a Hyprland special workspace and restore them;
+- expose active workspace data for the shell UI;
+- expose a window preview direction hint for future compositor integration;
 - fall back to `wmctrl`, `pgrep` and `pkill` where useful;
 - launch gaming apps through MangoHud and GameMode when requested.
 
@@ -148,6 +155,9 @@ Hyprland is the primary target:
 hyprctl clients -j
 hyprctl dispatch focuswindow address:<address>
 hyprctl dispatch closewindow address:<address>
+hyprctl dispatch fullscreen 1
+hyprctl dispatch movetoworkspace <workspace>,address:<address>
+hyprctl dispatch movetoworkspacesilent special:minimized,address:<address>
 ```
 
 ---
@@ -327,9 +337,14 @@ Current responsibilities:
 - open files through `QDesktopServices`;
 - create folders;
 - rename files/folders;
+- copy selected paths;
+- cut/move selected paths;
+- paste into the current directory;
+- show richer preview/details metadata;
+- multi-select rows from QML;
 - move files/folders to trash through `gio trash` when available.
 
-uNexus Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property.
+uNexus Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property. The panel now supports common desktop shortcuts such as Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+A, Delete, Return, F2 and Escape.
 
 ---
 
@@ -358,7 +373,7 @@ It shows install status and copies install commands for the user to run.
 | `unexus-launcher` | Implemented in `Launcher.qml` |
 | `unexus-settings` | Implemented as `SettingsPanel.qml` and `GameSettingsPanel.qml` |
 | `unexus-store` | Planned |
-| `unexus-files` | MVP embedded as `FilesPanel.qml` backed by `FileManager` |
+| `unexus-files` | Rich embedded file manager panel backed by `FileManager` |
 | `unexusctl` | Implemented as the current OS control CLI |
 | `unexus-recovery-session` | Implemented as the safe session fallback |
 
@@ -385,6 +400,8 @@ Near-term architecture work:
 - connect Settings provisioning rows to safe backend actions;
 - add systemd user service definitions for session health and startup tasks;
 - move repeated app metadata into a model or config file;
+- evolve Liquid Glass from a QML material into shader/compositor-backed blur and refraction;
+- build a graphical double-click installer while keeping `setup.sh` as the dev/recovery path;
 - start an `archiso` profile;
 - eventually replace ad hoc command wrappers with stronger service APIs.
 

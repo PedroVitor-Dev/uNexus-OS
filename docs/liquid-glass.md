@@ -29,6 +29,8 @@ Applied surfaces:
 - dock action menu;
 - notifications.
 
+Liquid Glass is paired with the spring motion tokens in `DesignTokens.qml`. Glass surfaces should feel light and responsive, with physical panel/dock movement and short opacity fades.
+
 ## Future Compositor Direction
 
 The long-term target is not generic CSS-style glassmorphism. The goal is a compositor-aware material that reacts to the scene under it:
@@ -42,3 +44,4 @@ The long-term target is not generic CSS-style glassmorphism. The goal is a compo
 
 Near-term work should keep using `LiquidGlass` as the visual API. When shader or compositor integration lands, panels should not need to be rewritten.
 
+Current limitation: the QML material does not yet sample the real wallpaper or windows behind it. It approximates depth visually until uNexus has a shader/compositor path for true blur and refraction.

@@ -47,6 +47,11 @@ uNexus currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] OS Provisioning checklist in Settings
 - [x] Project docs updated for the current shell state
 - [x] Official logo assets tracked and used in core shell surfaces
+- [x] Design token system for spacing, borders, shadows, typography, motion and surfaces
+- [x] Liquid Glass QML material applied to docks, menus and notifications
+- [x] Spring physics for panel transitions and dock interactions
+- [x] uNexus Files copy/cut/paste, delete confirmations, multi-select and previews
+- [x] Refined dock window actions, workspace indicators and minimize/restore behavior
 
 ### Known Gaps
 
@@ -54,9 +59,9 @@ uNexus currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] Basic packaged install flow exists through CMake install target and `scripts/setup.sh`
 - [x] Arch `PKGBUILD` exists
 - [ ] No bootable ISO yet
-- [ ] No real installer yet
+- [ ] No graphical double-click installer yet
 - [ ] No dedicated app/library data model yet
-- [ ] No full file manager feature set yet
+- [ ] File manager still needs standalone-window maturity and deeper preview integrations
 - [ ] No complete GPU driver manager yet
 - [ ] No per-game profile system yet
 - [ ] No controller management yet
@@ -88,12 +93,12 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [x] Add uNexus Files MVP with local directory navigation
 - [x] Add PT-BR interface localization selectable from uNexus Settings
 - [x] Add keyboard shortcuts for Launcher, Settings, Game Settings and stats overlay
-- [ ] Add a visible shortcut help panel inside uNexus Settings
-- [ ] Add quick toggles for stats overlay, Game Mode and theme
-- [ ] Add notification actions where useful instead of passive messages only
-- [ ] Improve the desktop context menu with real actions
+- [x] Add a visible shortcut help panel inside uNexus Settings
+- [x] Add quick toggles for stats overlay, Game Mode and theme
+- [x] Add notification actions where useful instead of passive messages only
+- [x] Improve the desktop context menu with real actions
 - [x] Add breadcrumbs and sorting to uNexus Files
-- [ ] Continue uNexus Files with copy/cut/paste, delete confirmations, multi-select and richer previews
+- [x] Continue uNexus Files with copy/cut/paste, delete confirmations, multi-select and richer previews
 
 ### Real OS Foundation
 
@@ -102,9 +107,9 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [x] Create a clean `.desktop` entry for `unexus-shell`
 - [x] Create a dedicated Hyprland session file for uNexus Shell
 - [x] Create a recovery session for safe terminal access
-- [ ] Document exact Hyprland config needed for daily testing
+- [x] Document exact Hyprland config needed for daily testing
 - [x] Add a simple health check command for missing dependencies
-- [ ] Keep all runtime assumptions documented in `docs/building.md`
+- [x] Keep all runtime assumptions documented in `docs/building.md`
 
 ### Exit Criteria
 
@@ -225,22 +230,22 @@ Goal: make the shell behave less like an overlay and more like an operating-syst
 
 - [x] Dock action menu exists
 - [x] Active app indicator exists
-- [ ] Add refined window action menus: Open, Focus, Close, Maximize, Move
-- [ ] Add a window preview direction for future compositor integration
-- [ ] Add workspace indicators with clear visual hierarchy
-- [ ] Add tasteful minimize/restore behavior that fits Hyprland
-- [ ] Add polished multi-monitor layout rules
+- [x] Add refined window action menus: Open, Focus, Close, Maximize, Move
+- [x] Add a window preview direction for future compositor integration
+- [x] Add workspace indicators with clear visual hierarchy
+- [x] Add tasteful minimize/restore behavior that fits Hyprland
+- [x] Add polished multi-monitor layout rules
 
 ### Features
 
 - [x] Focus existing windows with `hyprctl`
 - [x] Close windows with `hyprctl`
 - [x] Fallback process tracking exists
-- [ ] Add maximize/restore support through Hyprland
-- [ ] Add move-to-workspace support
-- [ ] Add special workspace support for "minimized" windows
-- [ ] Add workspace switcher UI
-- [ ] Add monitor detection
+- [x] Add maximize/restore support through Hyprland
+- [x] Add move-to-workspace support
+- [x] Add special workspace support for "minimized" windows
+- [x] Add workspace indicators UI
+- [x] Add basic monitor-aware dock layout rules
 - [ ] Add app pin/unpin behavior in docks
 - [ ] Add recently opened apps
 

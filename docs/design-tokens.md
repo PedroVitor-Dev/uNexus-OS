@@ -10,6 +10,8 @@ packages/unexus-shell/qml/DesignTokens.qml
 
 `Main.qml` exposes compatibility aliases such as `root.spaceMd`, `root.radiusLg`, `root.motionBase`, `root.surfaceRaised` and `root.textPrimary`. Existing panels should continue using those root aliases so the whole shell can be tuned from one place.
 
+The token system is now the default visual contract for Launcher, Settings, Game Settings, First Setup, Files, docks, menus and notifications.
+
 ## Token Groups
 
 | Group | Purpose |
@@ -47,3 +49,7 @@ Use them for transitions that should feel physical:
 - minimized/running indicators.
 
 Avoid springing opacity. A spring on alpha usually reads as flicker instead of weight.
+
+## Relationship To Liquid Glass
+
+Liquid Glass uses the same accent, radius, border, surface and shadow language exposed by the token layer. That keeps glass surfaces from becoming a separate visual style: they are the elevated material form of the same uNexus system.
