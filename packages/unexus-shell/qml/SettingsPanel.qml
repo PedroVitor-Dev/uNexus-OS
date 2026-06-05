@@ -311,6 +311,31 @@ Item {
                             ThemeButton { label: "Solar"; swatch: "#f4ff52"; active: root.themeIndex === 5; onClicked: root.applyTheme(5, true) }
                         }
 
+                        SettingsSubheader { width: parent.width; label: root.tr("Wallpaper") }
+                        SettingsOptionRow { width: parent.width; label: root.tr("Desktop wallpaper"); value: root.wallpaperLabelForId(root.desktopWallpaperId) }
+
+                        Grid {
+                            id: wallpaperGrid
+                            width: parent.width
+                            columns: root.compactLayout ? 1 : 2
+                            rowSpacing: 8
+                            columnSpacing: 8
+
+                            Repeater {
+                                model: root.wallpaperOptions
+                                WallpaperButton {
+                                    width: root.compactLayout ? wallpaperGrid.width : Math.floor((wallpaperGrid.width - 8) / 2)
+                                    label: modelData.label
+                                    source: modelData.source
+                                    active: root.desktopWallpaperId === modelData.id
+                                    onClicked: {
+                                        root.setWallpaper(modelData.id, true)
+                                        notifCenter.send(root.tr("Wallpaper applied"), root.trLabelMessage("{label} is now active.", modelData.label), "SYS")
+                                    }
+                                }
+                            }
+                        }
+
                         SettingsOptionRow { width: parent.width; label: root.tr("Font"); value: root.uiFont }
                     }
 
@@ -705,6 +730,83 @@ Item {
         }
     }
 
+    component WallpaperButton: Rectangle {
+        id: wallpaperButton
+        property string label: ""
+        property string source: ""
+        property bool active: false
+        signal clicked()
+
+        height: 86
+        radius: 8
+        clip: true
+        color: wallpaperMouse.containsMouse ? "#1b2a40" : "#172233"
+        border.color: active ? root.themeAccent : "#223247"
+        border.width: active ? 2 : 1
+
+        Image {
+            anchors.fill: parent
+            anchors.margins: 4
+            source: wallpaperButton.source
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            asynchronous: true
+            opacity: 0.82
+        }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 30
+            color: "#101927"
+            opacity: 0.86
+        }
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: activeBadge.left
+            anchors.rightMargin: 8
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            text: wallpaperButton.label
+            color: root.textPrimary
+            font.pixelSize: 11
+            font.family: root.uiFont
+            font.bold: wallpaperButton.active
+            elide: Text.ElideRight
+        }
+
+        Rectangle {
+            id: activeBadge
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 7
+            width: 18
+            height: 18
+            radius: 9
+            visible: wallpaperButton.active
+            color: root.themeAccent
+
+            Text {
+                anchors.centerIn: parent
+                text: "OK"
+                color: "#071018"
+                font.pixelSize: 7
+                font.family: root.uiFont
+                font.bold: true
+            }
+        }
+
+        MouseArea {
+            id: wallpaperMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: wallpaperButton.clicked()
+        }
+    }
     component ThemeButton: Rectangle {
         id: themeButton
         property string label: ""

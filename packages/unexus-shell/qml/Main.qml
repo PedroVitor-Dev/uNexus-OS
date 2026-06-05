@@ -17,8 +17,14 @@ Window {
 
     property string uiFont: tokens.fontFamily
     property string brandLogoSource: "qrc:/UNexusShell/assets/logo/SF%20White.png"
+    property string desktopWallpaperId: "unexus-core"
     property string desktopWallpaperSource: "qrc:/UNexusShell/assets/wallpapers/unexus-core.png"
-
+    property var wallpaperOptions: [
+        { id: "unexus-core", label: "uNexus Core", source: "qrc:/UNexusShell/assets/wallpapers/unexus-core.png" },
+        { id: "particle-drift", label: "Particle Drift", source: "qrc:/UNexusShell/assets/wallpapers/particle-drift.png" },
+        { id: "aurora-ice", label: "Aurora Ice", source: "qrc:/UNexusShell/assets/wallpapers/aurora-ice.png" },
+        { id: "ember-circuit", label: "Ember Circuit", source: "qrc:/UNexusShell/assets/wallpapers/ember-circuit.png" }
+    ]
     // Core visual language
     property int spaceXs: tokens.space.xs
     property int spaceSm: tokens.space.sm
@@ -158,6 +164,10 @@ Window {
         "Appearance": "Aparência",
         "Theme": "Tema",
         "Font": "Fonte",
+        "Wallpaper": "Papel de parede",
+        "Desktop wallpaper": "Papel de parede da area de trabalho",
+        "Wallpaper applied": "Papel de parede aplicado",
+        "{label} is now active.": "{label} esta ativo.",
         "uNexus Stats Overlay": "Overlay de estatísticas uNexus",
         "Shortcuts": "Atalhos",
         "Keyboard Shortcuts": "Atalhos do Teclado",
@@ -388,6 +398,43 @@ Window {
         localeVersion++
     }
 
+    function wallpaperSourceForId(id) {
+        for (var i = 0; i < wallpaperOptions.length; i++) {
+            if (wallpaperOptions[i].id === id)
+                return wallpaperOptions[i].source
+        }
+
+        return wallpaperOptions[0].source
+    }
+
+    function wallpaperLabelForId(id) {
+        for (var i = 0; i < wallpaperOptions.length; i++) {
+            if (wallpaperOptions[i].id === id)
+                return wallpaperOptions[i].label
+        }
+
+        return wallpaperOptions[0].label
+    }
+
+    function setWallpaper(id, persist) {
+        var normalizedId = id || "unexus-core"
+        var matched = false
+        for (var i = 0; i < wallpaperOptions.length; i++) {
+            if (wallpaperOptions[i].id === normalizedId) {
+                matched = true
+                break
+            }
+        }
+
+        if (!matched)
+            normalizedId = "unexus-core"
+
+        desktopWallpaperId = normalizedId
+        desktopWallpaperSource = wallpaperSourceForId(normalizedId)
+
+        if (persist !== false)
+            userSettings.wallpaperId = desktopWallpaperId
+    }
     function applyTheme(index, persist) {
         themeIndex = index
 
@@ -451,6 +498,7 @@ Window {
         languageCode = userSettings.languageCode
         localeVersion++
         applyTheme(userSettings.themeIndex, false)
+        setWallpaper(userSettings.wallpaperId, false)
         systemStats.visible = userSettings.statsOverlayVisible
     }
 

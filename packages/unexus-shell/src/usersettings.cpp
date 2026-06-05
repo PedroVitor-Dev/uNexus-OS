@@ -13,6 +13,10 @@ UserSettings::UserSettings(QObject *parent)
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
     m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
     m_notificationsEnabled = m_settings.value("notifications/enabled", true).toBool();
+    m_wallpaperId = m_settings.value("appearance/wallpaperId", "unexus-core").toString();
+    if (m_wallpaperId != "unexus-core" && m_wallpaperId != "particle-drift" &&
+        m_wallpaperId != "aurora-ice" && m_wallpaperId != "ember-circuit")
+        m_wallpaperId = "unexus-core";
     m_launcherShortcut = m_settings.value("shortcuts/launcher", "Meta+S").toString();
     m_settingsShortcut = m_settings.value("shortcuts/settings", "Meta+I").toString();
     m_gameSettingsShortcut = m_settings.value("shortcuts/gameSettings", "Meta+Alt+G").toString();
@@ -34,7 +38,7 @@ UserSettings::UserSettings(QObject *parent)
     m_settings.setValue("shortcuts/gameSettings", m_gameSettingsShortcut);
     m_settings.setValue("shortcuts/stats", m_statsShortcut);
     m_controlCenterSection = m_settings.value("controlCenter/section", "system").toString();
-    if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" &&
+    if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" && m_controlCenterSection != "help" &&
         m_controlCenterSection != "appearance" &&
         m_controlCenterSection != "language" && m_controlCenterSection != "about")
         m_controlCenterSection = "system";
@@ -98,6 +102,20 @@ void UserSettings::setNotificationsEnabled(bool enabled)
     emit notificationsEnabledChanged();
 }
 
+void UserSettings::setWallpaperId(const QString &wallpaperId)
+{
+    QString normalizedWallpaper = wallpaperId.trimmed();
+    if (normalizedWallpaper != "unexus-core" && normalizedWallpaper != "particle-drift" &&
+        normalizedWallpaper != "aurora-ice" && normalizedWallpaper != "ember-circuit")
+        normalizedWallpaper = "unexus-core";
+
+    if (m_wallpaperId == normalizedWallpaper)
+        return;
+
+    m_wallpaperId = normalizedWallpaper;
+    m_settings.setValue("appearance/wallpaperId", m_wallpaperId);
+    emit wallpaperIdChanged();
+}
 void UserSettings::setLauncherShortcut(const QString &shortcut)
 {
     const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+S") : shortcut.trimmed();
@@ -141,10 +159,11 @@ void UserSettings::setStatsShortcut(const QString &shortcut)
     m_settings.setValue("shortcuts/stats", m_statsShortcut);
     emit statsShortcutChanged();
 }
+
 void UserSettings::setControlCenterSection(const QString &section)
 {
     QString normalizedSection = section;
-    if (normalizedSection != "system" && normalizedSection != "shortcuts" &&
+    if (normalizedSection != "system" && normalizedSection != "shortcuts" && normalizedSection != "help" &&
         normalizedSection != "appearance" &&
         normalizedSection != "language" && normalizedSection != "about")
         normalizedSection = "system";

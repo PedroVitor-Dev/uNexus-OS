@@ -12,6 +12,7 @@ class UserSettings : public QObject
     Q_PROPERTY(bool statsOverlayVisible READ statsOverlayVisible WRITE setStatsOverlayVisible NOTIFY statsOverlayVisibleChanged)
     Q_PROPERTY(bool firstSetupCompleted READ firstSetupCompleted WRITE setFirstSetupCompleted NOTIFY firstSetupCompletedChanged)
     Q_PROPERTY(bool notificationsEnabled READ notificationsEnabled WRITE setNotificationsEnabled NOTIFY notificationsEnabledChanged)
+    Q_PROPERTY(QString wallpaperId READ wallpaperId WRITE setWallpaperId NOTIFY wallpaperIdChanged)
     Q_PROPERTY(QString launcherShortcut READ launcherShortcut WRITE setLauncherShortcut NOTIFY launcherShortcutChanged)
     Q_PROPERTY(QString settingsShortcut READ settingsShortcut WRITE setSettingsShortcut NOTIFY settingsShortcutChanged)
     Q_PROPERTY(QString gameSettingsShortcut READ gameSettingsShortcut WRITE setGameSettingsShortcut NOTIFY gameSettingsShortcutChanged)
@@ -26,6 +27,7 @@ public:
     bool statsOverlayVisible() const { return m_statsOverlayVisible; }
     bool firstSetupCompleted() const { return m_firstSetupCompleted; }
     bool notificationsEnabled() const { return m_notificationsEnabled; }
+    QString wallpaperId() const { return m_wallpaperId; }
     QString launcherShortcut() const { return m_launcherShortcut; }
     QString settingsShortcut() const { return m_settingsShortcut; }
     QString gameSettingsShortcut() const { return m_gameSettingsShortcut; }
@@ -38,6 +40,7 @@ public slots:
     void setStatsOverlayVisible(bool visible);
     void setFirstSetupCompleted(bool completed);
     void setNotificationsEnabled(bool enabled);
+    void setWallpaperId(const QString &wallpaperId);
     void setLauncherShortcut(const QString &shortcut);
     void setSettingsShortcut(const QString &shortcut);
     void setGameSettingsShortcut(const QString &shortcut);
@@ -50,6 +53,7 @@ signals:
     void statsOverlayVisibleChanged();
     void firstSetupCompletedChanged();
     void notificationsEnabledChanged();
+    void wallpaperIdChanged();
     void launcherShortcutChanged();
     void settingsShortcutChanged();
     void gameSettingsShortcutChanged();
@@ -63,6 +67,7 @@ private:
     bool m_statsOverlayVisible = false;
     bool m_firstSetupCompleted = false;
     bool m_notificationsEnabled = true;
+    QString m_wallpaperId = "unexus-core";
     QString m_launcherShortcut = "Meta+S";
     QString m_settingsShortcut = "Meta+I";
     QString m_gameSettingsShortcut = "Meta+Alt+G";
