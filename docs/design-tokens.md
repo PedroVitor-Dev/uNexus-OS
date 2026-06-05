@@ -31,6 +31,19 @@ packages/unexus-shell/qml/DesignTokens.qml
 - Prefer `root` token aliases in QML panels.
 - Add a new token only when at least two surfaces or components need it.
 - Keep motion fast and functional; avoid decorative delays.
+- Use spring motion for position, scale and size changes. Keep opacity on short timed fades.
 - Use semantic colors for state and status instead of hardcoded one-off colors.
 - Theme-specific accent colors still live in `Main.qml` because they are selected at runtime.
 
+## Spring Motion
+
+The shell exposes spring values from `DesignTokens.qml` through `root.motionPanelSpring`, `root.motionPanelDamping`, `root.motionDockSpring`, `root.motionDockDamping` and related aliases.
+
+Use them for transitions that should feel physical:
+
+- panel entrance and dismissal;
+- dock hover size changes;
+- dock click bounce;
+- minimized/running indicators.
+
+Avoid springing opacity. A spring on alpha usually reads as flicker instead of weight.

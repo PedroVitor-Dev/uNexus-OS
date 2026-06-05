@@ -52,6 +52,14 @@ QtObject {
         readonly property int base: 140
         readonly property int expressive: 180
         readonly property int entrance: 240
+        readonly property real panelSpring: 3.2
+        readonly property real panelDamping: 0.34
+        readonly property real panelEpsilon: 0.002
+        readonly property real dockSpring: 4.8
+        readonly property real dockDamping: 0.28
+        readonly property real dockEpsilon: 0.002
+        readonly property real controlSpring: 3.8
+        readonly property real controlDamping: 0.32
     }
 
     property QtObject type: QtObject {

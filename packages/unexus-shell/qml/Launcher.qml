@@ -166,16 +166,16 @@ function launchApp(app) {
     ParallelAnimation {
         id: showAnim
         NumberAnimation { target: launcher; property: "opacity"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
-        NumberAnimation { target: panel; property: "scale"; to: 1.0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
-        NumberAnimation { target: panelSlide; property: "y"; to: 0; duration: root.motionExpressive; easing.type: Easing.OutCubic }
+        SpringAnimation { target: panel; property: "scale"; to: 1.0; spring: root.motionPanelSpring; damping: root.motionPanelDamping; epsilon: root.motionPanelEpsilon }
+        SpringAnimation { target: panelSlide; property: "y"; to: 0; spring: root.motionPanelSpring; damping: root.motionPanelDamping; epsilon: root.motionPanelEpsilon }
     }
 
     SequentialAnimation {
         id: hideAnim
         ParallelAnimation {
             NumberAnimation { target: launcher; property: "opacity"; to: 0.0; duration: root.motionBase; easing.type: Easing.InCubic }
-            NumberAnimation { target: panel; property: "scale"; to: 0.98; duration: root.motionBase; easing.type: Easing.InCubic }
-            NumberAnimation { target: panelSlide; property: "y"; to: -8; duration: root.motionBase; easing.type: Easing.InCubic }
+            SpringAnimation { target: panel; property: "scale"; to: 0.98; spring: root.motionPanelSpring; damping: 0.42; epsilon: root.motionPanelEpsilon }
+            SpringAnimation { target: panelSlide; property: "y"; to: -8; spring: root.motionPanelSpring; damping: 0.42; epsilon: root.motionPanelEpsilon }
         }
         ScriptAction { script: launcher.visible = false }
     }

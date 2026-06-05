@@ -54,9 +54,9 @@ Rectangle {
     color: hovered ? root.surfaceHover : "transparent"
     scale: hovered ? 1.025 : 1.0
 
-    Behavior on width { NumberAnimation { duration: root.motionBase; easing.type: Easing.OutCubic } }
-    Behavior on height { NumberAnimation { duration: root.motionBase; easing.type: Easing.OutCubic } }
-    Behavior on scale { NumberAnimation { duration: root.motionQuick; easing.type: Easing.OutCubic } }
+    Behavior on width { SpringAnimation { spring: root.motionDockSpring; damping: root.motionDockDamping; epsilon: root.motionDockEpsilon } }
+    Behavior on height { SpringAnimation { spring: root.motionDockSpring; damping: root.motionDockDamping; epsilon: root.motionDockEpsilon } }
+    Behavior on scale { SpringAnimation { spring: root.motionControlSpring; damping: root.motionControlDamping; epsilon: root.motionDockEpsilon } }
 
     transform: Translate { id: dockBounce; y: 0 }
 
@@ -79,8 +79,8 @@ Rectangle {
 
     SequentialAnimation {
         id: dockBounceAnim
-        NumberAnimation { target: dockBounce; property: "y"; to: -10; duration: root.motionQuick; easing.type: Easing.OutCubic }
-        NumberAnimation { target: dockBounce; property: "y"; to: 0; duration: root.motionQuick; easing.type: Easing.InBounce }
+        SpringAnimation { target: dockBounce; property: "y"; to: -11; spring: root.motionDockSpring; damping: 0.22; epsilon: root.motionDockEpsilon }
+        SpringAnimation { target: dockBounce; property: "y"; to: 0; spring: root.motionDockSpring; damping: root.motionDockDamping; epsilon: root.motionDockEpsilon }
     }
 
     Rectangle {
@@ -292,7 +292,7 @@ Rectangle {
         anchors.leftMargin: 2
         anchors.rightMargin: 2
 
-        Behavior on height { NumberAnimation { duration: root.motionExpressive; easing.type: Easing.OutCubic } }
+        Behavior on height { SpringAnimation { spring: root.motionDockSpring; damping: root.motionDockDamping; epsilon: root.motionDockEpsilon } }
     }
 
     Rectangle {
@@ -306,7 +306,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 4
 
-        Behavior on width { NumberAnimation { duration: root.motionExpressive; easing.type: Easing.OutCubic } }
+        Behavior on width { SpringAnimation { spring: root.motionDockSpring; damping: root.motionDockDamping; epsilon: root.motionDockEpsilon } }
         Behavior on opacity { NumberAnimation { duration: root.motionExpressive } }
     }
 

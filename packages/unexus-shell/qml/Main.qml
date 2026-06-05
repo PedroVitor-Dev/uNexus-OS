@@ -41,6 +41,14 @@ Window {
     property int motionBase: tokens.motion.base
     property int motionExpressive: tokens.motion.expressive
     property int motionEntrance: tokens.motion.entrance
+    property real motionPanelSpring: tokens.motion.panelSpring
+    property real motionPanelDamping: tokens.motion.panelDamping
+    property real motionPanelEpsilon: tokens.motion.panelEpsilon
+    property real motionDockSpring: tokens.motion.dockSpring
+    property real motionDockDamping: tokens.motion.dockDamping
+    property real motionDockEpsilon: tokens.motion.dockEpsilon
+    property real motionControlSpring: tokens.motion.controlSpring
+    property real motionControlDamping: tokens.motion.controlDamping
     property int textMicro: tokens.type.micro
     property int textTiny: tokens.type.tiny
     property int textSmall: tokens.type.small
