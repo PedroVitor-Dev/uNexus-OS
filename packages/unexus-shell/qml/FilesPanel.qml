@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 Item {
     id: filesPanel
@@ -99,6 +100,26 @@ Item {
         }
     }
 
+    function selectAllEntries() {
+        var paths = []
+        var selected = []
+
+        for (var i = 0; i < entries.length; i++) {
+            paths.push(entries[i].path)
+            selected.push(entries[i])
+        }
+
+        selectedPaths = paths
+        selectedEntries = selected
+
+        if (selected.length > 0) {
+            var last = selected[selected.length - 1]
+            selectedPath = last.path
+            selectedName = last.name
+            selectedIsDir = last.isDir
+        }
+    }
+
     function handleEntryClick(entry, modifiers) {
         if (modifiers & Qt.ControlModifier || modifiers & Qt.ShiftModifier)
             toggleSelection(entry)
@@ -157,6 +178,65 @@ Item {
         onTriggered: {
             filesPanel.trashConfirmPath = ""
             filesPanel.deleteConfirmToken = ""
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+C"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.copySelected()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+X"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.cutSelected()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+V"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.pasteClipboard()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+A"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.selectAllEntries()
+    }
+
+    Shortcut {
+        sequence: "Delete"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.requestTrashSelected()
+    }
+
+    Shortcut {
+        sequence: "Return"
+        enabled: filesPanel.visible && filesPanel.mode === "browse"
+        onActivated: filesPanel.openSelected()
+    }
+
+    Shortcut {
+        sequence: "F2"
+        enabled: filesPanel.visible && filesPanel.mode === "browse" && filesPanel.selectionCount() === 1
+        onActivated: {
+            filesPanel.mode = "rename"
+            actionInput.text = filesPanel.selectedName
+            actionInput.forceActiveFocus()
+            actionInput.selectAll()
+        }
+    }
+
+    Shortcut {
+        sequence: "Escape"
+        enabled: filesPanel.visible
+        onActivated: {
+            if (filesPanel.mode !== "browse") {
+                filesPanel.mode = "browse"
+            } else {
+                filesPanel.clearSelection()
+            }
         }
     }
 
