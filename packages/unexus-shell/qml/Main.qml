@@ -17,6 +17,7 @@ Window {
 
     property string uiFont: tokens.fontFamily
     property string brandLogoSource: "qrc:/UNexusShell/assets/logo/SF%20White.png"
+    property string desktopWallpaperSource: "qrc:/UNexusShell/assets/wallpapers/unexus-core.png"
 
     // Core visual language
     property int spaceXs: tokens.space.xs
@@ -772,8 +773,18 @@ Window {
         anchors.fill: parent
         color: root.themeBgTop
 
+        Image {
+            anchors.fill: parent
+            source: root.desktopWallpaperSource
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            asynchronous: true
+            opacity: 0.78
+        }
+
         Rectangle {
             anchors.fill: parent
+            opacity: 0.46
             gradient: Gradient {
                 orientation: Gradient.Vertical
                 GradientStop { position: 0.0; color: root.themeBgTop }

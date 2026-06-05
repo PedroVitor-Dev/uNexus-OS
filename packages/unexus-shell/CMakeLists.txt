@@ -59,6 +59,10 @@ qt_add_resources(unexus-shell "unexus_brand_assets"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/4.png"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/SF Black.png"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/SF White.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/unexus-core.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/particle-drift.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/aurora-ice.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/ember-circuit.png"
 )
 
 target_include_directories(unexus-shell PRIVATE include)
@@ -107,4 +111,12 @@ install(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/logo/4.png"
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
     RENAME unexus-shell.png
+)
+
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/unexus-core.png"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/particle-drift.png"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/aurora-ice.png"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/wallpapers/ember-circuit.png"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/unexus/wallpapers
 )
