@@ -744,7 +744,7 @@ Item {
 
                         Column {
                             width: parent.width
-                            height: 52
+                            height: 24
                             spacing: 4
 
                             Row {
@@ -787,67 +787,13 @@ Item {
                                 }
                             }
 
-                            Row {
-                                id: selectedActions
-                                width: parent.width
-                                height: 24
-                                spacing: 6
-
-                                MiniAction {
-                                    label: root.tr("Open")
-                                    enabled: filesPanel.selectionCount() === 1
-                                    opacity: enabled ? 1.0 : 0.45
-                                    onClicked: filesPanel.openSelected()
-                                }
-
-                                MiniAction {
-                                    label: root.tr("Rename")
-                                    enabled: filesPanel.selectionCount() === 1
-                                    opacity: enabled ? 1.0 : 0.45
-                                    onClicked: {
-                                        filesPanel.mode = "rename"
-                                        actionInput.text = filesPanel.selectedName
-                                        actionInput.forceActiveFocus()
-                                        actionInput.selectAll()
-                                    }
-                                }
-
-                                MiniAction {
-                                    label: root.tr("Copy")
-                                    enabled: filesPanel.selectionCount() > 0
-                                    opacity: enabled ? 1.0 : 0.45
-                                    onClicked: filesPanel.copySelected()
-                                }
-
-                                MiniAction {
-                                    label: root.tr("Cut")
-                                    enabled: filesPanel.selectionCount() > 0
-                                    opacity: enabled ? 1.0 : 0.45
-                                    onClicked: filesPanel.cutSelected()
-                                }
-
-                                MiniAction {
-                                    label: root.tr("Paste")
-                                    enabled: filesPanel.clipboardPaths.length > 0
-                                    opacity: enabled ? 1.0 : 0.45
-                                    onClicked: filesPanel.pasteClipboard()
-                                }
-
-                                MiniAction {
-                                    label: filesPanel.deleteConfirmToken === filesPanel.selectedPaths.join("|") && filesPanel.selectionCount() > 0 ? root.tr("Confirm trash") : root.tr("Trash")
-                                    enabled: filesPanel.selectionCount() > 0
-                                    opacity: enabled ? 1.0 : 0.45
-                                    danger: true
-                                    onClicked: filesPanel.requestTrashSelected()
-                                }
-                            }
                         }
 
                         Rectangle { width: parent.width; height: 1; color: "#223247" }
 
                         PanelStateView {
                             width: parent.width
-                            height: parent.height - 62
+                            height: parent.height - 42
                             visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
                                      filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
                             state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
@@ -880,7 +826,7 @@ Item {
                         ListView {
                             id: filesList
                             width: parent.width
-                            height: parent.height - 62
+                            height: parent.height - 42
                             visible: !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
                                      filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
                             clip: true
