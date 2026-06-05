@@ -83,6 +83,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 - [x] Add empty, loading, error and unavailable states to every panel
 - [x] Make the shell look good at common laptop and desktop resolutions
 - [x] Add subtle motion rules so animations feel fast, not decorative
+- [x] Document visual-language rules for spacing, typography, surfaces and motion
 
 ### Features
 

@@ -24,6 +24,8 @@ Window {
     property int spaceMd: tokens.space.md
     property int spaceLg: tokens.space.lg
     property int spaceXl: tokens.space.xl
+    property int spaceXxl: tokens.space.xxl
+    property int spaceSection: tokens.space.section
     property bool compactLayout: width < tokens.layout.compactBreakpointWidth || height < tokens.layout.compactBreakpointHeight
     property int panelMargin: compactLayout ? tokens.layout.panelMarginCompact : tokens.layout.panelMargin
     property int panelPadding: compactLayout ? tokens.layout.panelPaddingCompact : tokens.layout.panelPadding
@@ -31,16 +33,25 @@ Window {
     property int panelTopMargin: compactLayout ? tokens.layout.panelTopMarginCompact : tokens.layout.panelTopMargin
     property int multiMonitorEdgeMargin: width >= 1800 ? tokens.layout.multiMonitorEdgeMargin : spaceMd
     property int multiMonitorTopMargin: compactLayout ? tokens.layout.multiMonitorTopMarginCompact : tokens.layout.multiMonitorTopMargin
+    property int controlHeight: compactLayout ? tokens.layout.compactControlHeight : tokens.layout.controlHeight
+    property int rowHeight: tokens.layout.rowHeight
+    property int denseRowHeight: tokens.layout.denseRowHeight
+    property int toolbarHeight: tokens.layout.toolbarHeight
     property int radiusSm: tokens.radius.sm
     property int radiusMd: tokens.radius.md
     property int radiusLg: tokens.radius.lg
     property int radiusXl: tokens.radius.xl
     property int radiusDock: tokens.radius.dock
     property int borderHairline: tokens.border.hairline
+    property int motionInstant: tokens.motion.instant
     property int motionQuick: tokens.motion.quick
     property int motionBase: tokens.motion.base
     property int motionExpressive: tokens.motion.expressive
     property int motionEntrance: tokens.motion.entrance
+    property int motionHover: tokens.motion.hover
+    property int motionPress: tokens.motion.press
+    property int motionFadeIn: tokens.motion.fadeIn
+    property int motionFadeOut: tokens.motion.fadeOut
     property real motionPanelSpring: tokens.motion.panelSpring
     property real motionPanelDamping: tokens.motion.panelDamping
     property real motionPanelEpsilon: tokens.motion.panelEpsilon
@@ -56,6 +67,18 @@ Window {
     property int textUi: tokens.type.ui
     property int textLg: tokens.type.lg
     property int textTitle: tokens.type.title
+    property int textDisplay: tokens.type.display
+    property int textHero: tokens.type.hero
+    property real lineTight: tokens.type.lineTight
+    property real lineNormal: tokens.type.lineNormal
+    property real lineRelaxed: tokens.type.lineRelaxed
+    property int weightRegular: tokens.type.weightRegular
+    property int weightMedium: tokens.type.weightMedium
+    property int weightSemibold: tokens.type.weightSemibold
+    property int weightBold: tokens.type.weightBold
+    property int trackingNone: tokens.type.trackingNone
+    property int trackingSection: tokens.type.trackingSection
+    property int trackingBrand: tokens.type.trackingBrand
     property color surfaceBase: tokens.surface.base
     property color surfacePanel: tokens.surface.panel
     property color surfaceRaised: tokens.surface.raised

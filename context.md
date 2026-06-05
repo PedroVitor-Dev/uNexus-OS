@@ -227,9 +227,9 @@ The most recent work focused on visual-system maturity, real file-manager behavi
 - Main shell starts fullscreen for Hyprland testing.
 - The dock hover residue was reduced; active state bugs were previously tracked in `docs/issue-dock-active-hover-state.md`.
 - Brand slogan was changed everywhere visible to `Open Source. Linux Powered. Gamer Focused.`
-- The first DesignTokens system now centralizes spacing, radius, borders, surfaces, status colors, typography and motion.
+- The DesignTokens system now formalizes spacing, layout dimensions, radius, borders, surfaces, status colors, typography hierarchy, weights, line-height and semantic motion timings.
 - LiquidGlass now gives docks, menus and notifications a shared translucent depth material.
-- Panel and dock transitions use spring physics for tactile motion.
+- Panel and dock transitions use spring physics for tactile motion; opacity/color stay on timed animations.
 - Dock action menus now include Open, Focus, Close, Maximize, Move and Minimize/Restore.
 - The shell exposes workspace indicators and a future-facing window preview direction.
 - Installer direction is a graphical Qt/QML double-click installer backed by native Arch packaging, with `setup.sh` kept for development/recovery.
@@ -246,7 +246,7 @@ The most recent work focused on visual-system maturity, real file-manager behavi
 - uNexus Files is no longer only an MVP, but still needs standalone-window maturity, deeper previews and more robust edge-case handling.
 - Some icons are still text/emoji fallbacks when the original app icon cannot be found.
 - GameMode/MangoHud integration needs more real-game validation.
-- Install flows copy commands; they do not yet run privileged or Flatpak installs directly.
+- Game Settings now starts real Flatpak installs for Steam, Lutris, Heroic and Bottles through AppLauncher.installFlatpak(). Privileged pacman/tool installs are still not automated.
 - The shell still relies heavily on Hyprland behavior through `hyprctl`.
 
 ---
@@ -339,7 +339,7 @@ mangohud gamemoderun %command%
 - `docs/architecture.md`: backend/QML architecture and component responsibilities.
 - `docs/building.md`: build/run instructions and dependency notes.
 - `docs/roadmap.md`: staged product/OS roadmap.
-- `docs/design-tokens.md`: shared visual language and motion token rules.
+- `docs/design-tokens.md`: formal visual language for spacing, typography, surfaces, radius, motion and component sizing.
 - `docs/liquid-glass.md`: current QML glass material and future compositor direction.
 - `docs/installer-technology.md`: chosen graphical installer direction.
 - `docs/contributing.md`: contribution guidance.

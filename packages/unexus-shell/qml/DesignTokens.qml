@@ -3,15 +3,20 @@ import QtQuick 2.15
 QtObject {
     id: tokens
 
+    // uNexus visual language: compact, fast, glassy and game-first.
     readonly property string fontFamily: "Exo 2"
+    readonly property string fontFallback: "Noto Sans"
 
     property QtObject space: QtObject {
+        readonly property int none: 0
+        readonly property int xxs: 2
         readonly property int xs: 4
         readonly property int sm: 8
         readonly property int md: 12
         readonly property int lg: 16
         readonly property int xl: 18
         readonly property int xxl: 24
+        readonly property int section: 32
     }
 
     property QtObject layout: QtObject {
@@ -28,9 +33,20 @@ QtObject {
         readonly property int multiMonitorEdgeMargin: 24
         readonly property int multiMonitorTopMarginCompact: 48
         readonly property int multiMonitorTopMargin: 58
+        readonly property int controlHeight: 32
+        readonly property int compactControlHeight: 28
+        readonly property int rowHeight: 42
+        readonly property int denseRowHeight: 36
+        readonly property int toolbarHeight: 38
+        readonly property int sidebarWidth: 170
+        readonly property int sidebarWidthCompact: 150
+        readonly property int previewWidth: 214
+        readonly property int dockItemSize: 52
+        readonly property int dockItemSizeCompact: 46
     }
 
     property QtObject radius: QtObject {
+        readonly property int xs: 4
         readonly property int sm: 6
         readonly property int md: 8
         readonly property int lg: 12
@@ -41,6 +57,7 @@ QtObject {
 
     property QtObject border: QtObject {
         readonly property int hairline: 1
+        readonly property int focus: 2
         readonly property color subtle: "#1e2d45"
         readonly property color muted: "#2a3a55"
         readonly property color strong: "#3b5170"
@@ -52,6 +69,14 @@ QtObject {
         readonly property int base: 140
         readonly property int expressive: 180
         readonly property int entrance: 240
+        readonly property int hover: quick
+        readonly property int press: instant
+        readonly property int fadeIn: expressive
+        readonly property int fadeOut: base
+        readonly property int panelIn: expressive
+        readonly property int panelOut: base
+        readonly property int dockReveal: expressive
+        readonly property int dockHide: base
         readonly property real panelSpring: 3.2
         readonly property real panelDamping: 0.34
         readonly property real panelEpsilon: 0.002
@@ -70,6 +95,18 @@ QtObject {
         readonly property int ui: 15
         readonly property int lg: 16
         readonly property int title: 22
+        readonly property int display: 28
+        readonly property int hero: 36
+        readonly property real lineTight: 1.08
+        readonly property real lineNormal: 1.2
+        readonly property real lineRelaxed: 1.36
+        readonly property int weightRegular: Font.Normal
+        readonly property int weightMedium: Font.Medium
+        readonly property int weightSemibold: Font.DemiBold
+        readonly property int weightBold: Font.Bold
+        readonly property int trackingNone: 0
+        readonly property int trackingSection: 1
+        readonly property int trackingBrand: 4
     }
 
     property QtObject surface: QtObject {
