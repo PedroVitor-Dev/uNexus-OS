@@ -19,6 +19,8 @@ Item {
     property bool leftSide: side === "left"
     property bool menuOwnsDock: actionMenuVisible && actionMenuSide === sideDock.side
     property bool shouldExpand: dockMouse.containsMouse || edgeMouse.containsMouse || menuOwnsDock
+    property int edgeMargin: root.multiMonitorEdgeMargin || root.spaceMd
+    property int topSafeMargin: root.multiMonitorTopMargin || 56
 
     signal launchRequested(var app)
     signal actionMenuRequested(var app, var point, string side)
@@ -35,10 +37,10 @@ Item {
 
     width: 72
     height: dockPanel.height
-    y: Math.max(56, ((parent ? parent.height : 720) - height) / 2)
+    y: Math.max(topSafeMargin, Math.min((parent ? parent.height : 720) - height - root.spaceLg, ((parent ? parent.height : 720) - height) / 2))
     x: leftSide
-       ? (expanded ? root.spaceMd : -60)
-       : (expanded ? (parent ? parent.width : 1280) - width - root.spaceMd : (parent ? parent.width : 1280) - root.spaceMd)
+       ? (expanded ? edgeMargin : -60)
+       : (expanded ? (parent ? parent.width : 1280) - width - edgeMargin : (parent ? parent.width : 1280) - edgeMargin)
 
     onShouldExpandChanged: {
         if (shouldExpand) {

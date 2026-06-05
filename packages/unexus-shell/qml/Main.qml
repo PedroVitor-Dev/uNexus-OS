@@ -25,6 +25,8 @@ Window {
     property int panelPadding: compactLayout ? 14 : 18
     property int panelGap: compactLayout ? 10 : 14
     property int panelTopMargin: compactLayout ? 72 : 100
+    property int multiMonitorEdgeMargin: width >= 1800 ? 24 : spaceMd
+    property int multiMonitorTopMargin: compactLayout ? 48 : 58
     property int radiusSm: 6
     property int radiusMd: 8
     property int radiusLg: 12
@@ -80,8 +82,20 @@ Window {
         "SYSTEM": "SISTEMA",
         "GAMES": "JOGOS",
         "Open / Focus": "Abrir / Focar",
+        "Window": "Janela",
+        "Focus": "Focar",
         "Close": "Fechar",
         "Confirm close": "Confirmar fechar",
+        "Maximize": "Maximizar",
+        "Move": "Mover",
+        "Minimize": "Minimizar",
+        "Restore": "Restaurar",
+        "left": "esquerda",
+        "right": "direita",
+        "up": "cima",
+        "down": "baixo",
+        "center": "centro",
+        "panel": "painel",
         "Copy Options": "Copiar Opções",
         "Copy": "Copiar",
         "Launch options copied": "Opções de inicialização copiadas",
@@ -454,12 +468,22 @@ Window {
     ]
     property int dockStateVersion: 0
     property int panelStateVersion: 0
+    property int workspaceStateVersion: 0
 
     Timer {
         interval: 1000
         running: true
         repeat: true
-        onTriggered: dockStateVersion++
+        onTriggered: {
+            dockStateVersion++
+            workspaceStateVersion++
+        }
+    }
+
+    function workspaceModel() {
+        workspaceStateVersion
+        var items = appLauncher.workspaces()
+        return items.slice(0, root.compactLayout ? 5 : 8)
     }
 
     function panelDockState(panel, stateVersion) {
@@ -587,6 +611,59 @@ Window {
 
         appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
         root.dockStateVersion++
+    }
+
+    function focusDesktopApp(app) {
+        if (!app)
+            return false
+
+        if (app.internalAction) {
+            root.launchDesktopApp(app)
+            return true
+        }
+
+        return appLauncher.focusWindow(app.windowClasses || [])
+    }
+
+    function maximizeDesktopApp(app) {
+        if (!app || app.internalAction)
+            return false
+
+        return appLauncher.maximizeWindow(app.windowClasses || [])
+    }
+
+    function moveDesktopApp(app) {
+        if (!app || app.internalAction)
+            return false
+
+        var moved = appLauncher.moveWindowToNextWorkspace(app.windowClasses || [])
+        root.dockStateVersion++
+        return moved
+    }
+
+    function minimizeOrRestoreDesktopApp(app) {
+        if (!app)
+            return false
+
+        if (app.internalAction) {
+            if (app.internalAction === "settings")
+                unexusSettings.visible ? unexusSettings.hide() : unexusSettings.show()
+            else if (app.internalAction === "files")
+                unexusFiles.visible ? unexusFiles.hide() : unexusFiles.show()
+            else if (app.internalAction === "gameSettings")
+                gameSettings.visible ? gameSettings.hide() : gameSettings.show()
+            else if (app.internalAction === "firstSetup")
+                firstSetup.visible ? firstSetup.hide() : firstSetup.show()
+
+            root.panelStateVersion++
+            root.dockStateVersion++
+            return true
+        }
+
+        var hidden = appLauncher.isWindowHidden(app.windowClasses || [])
+        var ok = hidden ? appLauncher.restoreWindow(app.windowClasses || []) : appLauncher.minimizeWindow(app.windowClasses || [])
+        root.dockStateVersion++
+        return ok
     }
 
     Rectangle {
@@ -790,6 +867,52 @@ Window {
         }
 
         Row {
+            id: workspaceStrip
+            anchors.left: parent.left
+            anchors.leftMargin: root.compactLayout ? 108 : 124
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 6
+
+            Repeater {
+                model: root.workspaceModel()
+
+                delegate: Rectangle {
+                    width: modelData.active ? 30 : 22
+                    height: 18
+                    radius: root.radiusSm
+                    color: modelData.active ? root.themeAccentDim : (modelData.windows > 0 ? root.surfaceRaised : "transparent")
+                    border.color: modelData.active ? root.themeAccent : (modelData.windows > 0 ? root.borderMuted : root.borderSubtle)
+                    border.width: modelData.active ? 1 : 0
+                    opacity: modelData.active ? 1.0 : (modelData.windows > 0 ? 0.74 : 0.36)
+
+                    Behavior on width { NumberAnimation { duration: root.motionQuick; easing.type: Easing.OutCubic } }
+                    Behavior on opacity { NumberAnimation { duration: root.motionQuick } }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: modelData.id
+                        color: modelData.active ? root.textPrimary : root.textMuted
+                        font.pixelSize: root.textTiny
+                        font.family: root.uiFont
+                        font.bold: modelData.active
+                    }
+
+                    Rectangle {
+                        visible: modelData.windows > 0
+                        anchors.right: parent.right
+                        anchors.rightMargin: 3
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 3
+                        width: 3
+                        height: 3
+                        radius: 2
+                        color: modelData.active ? root.themeAccent : root.textMuted
+                    }
+                }
+            }
+        }
+
+        Row {
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
@@ -977,7 +1100,7 @@ Window {
 
     Rectangle {
         id: dockActionMenu
-        width: 150
+        width: 190
         height: actionColumn.height + 12
         radius: root.radiusMd
         color: root.surfaceBase
@@ -989,11 +1112,13 @@ Window {
         property var currentApp: null
         property string currentSide: ""
         property bool closeConfirming: false
+        property var previewInfo: ({})
 
         function showForApp(app, point, side) {
             currentApp = app
             currentSide = side || ""
             closeConfirming = false
+            previewInfo = app && app.windowClasses ? appLauncher.windowPreviewDirection(app.windowClasses) : ({ direction: "panel", available: false })
             closeConfirmTimer.stop()
             x = Math.max(8, Math.min(root.width - width - 8, point.x - width / 2))
             y = Math.max(44, point.y - height - 10)
@@ -1005,6 +1130,7 @@ Window {
             currentApp = null
             currentSide = ""
             closeConfirming = false
+            previewInfo = ({})
             closeConfirmTimer.stop()
         }
 
@@ -1023,6 +1149,40 @@ Window {
             anchors.topMargin: root.radiusSm
             spacing: 2
 
+            Column {
+                width: parent.width
+                height: 42
+                spacing: 2
+
+                Text {
+                    width: parent.width - root.spaceLg
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: dockActionMenu.currentApp ? root.tr(dockActionMenu.currentApp.label) : root.tr("Window")
+                    color: root.textPrimary
+                    font.pixelSize: root.textSmall
+                    font.family: root.uiFont
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    width: parent.width - root.spaceLg
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: root.tr("Preview") + ": " + root.tr(dockActionMenu.previewInfo.direction || "center")
+                    color: root.textMuted
+                    font.pixelSize: root.textTiny
+                    font.family: root.uiFont
+                    elide: Text.ElideRight
+                }
+            }
+
+            Rectangle {
+                width: parent.width - root.spaceMd
+                height: 1
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: root.borderSubtle
+            }
+
             Rectangle {
                 width: parent.width
                 height: 34
@@ -1032,7 +1192,7 @@ Window {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: root.spaceMd
-                    text: root.tr("Open / Focus")
+                    text: root.tr("Open")
                     color: root.textPrimary
                     font.pixelSize: root.textSmall
                     font.family: root.uiFont
@@ -1046,6 +1206,126 @@ Window {
                     onClicked: {
                         if (dockActionMenu.currentApp)
                             root.launchDesktopApp(dockActionMenu.currentApp)
+
+                        dockActionMenu.hideMenu()
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 34
+                color: focusMouse.containsMouse ? root.surfaceHover : "transparent"
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: root.spaceMd
+                    text: root.tr("Focus")
+                    color: root.textPrimary
+                    font.pixelSize: root.textSmall
+                    font.family: root.uiFont
+                }
+
+                MouseArea {
+                    id: focusMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onClicked: {
+                        if (dockActionMenu.currentApp)
+                            root.focusDesktopApp(dockActionMenu.currentApp)
+
+                        dockActionMenu.hideMenu()
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 34
+                color: minimizeMouse.containsMouse ? root.surfaceHover : "transparent"
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: root.spaceMd
+                    text: dockActionMenu.currentApp && !dockActionMenu.currentApp.internalAction && appLauncher.isWindowHidden(dockActionMenu.currentApp.windowClasses || []) ? root.tr("Restore") : root.tr("Minimize")
+                    color: root.textPrimary
+                    font.pixelSize: root.textSmall
+                    font.family: root.uiFont
+                }
+
+                MouseArea {
+                    id: minimizeMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onClicked: {
+                        if (dockActionMenu.currentApp)
+                            root.minimizeOrRestoreDesktopApp(dockActionMenu.currentApp)
+
+                        dockActionMenu.hideMenu()
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 34
+                opacity: dockActionMenu.currentApp && !dockActionMenu.currentApp.internalAction ? 1.0 : 0.45
+                color: maximizeMouse.containsMouse ? root.surfaceHover : "transparent"
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: root.spaceMd
+                    text: root.tr("Maximize")
+                    color: root.textPrimary
+                    font.pixelSize: root.textSmall
+                    font.family: root.uiFont
+                }
+
+                MouseArea {
+                    id: maximizeMouse
+                    anchors.fill: parent
+                    enabled: dockActionMenu.currentApp && !dockActionMenu.currentApp.internalAction
+                    hoverEnabled: enabled
+
+                    onClicked: {
+                        if (dockActionMenu.currentApp)
+                            root.maximizeDesktopApp(dockActionMenu.currentApp)
+
+                        dockActionMenu.hideMenu()
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 34
+                opacity: dockActionMenu.currentApp && !dockActionMenu.currentApp.internalAction ? 1.0 : 0.45
+                color: moveMouse.containsMouse ? root.surfaceHover : "transparent"
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: root.spaceMd
+                    text: root.tr("Move")
+                    color: root.textPrimary
+                    font.pixelSize: root.textSmall
+                    font.family: root.uiFont
+                }
+
+                MouseArea {
+                    id: moveMouse
+                    anchors.fill: parent
+                    enabled: dockActionMenu.currentApp && !dockActionMenu.currentApp.internalAction
+                    hoverEnabled: enabled
+
+                    onClicked: {
+                        if (dockActionMenu.currentApp)
+                            root.moveDesktopApp(dockActionMenu.currentApp)
 
                         dockActionMenu.hideMenu()
                     }

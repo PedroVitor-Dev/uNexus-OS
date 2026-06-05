@@ -1,8 +1,12 @@
 #pragma once
 
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QVariantList>
+#include <QVariantMap>
 
 class AppLauncher : public QObject
 {
@@ -40,8 +44,19 @@ public:
     
     Q_INVOKABLE bool closeWindow(const QStringList &windowClasses);
     Q_INVOKABLE bool closeApp(const QStringList &windowClasses, const QStringList &processNames);
+    Q_INVOKABLE bool maximizeWindow(const QStringList &windowClasses);
+    Q_INVOKABLE bool moveWindowToNextWorkspace(const QStringList &windowClasses);
+    Q_INVOKABLE bool minimizeWindow(const QStringList &windowClasses);
+    Q_INVOKABLE bool restoreWindow(const QStringList &windowClasses);
+    Q_INVOKABLE QVariantMap windowPreviewDirection(const QStringList &windowClasses);
+    Q_INVOKABLE QVariantList workspaces();
+    Q_INVOKABLE int activeWorkspace();
 
 private:
+    QJsonArray hyprctlJsonArray(const QStringList &arguments) const;
+    QJsonObject hyprctlJsonObject(const QStringList &arguments) const;
+    QJsonObject findHyprlandClient(const QStringList &windowClasses) const;
+    bool dispatchHyprctl(const QStringList &arguments) const;
     bool focusWithHyprctl(const QStringList &windowClasses);
     bool focusWithWmctrl(const QStringList &windowClasses);
     bool terminateProcesses(const QStringList &processNames);

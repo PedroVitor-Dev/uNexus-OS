@@ -1,5 +1,7 @@
 #include "applauncher.h"
 
+#include <algorithm>
+#include <cmath>
 #include <QClipboard>
 #include <QDir>
 #include <QFileInfo>
@@ -8,6 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QList>
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
@@ -132,6 +135,71 @@ QString AppLauncher::findIcon(const QStringList &iconNames)
 
     return QString();
 }
+
+QJsonArray AppLauncher::hyprctlJsonArray(const QStringList &arguments) const
+{
+    if (QStandardPaths::findExecutable(QStringLiteral("hyprctl")).isEmpty())
+        return {};
+
+    QProcess process;
+    process.start(QStringLiteral("hyprctl"), arguments);
+
+    if (!process.waitForFinished(1500) ||
+        process.exitStatus() != QProcess::NormalExit ||
+        process.exitCode() != 0) {
+        return {};
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(process.readAllStandardOutput());
+    return document.isArray() ? document.array() : QJsonArray();
+}
+
+QJsonObject AppLauncher::hyprctlJsonObject(const QStringList &arguments) const
+{
+    if (QStandardPaths::findExecutable(QStringLiteral("hyprctl")).isEmpty())
+        return {};
+
+    QProcess process;
+    process.start(QStringLiteral("hyprctl"), arguments);
+
+    if (!process.waitForFinished(1500) ||
+        process.exitStatus() != QProcess::NormalExit ||
+        process.exitCode() != 0) {
+        return {};
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(process.readAllStandardOutput());
+    return document.isObject() ? document.object() : QJsonObject();
+}
+
+QJsonObject AppLauncher::findHyprlandClient(const QStringList &windowClasses) const
+{
+    if (windowClasses.isEmpty())
+        return {};
+
+    const QJsonArray clients = hyprctlJsonArray({QStringLiteral("clients"), QStringLiteral("-j")});
+
+    for (const QJsonValue &value : clients) {
+        const QJsonObject client = value.toObject();
+        const QString windowClass = client.value(QStringLiteral("class")).toString();
+
+        for (const QString &candidate : windowClasses) {
+            if (windowClass.compare(candidate, Qt::CaseInsensitive) == 0)
+                return client;
+        }
+    }
+
+    return {};
+}
+
+bool AppLauncher::dispatchHyprctl(const QStringList &arguments) const
+{
+    if (QStandardPaths::findExecutable(QStringLiteral("hyprctl")).isEmpty())
+        return false;
+
+    return QProcess::execute(QStringLiteral("hyprctl"), arguments) == 0;
+}
+
 bool AppLauncher::isWindowOpen(const QStringList &windowClasses)
 {
     if (windowClasses.isEmpty())
@@ -469,6 +537,177 @@ bool AppLauncher::closeApp(const QStringList &windowClasses, const QStringList &
     const bool processesClosed = terminateProcesses(processNames);
 
     return windowClosed || processesClosed;
+}
+
+bool AppLauncher::maximizeWindow(const QStringList &windowClasses)
+{
+    if (!focusWindow(windowClasses))
+        return false;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("fullscreen"),
+        QStringLiteral("1")
+    });
+}
+
+bool AppLauncher::moveWindowToNextWorkspace(const QStringList &windowClasses)
+{
+    const QJsonObject client = findHyprlandClient(windowClasses);
+    const QString address = client.value(QStringLiteral("address")).toString();
+
+    if (address.isEmpty())
+        return false;
+
+    const int currentWorkspace = activeWorkspace();
+    const int targetWorkspace = currentWorkspace > 0 ? currentWorkspace + 1 : 2;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("movetoworkspacesilent"),
+        QStringLiteral("%1,address:%2").arg(targetWorkspace).arg(address)
+    });
+}
+
+bool AppLauncher::minimizeWindow(const QStringList &windowClasses)
+{
+    const QJsonObject client = findHyprlandClient(windowClasses);
+    const QString address = client.value(QStringLiteral("address")).toString();
+
+    if (address.isEmpty())
+        return false;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("movetoworkspacesilent"),
+        QStringLiteral("special:unexus-minimized,address:") + address
+    });
+}
+
+bool AppLauncher::restoreWindow(const QStringList &windowClasses)
+{
+    const QJsonObject client = findHyprlandClient(windowClasses);
+    const QString address = client.value(QStringLiteral("address")).toString();
+
+    if (address.isEmpty())
+        return false;
+
+    const int currentWorkspace = activeWorkspace();
+    const QString targetWorkspace = currentWorkspace > 0 ? QString::number(currentWorkspace) : QStringLiteral("current");
+
+    if (!dispatchHyprctl({
+            QStringLiteral("dispatch"),
+            QStringLiteral("movetoworkspace"),
+            targetWorkspace + QStringLiteral(",address:") + address
+        })) {
+        return false;
+    }
+
+    return focusWindow(windowClasses);
+}
+
+QVariantMap AppLauncher::windowPreviewDirection(const QStringList &windowClasses)
+{
+    QVariantMap result;
+    result.insert(QStringLiteral("direction"), QStringLiteral("center"));
+    result.insert(QStringLiteral("workspace"), activeWorkspace());
+    result.insert(QStringLiteral("monitor"), QStringLiteral(""));
+    result.insert(QStringLiteral("available"), false);
+
+    const QJsonObject client = findHyprlandClient(windowClasses);
+    if (client.isEmpty())
+        return result;
+
+    const int monitorId = client.value(QStringLiteral("monitor")).toInt(-1);
+    const QJsonArray at = client.value(QStringLiteral("at")).toArray();
+    const QJsonArray size = client.value(QStringLiteral("size")).toArray();
+
+    if (at.size() < 2 || size.size() < 2)
+        return result;
+
+    const double windowCenterX = at.at(0).toDouble() + size.at(0).toDouble() / 2.0;
+    const double windowCenterY = at.at(1).toDouble() + size.at(1).toDouble() / 2.0;
+    const QJsonArray monitors = hyprctlJsonArray({QStringLiteral("monitors"), QStringLiteral("-j")});
+
+    for (const QJsonValue &value : monitors) {
+        const QJsonObject monitor = value.toObject();
+        if (monitor.value(QStringLiteral("id")).toInt(-2) != monitorId)
+            continue;
+
+        const double x = monitor.value(QStringLiteral("x")).toDouble();
+        const double y = monitor.value(QStringLiteral("y")).toDouble();
+        const double width = monitor.value(QStringLiteral("width")).toDouble();
+        const double height = monitor.value(QStringLiteral("height")).toDouble();
+        const double centerX = x + width / 2.0;
+        const double centerY = y + height / 2.0;
+        QString direction = QStringLiteral("center");
+
+        if (std::abs(windowCenterX - centerX) > std::abs(windowCenterY - centerY))
+            direction = windowCenterX < centerX ? QStringLiteral("left") : QStringLiteral("right");
+        else
+            direction = windowCenterY < centerY ? QStringLiteral("up") : QStringLiteral("down");
+
+        result.insert(QStringLiteral("direction"), direction);
+        result.insert(QStringLiteral("monitor"), monitor.value(QStringLiteral("name")).toString());
+        result.insert(QStringLiteral("available"), true);
+        return result;
+    }
+
+    return result;
+}
+
+QVariantList AppLauncher::workspaces()
+{
+    QVariantList result;
+    const int activeId = activeWorkspace();
+    const QJsonArray workspaceArray = hyprctlJsonArray({QStringLiteral("workspaces"), QStringLiteral("-j")});
+    QList<QJsonObject> workspaceObjects;
+
+    for (const QJsonValue &value : workspaceArray)
+        workspaceObjects << value.toObject();
+
+    std::sort(workspaceObjects.begin(), workspaceObjects.end(), [](const QJsonObject &left, const QJsonObject &right) {
+        return left.value(QStringLiteral("id")).toInt() < right.value(QStringLiteral("id")).toInt();
+    });
+
+    for (const QJsonObject &workspace : workspaceObjects) {
+        const int id = workspace.value(QStringLiteral("id")).toInt();
+
+        if (id < 0)
+            continue;
+
+        QVariantMap item;
+        item.insert(QStringLiteral("id"), id);
+        item.insert(QStringLiteral("name"), workspace.value(QStringLiteral("name")).toString(QString::number(id)));
+        item.insert(QStringLiteral("windows"), workspace.value(QStringLiteral("windows")).toInt());
+        item.insert(QStringLiteral("monitor"), workspace.value(QStringLiteral("monitor")).toString());
+        item.insert(QStringLiteral("active"), id == activeId);
+        result << item;
+    }
+
+    if (result.isEmpty()) {
+        for (int i = 1; i <= 4; ++i) {
+            QVariantMap item;
+            item.insert(QStringLiteral("id"), i);
+            item.insert(QStringLiteral("name"), QString::number(i));
+            item.insert(QStringLiteral("windows"), 0);
+            item.insert(QStringLiteral("monitor"), QString());
+            item.insert(QStringLiteral("active"), i == 1);
+            result << item;
+        }
+    }
+
+    return result;
+}
+
+int AppLauncher::activeWorkspace()
+{
+    const QJsonObject workspace = hyprctlJsonObject({
+        QStringLiteral("activeworkspace"),
+        QStringLiteral("-j")
+    });
+
+    return workspace.value(QStringLiteral("id")).toInt(1);
 }
 
 bool AppLauncher::terminateProcesses(const QStringList &processNames)
