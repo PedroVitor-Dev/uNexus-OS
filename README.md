@@ -1,6 +1,6 @@
 <div align="center">
   <img src="assets/logo/SF%20White.png" width="320" alt="uNexus logo">
-  <h1>uNexus</h1>
+
   <p>A gaming-first Linux shell built around speed, focus, and a polished desktop experience.</p>
 
   ![Status](https://img.shields.io/badge/status-in%20development-blue)
