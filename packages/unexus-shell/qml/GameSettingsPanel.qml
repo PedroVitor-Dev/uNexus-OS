@@ -277,7 +277,7 @@ Item {
                             label: "Steam"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) : (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam"))
                             running: appLauncher.isWindowOpen(["steam", "Steam"]) || appLauncher.isProcessRunning(["steam"])
-                            installCommand: "flatpak install -y flathub com.valvesoftware.Steam"
+                            flatpakId: "com.valvesoftware.Steam"
                         }
 
                         SettingsInstallRow {
@@ -285,7 +285,7 @@ Item {
                             label: "Lutris"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) : (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris"))
                             running: appLauncher.isWindowOpen(["lutris", "Lutris"]) || appLauncher.isProcessRunning(["lutris"])
-                            installCommand: "flatpak install -y flathub net.lutris.Lutris"
+                            flatpakId: "net.lutris.Lutris"
                         }
 
                         SettingsInstallRow {
@@ -293,7 +293,7 @@ Item {
                             label: "Heroic"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) : (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl"))
                             running: appLauncher.isWindowOpen(["heroic", "Heroic", "com.heroicgameslauncher.hgl"]) || appLauncher.isProcessRunning(["heroic", "heroicgameslauncher"])
-                            installCommand: "flatpak install -y flathub com.heroicgameslauncher.hgl"
+                            flatpakId: "com.heroicgameslauncher.hgl"
                         }
 
                         SettingsInstallRow {
@@ -301,7 +301,7 @@ Item {
                             label: "Bottles"
                             installed: settingsPanel.toolsRefresh ? (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles")) : (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
                             running: appLauncher.isWindowOpen(["bottles", "Bottles", "com.usebottles.bottles"]) || appLauncher.isProcessRunning(["bottles"])
-                            installCommand: "flatpak install -y flathub com.usebottles.bottles"
+                            flatpakId: "com.usebottles.bottles"
                         }
                     }
 
@@ -508,7 +508,8 @@ Item {
         property bool installed: false
         property bool running: false
         property bool needsRestart: false
-        property string installCommand: ""
+        property string flatpakId: ""
+        property bool installing: false
 
         height: 42
         radius: 8
@@ -540,7 +541,7 @@ Item {
                 id: installedLabel
                 anchors.centerIn: parent
                 visible: !installRow.installed && !installRow.running && !installRow.needsRestart
-                text: root.tr("Copy install")
+                text: installRow.installing ? root.tr("Installing") : root.tr("Install")
                 color: "#b7ddff"
                 font.pixelSize: 10
                 font.family: root.uiFont
@@ -559,14 +560,27 @@ Item {
             MouseArea {
                 id: installMouse
                 anchors.fill: parent
-                enabled: !installRow.installed && !installRow.running && !installRow.needsRestart && installRow.installCommand.length > 0
+                enabled: !installRow.installed && !installRow.running && !installRow.needsRestart && !installRow.installing && installRow.flatpakId.length > 0
                 hoverEnabled: enabled
                 onClicked: {
-                    appLauncher.copyToClipboard(installRow.installCommand)
-                    notifCenter.send(root.tr("Install command copied"), root.trAppMessage("{app} Flatpak command copied.", installRow.label), "SETUP", root.tr("Open Terminal"), function() {
-                        appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])
-                    })
+                    if (appLauncher.installFlatpak(installRow.flatpakId)) {
+                        installRow.installing = true
+                        settingsPanel.toolsRefresh++
+                        installRefreshTimer.restart()
+                        notifCenter.send(root.tr("Flatpak install started"), root.trAppMessage("Installing {app} from Flathub.", installRow.label), "SETUP")
+                    } else {
+                        notifCenter.send(root.tr("Flatpak install failed"), root.tr("Flatpak is unavailable or could not start."), "SETUP")
+                    }
                 }
+            }
+        }
+        Timer {
+            id: installRefreshTimer
+            interval: 12000
+            repeat: false
+            onTriggered: {
+                installRow.installing = false
+                settingsPanel.toolsRefresh++
             }
         }
     }

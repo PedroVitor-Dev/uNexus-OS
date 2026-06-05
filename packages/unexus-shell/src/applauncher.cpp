@@ -64,6 +64,31 @@ bool AppLauncher::isFlatpakInstalled(const QString &flatpakId)
     return process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0;
 }
 
+
+bool AppLauncher::installFlatpak(const QString &flatpakId)
+{
+    const QString appId = flatpakId.trimmed();
+    if (appId.isEmpty())
+        return false;
+
+    if (QStandardPaths::findExecutable("flatpak").isEmpty())
+        return false;
+
+    QProcess::execute("flatpak", {
+        QStringLiteral("remote-add"),
+        QStringLiteral("--if-not-exists"),
+        QStringLiteral("flathub"),
+        QStringLiteral("https://flathub.org/repo/flathub.flatpakrepo")
+    });
+
+    return QProcess::startDetached("flatpak", {
+        QStringLiteral("install"),
+        QStringLiteral("-y"),
+        QStringLiteral("flathub"),
+        appId
+    });
+}
+
 bool AppLauncher::isMangoHudInstalled()
 {
     return !QStandardPaths::findExecutable("mangohud").isEmpty();

@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE bool launchFirstAvailable(const QStringList &commands, const QStringList &arguments = {});
     Q_INVOKABLE bool isInstalled(const QString &command);
     Q_INVOKABLE bool isFlatpakInstalled(const QString &flatpakId);
+    Q_INVOKABLE bool installFlatpak(const QString &flatpakId);
     Q_INVOKABLE bool isMangoHudInstalled();
     Q_INVOKABLE bool isGameModeRunInstalled();
     Q_INVOKABLE bool isWindowOpen(const QStringList &windowClasses);
