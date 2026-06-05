@@ -26,6 +26,9 @@ Item {
     property string unavailableMessage: ""
     property string trashConfirmPath: ""
     property string deleteConfirmToken: ""
+    property bool contextMenuVisible: false
+    property real contextMenuX: 0
+    property real contextMenuY: 0
 
     function show(path) {
         hideAnim.stop()
@@ -47,6 +50,7 @@ Item {
         trashConfirmPath = ""
         deleteConfirmToken = ""
         trashConfirmTimer.stop()
+        hideContextMenu()
         hideAnim.start()
     }
 
@@ -62,6 +66,7 @@ Item {
         selectedEntries = []
         trashConfirmPath = ""
         deleteConfirmToken = ""
+        hideContextMenu()
     }
 
     function selectOnly(entry) {
@@ -121,6 +126,7 @@ Item {
     }
 
     function handleEntryClick(entry, modifiers) {
+        hideContextMenu()
         if (modifiers & Qt.ControlModifier || modifiers & Qt.ShiftModifier)
             toggleSelection(entry)
         else
@@ -148,6 +154,27 @@ Item {
         return result
     }
 
+
+    function showContextMenu(x, y) {
+        contextMenuX = Math.max(8, Math.min(width - fileContextMenu.width - 8, x))
+        contextMenuY = Math.max(8, Math.min(height - fileContextMenu.height - 8, y))
+        contextMenuVisible = true
+    }
+
+    function hideContextMenu() {
+        contextMenuVisible = false
+    }
+
+    function beginRenameSelected() {
+        if (selectionCount() !== 1)
+            return
+
+        hideContextMenu()
+        mode = "rename"
+        actionInput.text = selectedName
+        actionInput.forceActiveFocus()
+        actionInput.selectAll()
+    }
     function requestTrashSelected() {
         if (selectionCount() === 0)
             return
@@ -163,6 +190,7 @@ Item {
         trashConfirmTimer.stop()
         trashConfirmPath = ""
         deleteConfirmToken = ""
+        hideContextMenu()
         if (fileManager.movePathsToTrash(stringList(selectedPaths))) {
             notifCenter.send(root.tr("Moved to trash"), selectionLabel(), "FILES")
             refresh()
@@ -330,6 +358,7 @@ Item {
         currentPath = path
         pathInput.text = currentPath
         clearSelection()
+        hideContextMenu()
         mode = "browse"
         entries = sortedEntries(fileManager.listDirectory(currentPath))
         loading = false
@@ -352,6 +381,7 @@ Item {
 
         clipboardPaths = selectedPaths.slice()
         clipboardMode = "copy"
+        hideContextMenu()
         notifCenter.send(root.tr("Copied"), selectionLabel(), "FILES")
     }
 
@@ -361,6 +391,7 @@ Item {
 
         clipboardPaths = selectedPaths.slice()
         clipboardMode = "cut"
+        hideContextMenu()
         notifCenter.send(root.tr("Cut"), selectionLabel(), "FILES")
     }
 
@@ -368,6 +399,7 @@ Item {
         if (clipboardPaths.length === 0)
             return
 
+        hideContextMenu()
         var ok = clipboardMode === "cut"
             ? fileManager.movePaths(stringList(clipboardPaths), currentPath)
             : fileManager.copyPaths(stringList(clipboardPaths), currentPath)
@@ -840,6 +872,10 @@ Item {
                                 selected: filesPanel.selectedPaths.indexOf(modelData.path) >= 0
                                 cutMarked: filesPanel.clipboardMode === "cut" && filesPanel.clipboardPaths.indexOf(modelData.path) >= 0
                                 onClicked: function(modifiers) { filesPanel.handleEntryClick(modelData, modifiers) }
+                                onContextRequested: function(menuX, menuY) {
+                                    filesPanel.selectOnly(modelData)
+                                    filesPanel.showContextMenu(menuX, menuY)
+                                }
                                 onOpenRequested: {
                                     filesPanel.selectOnly(modelData)
                                     filesPanel.openSelected()
@@ -865,6 +901,41 @@ Item {
         }
     }
 
+
+    LiquidGlass {
+        id: fileContextMenu
+        x: filesPanel.contextMenuX
+        y: filesPanel.contextMenuY
+        width: 168
+        height: contextMenuColumn.height + root.spaceMd
+        radius: root.radiusMd
+        tintColor: root.surfaceBase
+        accentColor: root.themeAccent
+        borderColor: root.borderMuted
+        materialOpacity: 0.82
+        borderOpacity: 0.58
+        highlightOpacity: 0.14
+        depth: 0.38
+        visible: filesPanel.contextMenuVisible
+        z: 260
+
+        Column {
+            id: contextMenuColumn
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: root.spaceSm
+            spacing: 2
+
+            ContextMenuAction { label: root.tr("Open"); enabled: filesPanel.selectionCount() === 1; onTriggered: { filesPanel.hideContextMenu(); filesPanel.openSelected() } }
+            ContextMenuAction { label: root.tr("Copy"); enabled: filesPanel.selectionCount() > 0; onTriggered: filesPanel.copySelected() }
+            ContextMenuAction { label: root.tr("Cut"); enabled: filesPanel.selectionCount() > 0; onTriggered: filesPanel.cutSelected() }
+            ContextMenuAction { label: root.tr("Paste"); enabled: filesPanel.clipboardPaths.length > 0; onTriggered: filesPanel.pasteClipboard() }
+            Rectangle { width: parent.width - root.spaceMd; height: 1; anchors.horizontalCenter: parent.horizontalCenter; color: root.borderSubtle }
+            ContextMenuAction { label: root.tr("Rename"); enabled: filesPanel.selectionCount() === 1; onTriggered: filesPanel.beginRenameSelected() }
+            ContextMenuAction { label: filesPanel.deleteConfirmToken === filesPanel.selectedPaths.join("|") && filesPanel.selectionCount() > 0 ? root.tr("Confirm trash") : root.tr("Trash"); enabled: filesPanel.selectionCount() > 0; danger: true; onTriggered: filesPanel.requestTrashSelected() }
+        }
+    }
     component BreadcrumbButton: Rectangle {
         id: breadcrumbButton
         property string label: ""
@@ -998,6 +1069,37 @@ Item {
         }
     }
 
+
+    component ContextMenuAction: Rectangle {
+        id: menuAction
+        property string label: ""
+        property bool danger: false
+        signal triggered()
+
+        width: parent.width
+        height: 32
+        color: actionMouse.containsMouse && enabled ? (danger ? "#3a1f2a" : root.surfaceHover) : "transparent"
+        opacity: enabled ? 1.0 : 0.42
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: root.spaceMd
+            anchors.verticalCenter: parent.verticalCenter
+            text: menuAction.label
+            color: menuAction.danger ? "#ff9a9a" : root.textPrimary
+            font.pixelSize: root.textSmall
+            font.family: root.uiFont
+            elide: Text.ElideRight
+        }
+
+        MouseArea {
+            id: actionMouse
+            anchors.fill: parent
+            enabled: menuAction.enabled
+            hoverEnabled: enabled
+            onClicked: menuAction.triggered()
+        }
+    }
     component FileRow: Rectangle {
         id: fileRow
         property string name: ""
@@ -1010,6 +1112,7 @@ Item {
         property bool selected: false
         property bool cutMarked: false
         signal clicked(var modifiers)
+        signal contextRequested(real menuX, real menuY)
         signal openRequested()
 
         height: 42
@@ -1117,8 +1220,16 @@ Item {
         MouseArea {
             id: fileMouse
             anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             hoverEnabled: true
-            onClicked: function(mouse) { fileRow.clicked(mouse.modifiers) }
+            onClicked: function(mouse) {
+                if (mouse.button === Qt.RightButton) {
+                    var point = fileMouse.mapToItem(filesPanel, mouse.x, mouse.y)
+                    fileRow.contextRequested(point.x, point.y)
+                    return
+                }
+                fileRow.clicked(mouse.modifiers)
+            }
             onDoubleClicked: fileRow.openRequested()
         }
     }

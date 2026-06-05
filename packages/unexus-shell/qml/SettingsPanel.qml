@@ -39,7 +39,7 @@ Item {
     }
 
     function cycleTheme() {
-        root.applyTheme((root.themeIndex + 1) % 4, true)
+        root.applyTheme((root.themeIndex + 1) % 6, true)
     }
 
     function toggleGameModeQuick() {
@@ -240,6 +240,7 @@ Item {
                         SettingsOptionRow { width: parent.width; label: root.tr("Network"); value: systemInfo.networkConnected ? root.tr("Online") : root.tr("Offline") }
                         SettingsOptionRow { width: parent.width; label: root.tr("Battery"); value: systemInfo.hasBattery ? systemInfo.batteryLevel + "%" : root.tr("Not available") }
                         SettingsToggle { width: parent.width; label: root.tr("uNexus Stats Overlay"); detail: systemStats.visible ? root.tr("Visible on desktop") : root.tr("Hidden"); checked: systemStats.visible; onClicked: systemStats.visible = !systemStats.visible }
+                        SettingsToggle { width: parent.width; label: root.tr("Notifications"); detail: userSettings.notificationsEnabled ? root.tr("Notifications enabled") : root.tr("Notifications disabled"); checked: userSettings.notificationsEnabled; onClicked: userSettings.notificationsEnabled = !userSettings.notificationsEnabled }
                         SettingsActionButton { width: parent.width; label: root.tr("Open First Setup"); onClicked: firstSetup.show() }
                     }
 
@@ -248,10 +249,11 @@ Item {
                         collapsed: settingsPanel.activeSection !== "shortcuts"
                         title: root.tr("Keyboard Shortcuts")
 
-                        ShortcutRow { width: parent.width; label: root.tr("Launcher"); keys: "Super + Space / Super + S" }
-                        ShortcutRow { width: parent.width; label: root.tr("Settings"); keys: "Super + I" }
-                        ShortcutRow { width: parent.width; label: root.tr("Game Settings"); keys: "Super + G" }
-                        ShortcutRow { width: parent.width; label: root.tr("Stats Overlay"); keys: "Super + Alt + G" }
+                        SettingsHint { width: parent.width; text: root.tr("Customize shortcuts") }
+                        ShortcutEditRow { width: parent.width; label: root.tr("Launcher shortcut"); value: userSettings.launcherShortcut; defaultValue: "Meta+Space"; onShortcutAccepted: function(sequence) { userSettings.launcherShortcut = sequence } }
+                        ShortcutEditRow { width: parent.width; label: root.tr("Settings shortcut"); value: userSettings.settingsShortcut; defaultValue: "Meta+I"; onShortcutAccepted: function(sequence) { userSettings.settingsShortcut = sequence } }
+                        ShortcutEditRow { width: parent.width; label: root.tr("Game Settings shortcut"); value: userSettings.gameSettingsShortcut; defaultValue: "Meta+G"; onShortcutAccepted: function(sequence) { userSettings.gameSettingsShortcut = sequence } }
+                        ShortcutEditRow { width: parent.width; label: root.tr("Stats shortcut"); value: userSettings.statsShortcut; defaultValue: "Meta+Alt+G"; onShortcutAccepted: function(sequence) { userSettings.statsShortcut = sequence } }
                     }
 
                     SettingsSection {
@@ -261,13 +263,17 @@ Item {
 
                         SettingsOptionRow { width: parent.width; label: root.tr("Theme"); value: root.themeName }
 
-                        Row {
+                        Grid {
                             width: parent.width
-                            spacing: 8
+                            columns: 3
+                            rowSpacing: 8
+                            columnSpacing: 8
                             ThemeButton { label: "Neon"; swatch: "#4d9eff"; active: root.themeIndex === 0; onClicked: root.applyTheme(0, true) }
                             ThemeButton { label: "Violet"; swatch: "#b86cff"; active: root.themeIndex === 1; onClicked: root.applyTheme(1, true) }
                             ThemeButton { label: "Toxic"; swatch: "#00ff88"; active: root.themeIndex === 2; onClicked: root.applyTheme(2, true) }
                             ThemeButton { label: "Ember"; swatch: "#ff6a2a"; active: root.themeIndex === 3; onClicked: root.applyTheme(3, true) }
+                            ThemeButton { label: "Aurora"; swatch: "#7cf7ff"; active: root.themeIndex === 4; onClicked: root.applyTheme(4, true) }
+                            ThemeButton { label: "Solar"; swatch: "#f4ff52"; active: root.themeIndex === 5; onClicked: root.applyTheme(5, true) }
                         }
 
                         SettingsOptionRow { width: parent.width; label: root.tr("Font"); value: root.uiFont }
@@ -480,6 +486,78 @@ Item {
         }
     }
 
+
+    component ShortcutEditRow: Rectangle {
+        id: shortcutRow
+        property string label: ""
+        property string value: ""
+        property string defaultValue: ""
+        signal shortcutAccepted(string sequence)
+
+        height: 44
+        radius: 8
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: shortcutInputBox.left
+            anchors.rightMargin: 10
+            text: shortcutRow.label
+            color: root.textPrimary
+            font.pixelSize: 12
+            font.family: root.uiFont
+            elide: Text.ElideRight
+        }
+
+        Rectangle {
+            id: shortcutInputBox
+            anchors.right: resetButton.left
+            anchors.rightMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            width: 150
+            height: 28
+            radius: 7
+            color: "#101927"
+            border.color: root.themeAccent
+            border.width: 1
+
+            TextInput {
+                id: shortcutInput
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                verticalAlignment: TextInput.AlignVCenter
+                text: shortcutRow.value
+                color: "#b7ddff"
+                selectionColor: root.themeAccent
+                font.pixelSize: 10
+                font.family: root.uiFont
+                font.bold: true
+                onAccepted: shortcutRow.shortcutAccepted(text)
+                onEditingFinished: shortcutRow.shortcutAccepted(text)
+            }
+        }
+
+        ControlButton {
+            id: resetButton
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 76
+            height: 28
+            label: root.tr("Reset")
+            variant: "subtle"
+            fontFamily: root.uiFont
+            accentColor: root.themeAccent
+            motionDuration: root.motionQuick
+            onClicked: {
+                shortcutInput.text = shortcutRow.defaultValue
+                shortcutRow.shortcutAccepted(shortcutRow.defaultValue)
+            }
+        }
+    }
     component QuickToggle: Rectangle {
         id: quickToggle
         property string label: ""
@@ -559,7 +637,7 @@ Item {
         property bool active: false
         signal clicked()
 
-        width: Math.floor((parent.width - 24) / 4)
+        width: parent && parent.columns === 3 ? Math.floor((parent.width - 16) / 3) : Math.floor((parent.width - 24) / 4)
         height: 42
         radius: 8
         color: themeMouse.containsMouse ? "#1b2a40" : "#172233"

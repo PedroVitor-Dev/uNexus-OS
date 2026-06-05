@@ -137,6 +137,15 @@ Window {
         "uNexus Stats Overlay": "Overlay de estatÃ­sticas uNexus",
         "Shortcuts": "Atalhos",
         "Keyboard Shortcuts": "Atalhos do Teclado",
+        "Customize shortcuts": "Personalizar atalhos",
+        "Notifications": "Notificações",
+        "Notifications enabled": "Notificações ativas",
+        "Notifications disabled": "Notificações desativadas",
+        "Launcher shortcut": "Atalho do launcher",
+        "Settings shortcut": "Atalho das configurações",
+        "Game Settings shortcut": "Atalho dos jogos",
+        "Stats shortcut": "Atalho das estatísticas",
+        "Reset": "Redefinir",
         "Launcher": "Launcher",
         "Visible on desktop": "VisÃ­vel na Ã¡rea de trabalho",
         "Hidden": "Oculto",
@@ -356,6 +365,22 @@ Window {
             themeAccent = "#ff6a2a"
             themeAccentDim = "#5a2413"
             themeGlow = "#ffcc33"
+        } else if (index === 4) {
+            themeName = "Aurora Ice"
+            themeBgTop = "#021018"
+            themeBgMid = "#062433"
+            themeBgBottom = "#03151f"
+            themeAccent = "#7cf7ff"
+            themeAccentDim = "#124a54"
+            themeGlow = "#d6ff7a"
+        } else if (index === 5) {
+            themeName = "Solar Punk"
+            themeBgTop = "#101006"
+            themeBgMid = "#1d240b"
+            themeBgBottom = "#070b05"
+            themeAccent = "#f4ff52"
+            themeAccentDim = "#4b5415"
+            themeGlow = "#2dff9a"
         } else {
             themeName = "Neon Blue"
             themeBgTop = "#04050d"
@@ -372,7 +397,6 @@ Window {
         if (persist !== false)
             userSettings.themeIndex = themeIndex
     }
-
     Component.onCompleted: {
         languageCode = userSettings.languageCode
         localeVersion++
@@ -435,25 +459,25 @@ Window {
     }
 
     Shortcut {
-        sequences: ["Meta+S", "Meta+Space"]
+        sequence: userSettings.launcherShortcut
         enabled: !loginScreen || !loginScreen.visible
         onActivated: root.toggleLauncher()
     }
 
     Shortcut {
-        sequence: "Meta+I"
+        sequence: userSettings.settingsShortcut
         enabled: !loginScreen || !loginScreen.visible
         onActivated: root.toggleSettingsPanel()
     }
 
     Shortcut {
-        sequence: "Meta+G"
+        sequence: userSettings.gameSettingsShortcut
         enabled: !loginScreen || !loginScreen.visible
         onActivated: root.toggleGameSettingsPanel()
     }
 
     Shortcut {
-        sequence: "Meta+Alt+G"
+        sequence: userSettings.statsShortcut
         enabled: !loginScreen || !loginScreen.visible
         onActivated: root.toggleStatsOverlay()
     }
@@ -1419,6 +1443,7 @@ MouseArea {
 
     NotificationCenter {
         id: notifCenter
+        notificationsEnabled: userSettings.notificationsEnabled
         anchors.fill: parent
         z: 120
     }

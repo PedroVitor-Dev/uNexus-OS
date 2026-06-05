@@ -5,11 +5,26 @@ UserSettings::UserSettings(QObject *parent)
     , m_settings("uNexus", "unexus-shell")
 {
     m_themeIndex = m_settings.value("appearance/themeIndex", 0).toInt();
+    if (m_themeIndex < 0 || m_themeIndex > 5)
+        m_themeIndex = 0;
     m_languageCode = m_settings.value("locale/languageCode", "en").toString();
     if (m_languageCode != "pt-BR")
         m_languageCode = "en";
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
     m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
+    m_notificationsEnabled = m_settings.value("notifications/enabled", true).toBool();
+    m_launcherShortcut = m_settings.value("shortcuts/launcher", "Meta+Space").toString();
+    m_settingsShortcut = m_settings.value("shortcuts/settings", "Meta+I").toString();
+    m_gameSettingsShortcut = m_settings.value("shortcuts/gameSettings", "Meta+G").toString();
+    m_statsShortcut = m_settings.value("shortcuts/stats", "Meta+Alt+G").toString();
+    if (m_launcherShortcut.trimmed().isEmpty())
+        m_launcherShortcut = "Meta+Space";
+    if (m_settingsShortcut.trimmed().isEmpty())
+        m_settingsShortcut = "Meta+I";
+    if (m_gameSettingsShortcut.trimmed().isEmpty())
+        m_gameSettingsShortcut = "Meta+G";
+    if (m_statsShortcut.trimmed().isEmpty())
+        m_statsShortcut = "Meta+Alt+G";
     m_controlCenterSection = m_settings.value("controlCenter/section", "system").toString();
     if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" &&
         m_controlCenterSection != "appearance" &&
@@ -22,8 +37,8 @@ void UserSettings::setThemeIndex(int themeIndex)
     if (themeIndex < 0)
         themeIndex = 0;
 
-    if (themeIndex > 3)
-        themeIndex = 3;
+    if (themeIndex > 5)
+        themeIndex = 5;
 
     if (m_themeIndex == themeIndex)
         return;
@@ -65,6 +80,59 @@ void UserSettings::setFirstSetupCompleted(bool completed)
     emit firstSetupCompletedChanged();
 }
 
+void UserSettings::setNotificationsEnabled(bool enabled)
+{
+    if (m_notificationsEnabled == enabled)
+        return;
+
+    m_notificationsEnabled = enabled;
+    m_settings.setValue("notifications/enabled", m_notificationsEnabled);
+    emit notificationsEnabledChanged();
+}
+
+void UserSettings::setLauncherShortcut(const QString &shortcut)
+{
+    const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+Space") : shortcut.trimmed();
+    if (m_launcherShortcut == normalizedShortcut)
+        return;
+
+    m_launcherShortcut = normalizedShortcut;
+    m_settings.setValue("shortcuts/launcher", m_launcherShortcut);
+    emit launcherShortcutChanged();
+}
+
+void UserSettings::setSettingsShortcut(const QString &shortcut)
+{
+    const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+I") : shortcut.trimmed();
+    if (m_settingsShortcut == normalizedShortcut)
+        return;
+
+    m_settingsShortcut = normalizedShortcut;
+    m_settings.setValue("shortcuts/settings", m_settingsShortcut);
+    emit settingsShortcutChanged();
+}
+
+void UserSettings::setGameSettingsShortcut(const QString &shortcut)
+{
+    const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+G") : shortcut.trimmed();
+    if (m_gameSettingsShortcut == normalizedShortcut)
+        return;
+
+    m_gameSettingsShortcut = normalizedShortcut;
+    m_settings.setValue("shortcuts/gameSettings", m_gameSettingsShortcut);
+    emit gameSettingsShortcutChanged();
+}
+
+void UserSettings::setStatsShortcut(const QString &shortcut)
+{
+    const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+Alt+G") : shortcut.trimmed();
+    if (m_statsShortcut == normalizedShortcut)
+        return;
+
+    m_statsShortcut = normalizedShortcut;
+    m_settings.setValue("shortcuts/stats", m_statsShortcut);
+    emit statsShortcutChanged();
+}
 void UserSettings::setControlCenterSection(const QString &section)
 {
     QString normalizedSection = section;

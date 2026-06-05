@@ -7,8 +7,11 @@ Item {
 
     property var notifications: []
     property int maxNotifications: 4
+    property bool notificationsEnabled: true
 
     function send(title, message, icon, actionLabel, actionCallback) {
+        if (!notificationsEnabled)
+            return
         var n = {
             id: Date.now(),
             title: title,
@@ -23,6 +26,8 @@ Item {
             list = list.slice(0, maxNotifications)
         notifications = list
     }
+
+    onNotificationsEnabledChanged: if (!notificationsEnabled) notifications = []
 
     function dismiss(index) {
         var list = notifications.slice()
