@@ -736,14 +736,16 @@ Item {
                     border.color: "#223247"
                     border.width: 1
 
-                    Column {
+                    Item {
                         anchors.fill: parent
                         anchors.margins: 10
                         anchors.rightMargin: previewPane.visible ? 230 : 10
-                        spacing: 8
 
                         Column {
-                            width: parent.width
+                            id: filesHeader
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
                             height: 24
                             spacing: 4
 
@@ -786,88 +788,102 @@ Item {
                                     }
                                 }
                             }
-
                         }
 
-                        Rectangle { width: parent.width; height: 1; color: "#223247" }
-
-                        PanelStateView {
-                            width: parent.width
-                            height: parent.height - 42
-                            visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
-                                     filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
-                            state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
-                            title: filesPanel.loading ? root.tr("Loading folder") :
-                                   (filesPanel.errorMessage.length > 0 ? root.tr("Folder error") :
-                                   (filesPanel.unavailableMessage.length > 0 ? root.tr("Folder unavailable") : root.tr("Folder is empty")))
-                            message: filesPanel.loading ? root.tr("Reading local files.") :
-                                     (filesPanel.errorMessage.length > 0 ? filesPanel.errorMessage :
-                                     (filesPanel.unavailableMessage.length > 0 ? filesPanel.unavailableMessage : root.tr("Create a folder or choose another place.")))
-                            actionLabel: filesPanel.loading ? "" : root.tr("Refresh")
-                            fontFamily: root.uiFont
-                            accentColor: root.themeAccent
-                            primaryTextColor: root.textPrimary
-                            secondaryTextColor: root.textMuted
-                            onActionRequested: filesPanel.refresh()
+                        Rectangle {
+                            id: filesSeparator
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: filesHeader.bottom
+                            anchors.topMargin: 8
+                            height: 1
+                            color: "#223247"
                         }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
-                                     filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
-                            acceptedButtons: Qt.RightButton
-                            z: 18
-                            onClicked: function(mouse) {
-                                var point = mapToItem(filesPanel, mouse.x, mouse.y)
-                                filesPanel.showEmptyContextMenu(point.x, point.y)
+                        Item {
+                            id: filesContentArea
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: filesSeparator.bottom
+                            anchors.topMargin: 8
+                            anchors.bottom: parent.bottom
+
+                            PanelStateView {
+                                anchors.fill: parent
+                                visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
+                                         filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
+                                state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
+                                title: filesPanel.loading ? root.tr("Loading folder") :
+                                       (filesPanel.errorMessage.length > 0 ? root.tr("Folder error") :
+                                       (filesPanel.unavailableMessage.length > 0 ? root.tr("Folder unavailable") : root.tr("Folder is empty")))
+                                message: filesPanel.loading ? root.tr("Reading local files.") :
+                                         (filesPanel.errorMessage.length > 0 ? filesPanel.errorMessage :
+                                         (filesPanel.unavailableMessage.length > 0 ? filesPanel.unavailableMessage : root.tr("Create a folder or choose another place.")))
+                                actionLabel: filesPanel.loading ? "" : root.tr("Refresh")
+                                fontFamily: root.uiFont
+                                accentColor: root.themeAccent
+                                primaryTextColor: root.textPrimary
+                                secondaryTextColor: root.textMuted
+                                onActionRequested: filesPanel.refresh()
                             }
-                        }
 
-                        ListView {
-                            id: filesList
-                            width: parent.width
-                            height: parent.height - 42
-                            visible: !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
-                                     filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
-                            clip: true
-                            spacing: 2
-                            model: filesPanel.entries
-
-                            TapHandler {
+                            MouseArea {
+                                anchors.fill: parent
+                                visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
+                                         filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
                                 acceptedButtons: Qt.RightButton
-                                onTapped: function(point) {
-                                    var localX = point.position.x
-                                    var localY = point.position.y
-                                    var index = filesList.indexAt(localX, localY)
-                                    var mapped = filesList.mapToItem(filesPanel, localX, localY)
-                                    if (index >= 0 && index < filesPanel.entries.length) {
-                                        filesPanel.selectOnly(filesPanel.entries[index])
-                                        filesPanel.showContextMenu(mapped.x, mapped.y)
-                                    } else {
-                                        filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
+                                z: 18
+                                onClicked: function(mouse) {
+                                    var point = mapToItem(filesPanel, mouse.x, mouse.y)
+                                    filesPanel.showEmptyContextMenu(point.x, point.y)
+                                }
+                            }
+
+                            ListView {
+                                id: filesList
+                                anchors.fill: parent
+                                visible: !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
+                                         filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
+                                clip: true
+                                spacing: 2
+                                model: filesPanel.entries
+
+                                TapHandler {
+                                    acceptedButtons: Qt.RightButton
+                                    onTapped: function(point) {
+                                        var localX = point.position.x
+                                        var localY = point.position.y
+                                        var index = filesList.indexAt(localX, localY)
+                                        var mapped = filesList.mapToItem(filesPanel, localX, localY)
+                                        if (index >= 0 && index < filesPanel.entries.length) {
+                                            filesPanel.selectOnly(filesPanel.entries[index])
+                                            filesPanel.showContextMenu(mapped.x, mapped.y)
+                                        } else {
+                                            filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
+                                        }
                                     }
                                 }
-                            }
 
-                            delegate: FileRow {
-                                width: filesList.width
-                                name: modelData.name
-                                path: modelData.path
-                                icon: modelData.icon
-                                kind: modelData.kind
-                                size: modelData.size
-                                modified: modelData.modified
-                                isDir: modelData.isDir
-                                selected: filesPanel.selectedPaths.indexOf(modelData.path) >= 0
-                                cutMarked: filesPanel.clipboardMode === "cut" && filesPanel.clipboardPaths.indexOf(modelData.path) >= 0
-                                onClicked: function(modifiers) { filesPanel.handleEntryClick(modelData, modifiers) }
-                                onContextRequested: function(menuX, menuY) {
-                                    filesPanel.selectOnly(modelData)
-                                    filesPanel.showContextMenu(menuX, menuY)
-                                }
-                                onOpenRequested: {
-                                    filesPanel.selectOnly(modelData)
-                                    filesPanel.openSelected()
+                                delegate: FileRow {
+                                    width: filesList.width
+                                    name: modelData.name
+                                    path: modelData.path
+                                    icon: modelData.icon
+                                    kind: modelData.kind
+                                    size: modelData.size
+                                    modified: modelData.modified
+                                    isDir: modelData.isDir
+                                    selected: filesPanel.selectedPaths.indexOf(modelData.path) >= 0
+                                    cutMarked: filesPanel.clipboardMode === "cut" && filesPanel.clipboardPaths.indexOf(modelData.path) >= 0
+                                    onClicked: function(modifiers) { filesPanel.handleEntryClick(modelData, modifiers) }
+                                    onContextRequested: function(menuX, menuY) {
+                                        filesPanel.selectOnly(modelData)
+                                        filesPanel.showContextMenu(menuX, menuY)
+                                    }
+                                    onOpenRequested: {
+                                        filesPanel.selectOnly(modelData)
+                                        filesPanel.openSelected()
+                                    }
                                 }
                             }
                         }
