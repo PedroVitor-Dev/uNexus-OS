@@ -8,6 +8,7 @@ arch=('x86_64')
 url='https://github.com/PedroVitor-Dev/uNexus-OS'
 license=('GPL-3.0-or-later')
 depends=(
+  'brave-bin'
   'flatpak'
   'gamemode'
   'hyprland'
@@ -15,6 +16,7 @@ depends=(
   'qt6-base'
   'qt6-declarative'
   'qt6-wayland'
+  'xdg-utils'
 )
 makedepends=(
   'cmake'

@@ -29,6 +29,7 @@ export GDK_BACKEND="${GDK_BACKEND:-wayland,x11}"
 export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland;xcb}"
 export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-wayland}"
 export CLUTTER_BACKEND="${CLUTTER_BACKEND:-wayland}"
+export BROWSER="${BROWSER:-brave}"
 
 runtime_root="${XDG_RUNTIME_DIR:-/tmp}/unexus"
 state_root="${XDG_STATE_HOME:-$HOME/.local/state}/unexus"
@@ -52,6 +53,7 @@ mkdir -p "$log_root"
     echo "env = QT_QPA_PLATFORM,wayland;xcb"
     echo "env = SDL_VIDEODRIVER,wayland"
     echo "env = CLUTTER_BACKEND,wayland"
+    echo "env = BROWSER,brave"
     if [ -f "$user_config" ]; then
         printf 'source = %s\n' "$user_config"
     fi
@@ -61,6 +63,7 @@ mkdir -p "$log_root"
     echo "bind = SUPER, I, exec, unexus-shell --shortcut settings"
     echo "bind = SUPER, G, exec, unexus-shell --shortcut stats"
     echo "bind = SUPER ALT, G, exec, unexus-shell --shortcut gameSettings"
+    echo "exec-once = sh -lc 'if command -v brave >/dev/null 2>&1 && command -v xdg-settings >/dev/null 2>&1; then xdg-settings set default-web-browser brave-browser.desktop; xdg-mime default brave-browser.desktop x-scheme-handler/http x-scheme-handler/https text/html; fi'"
     if command -v unexus-shell >/dev/null 2>&1; then
         printf "exec-once = sh -lc 'unexus-shell >>\"%s\" 2>&1 || %s'\n" "$session_log" "${fallback_terminal:-true}"
     elif [ -n "$fallback_terminal" ]; then
