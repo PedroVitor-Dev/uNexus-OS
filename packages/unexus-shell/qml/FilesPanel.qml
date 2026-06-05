@@ -887,18 +887,18 @@ Item {
                             spacing: 2
                             model: filesPanel.entries
 
-                            MouseArea {
-                                anchors.fill: parent
+                            TapHandler {
                                 acceptedButtons: Qt.RightButton
-                                z: 18
-                                onClicked: function(mouse) {
-                                    var index = filesList.indexAt(mouse.x, mouse.y)
-                                    var point = mapToItem(filesPanel, mouse.x, mouse.y)
+                                onTapped: function(point) {
+                                    var localX = point.position.x
+                                    var localY = point.position.y
+                                    var index = filesList.indexAt(localX, localY)
+                                    var mapped = filesList.mapToItem(filesPanel, localX, localY)
                                     if (index >= 0 && index < filesPanel.entries.length) {
                                         filesPanel.selectOnly(filesPanel.entries[index])
-                                        filesPanel.showContextMenu(point.x, point.y)
+                                        filesPanel.showContextMenu(mapped.x, mapped.y)
                                     } else {
-                                        filesPanel.showEmptyContextMenu(point.x, point.y)
+                                        filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
                                     }
                                 }
                             }
