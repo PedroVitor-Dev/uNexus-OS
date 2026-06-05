@@ -27,20 +27,19 @@ uNexus Shell is currently running natively on **Arch Linux + Hyprland** on real 
 
 The current prototype manages:
 
-- desktop wallpaper and top bar;
+- branded desktop wallpaper set, animated background layer and top bar;
 - fullscreen login screen;
-- system and gaming side docks;
-- themed system and gaming side docks with real icon lookup and drawn icon fallbacks;
+- system and gaming side docks with real icon lookup and drawn fallbacks;
 - app launcher with search, categories and installed/running/missing status chips;
-- uNexus Files with navigation, breadcrumbs, sorting, multi-select, clipboard actions and previews;
-- right-click desktop context menu;
-- notifications;
-- uNexus Settings control center with OS Provisioning checklist;
-- Game Settings dashboard;
+- uNexus Files with navigation, breadcrumbs, sorting, multi-select, clipboard actions, keyboard shortcuts and previews;
+- right-click desktop and file-manager context menus;
+- notifications, persistent notification preference and stats overlay;
+- uNexus Settings control center with appearance, language, shortcuts, help and about sections;
+- Game Settings dashboard with GameMode, MangoHud and real Flatpak launcher install actions;
 - first-run setup checklist;
 - PT-BR / English interface language selection;
-- CPU/GPU/RAM stats overlay;
 - real app launch, focus, close, maximize, move and minimize/restore through C++ and `hyprctl`;
+- Windows-like global shortcuts for Launcher, Settings, Game Settings and stats overlay;
 - workspace indicators and compositor-ready window preview direction;
 - installable Hyprland session and recovery session;
 - `unexusctl` for doctor, logs, backup, rollback, update and state management.
@@ -54,63 +53,28 @@ The shell can be installed as a Wayland session through `scripts/setup.sh`.
 - **Game-first workflow**: Steam, Lutris, Heroic and Bottles are first-class launcher targets.
 - **Hyprland-native control**: window focus, close, maximize, move and minimize/restore actions use `hyprctl` when available.
 - **Real system data**: battery, network, CPU, GPU, RAM and temperature data come from C++ backends.
-- **Gaming helpers**: Game Mode, MangoHud detection, Flatpak fallbacks and copied Steam launch options.
+- **Gaming helpers**: Game Mode, MangoHud detection, Steam launch-option helpers and real Flatpak launcher installs.
 - **Clean interface**: side docks, launcher, settings panels, notifications and setup live in one cohesive token-driven shell.
-- **uNexus visual language**: shared design tokens, Liquid Glass surfaces and spring motion give the shell a recognizable feel.
+- **uNexus visual language**: shared design tokens, Liquid Glass surfaces, spring motion and official wallpapers give the shell a recognizable feel.
 - **Open source**: GPL-3.0 and community-driven.
 
 ---
 
-## Features
+## Feature Status
 
-| Feature | Status |
+Recent shipping focus:
+
+| Area | Status |
 |---|---|
-| Login screen with avatar, clock and password | Done |
-| Geometric wallpaper with particles | Done |
-| Top bar with clock, date, network, battery and Game Mode | Done |
-| Game Mode toggle through C++ | Done |
-| CPU/GPU/RAM stats overlay | Done |
-| Missing GPU metrics shown as N/A | Done |
-| System side dock | Done |
-| Gaming side dock | Done |
-| Theme-synced dock accents | Done |
-| Dock icon lookup and drawn fallbacks | Done |
-| Dock hover, tooltip, bounce and active indicator | Done |
-| Dock open, minimized and closed app states | Done |
-| Design token system for spacing, radius, motion, type and surfaces | Done |
-| Liquid Glass QML material for docks, menus and notifications | Done |
-| Spring physics for panel and dock motion | Done |
-| Real app launch through C++ | Done |
-| Focus running apps before opening duplicates | Done |
-| Close apps through `hyprctl` / process fallback | Done |
-| Maximize, move, minimize and restore through dock action menu | Done |
-| Workspace indicators in the top bar | Done |
-| Dock right-click action menu | Done |
-| Launcher with search and categories | Done |
-| Gaming category with Steam, Lutris, Heroic and Bottles | Done |
-| Installed/not installed detection for gaming apps | Done |
-| Flatpak fallback for gaming apps | Done |
-| MangoHud/GameMode launch path for gaming apps | Done |
-| uNexus Settings panel | Done |
-| Settings control center sections with persistent active section | Done |
-| Settings OS Provisioning checklist | Done |
-| Game Settings panel | Done |
-| Game Settings dashboard summary | Done |
-| First Setup panel | Done |
-| uNexus Files file manager with copy/cut/paste, multi-select and previews | Done |
-| PT-BR / English language selection in Settings | Done |
-| Persistent user settings through `QSettings` | Done |
-| Notification system | Done |
-| Desktop context menu | Done |
-| Installable uNexus Hyprland session | Done |
-| uNexus Recovery session | Done |
-| `unexus-doctor` install validation | Done |
-| `unexusctl` state, logs, backup, rollback and update controls | Done |
-| Arch PKGBUILD | Done |
-| GPU driver manager | Planned |
-| Per-game performance profiles | Planned |
-| Bootable ISO | Planned |
+| Official wallpaper identity set | Added `unexus-core`, `particle-drift`, `aurora-ice` and `ember-circuit` assets |
+| Wayland session packaging | Installable `uNexus` and `uNexus Recovery` sessions are in place |
+| Global shortcuts | Windows-style Launcher, Settings, Game Settings and stats shortcuts are implemented |
+| Settings shortcuts/help | Shortcut customization, apply buttons, restore defaults and help panel are available |
+| Game launcher installs | Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles |
+| uNexus Files polish | Context menu, copy/cut/paste hotkeys, sorting, previews and layout fixes are in place |
+| Visual language | Tokens now cover spacing, radius, typography, surfaces and motion |
 
+For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 
 ---
 
@@ -141,7 +105,7 @@ The shell can be installed as a Wayland session through `scripts/setup.sh`.
 | `packaging/linux` | Desktop entries, Wayland sessions and session launchers |
 | `packaging/arch` | Arch Linux PKGBUILD |
 | `docs` | Architecture, build guide, roadmap and contribution docs |
-| `assets` | Visual and media assets |
+| `assets` | Logo, wallpaper and media assets |
 | `scripts` | Build, install, package, uninstall, doctor and control scripts |
 
 ---
@@ -172,10 +136,11 @@ See [docs/installer-technology.md](docs/installer-technology.md).
 | Notifications | `qml/NotificationCenter.qml` | Toast notifications |
 | Desktop menu | `qml/ContextMenu.qml` | Right-click desktop actions |
 | Stats overlay | `qml/FpsOverlay.qml`, `systemstats.cpp` | CPU, GPU, RAM and temperature overlay |
-| uNexus Settings | `qml/SettingsPanel.qml`, `usersettings.cpp` | Control center sections, OS provisioning, appearance and shell preferences |
-| Game Settings | `qml/GameSettingsPanel.qml` | Dashboard, MangoHud, GameMode and gaming launchers |
-| First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and install commands |
+| uNexus Settings | `qml/SettingsPanel.qml`, `usersettings.cpp` | Control center sections, appearance, shortcuts, language and shell preferences |
+| Game Settings | `qml/GameSettingsPanel.qml` | Dashboard, MangoHud, GameMode and gaming launcher installs |
+| First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and dependency guidance |
 | uNexus Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, multi-select, copy/cut/paste, open, create folder, rename, previews and trash |
+| Global shortcuts | `globalshortcuts.cpp`, `main.cpp` | Hyprland-triggered shortcut command bridge |
 | Session control | `packaging/linux/unexus-session`, `unexus-recovery-session` | Normal and recovery Hyprland sessions |
 | CLI control | `scripts/unexusctl.sh`, `scripts/unexus-doctor.sh` | State management, diagnostics, update, rollback and logs |
 | System info | `systeminfo.cpp` | Battery and network data |
@@ -217,9 +182,10 @@ See [docs/roadmap.md](docs/roadmap.md).
 
 Current near-term focus:
 
+- validate the current Stage 1 shell polish on Arch + Hyprland;
 - build the first graphical double-click uNexus Installer MVP;
-- turn OS Provisioning from copied commands into `unexusctl provision` profiles;
-- deepen Liquid Glass toward shader/compositor-backed blur and refraction;
+- package Qt/QML dependencies and runtime assets correctly;
+- add Flathub setup/status and safer provisioning backends;
 - start the Game Library and per-game profile data model;
 - start the bootable ISO path with `archiso`.
 

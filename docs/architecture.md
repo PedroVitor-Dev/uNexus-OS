@@ -8,14 +8,15 @@ This document describes the current technical architecture of uNexus.
 
 uNexus is a Linux gaming desktop shell built on top of Wayland and Hyprland.
 
-The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats and persistent user settings.
+The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats, file actions, global shortcut commands and persistent user settings.
 
-Around the shell there is now a small OS support layer:
+Around the shell there is a small OS support layer:
 
 - installable Wayland session entries;
 - a recovery Hyprland session;
 - `unexus-doctor` for validation;
 - `unexusctl` for state, logs, backup, rollback and update workflows;
+- official logo and wallpaper resources packaged with the shell;
 - XDG user directories for config, data, cache, state and logs.
 
 ---
@@ -27,7 +28,7 @@ Around the shell there is now a small OS support layer:
 | Games and gaming launchers           |
 | Steam, Lutris, Heroic, Bottles        |
 +--------------------------------------+
-| uNexus Shell UI                         |
+| uNexus Shell UI                      |
 | Main, docks, launcher, settings      |
 +--------------------------------------+
 | Qt6 / QML                            |
@@ -56,12 +57,13 @@ Around the shell there is now a small OS support layer:
 |---|---|---|
 | `systemInfo` | `SystemInfo` | Battery and network state |
 | `gameMode` | `GameMode` | Game Mode toggle/state |
-| `appLauncher` | `AppLauncher` | Launch, focus, close and detect apps |
+| `appLauncher` | `AppLauncher` | Launch, focus, close, install and detect apps |
 | `systemStats` | `SystemStats` | CPU, GPU, RAM and temperature stats |
 | `userSettings` | `UserSettings` | Persistent shell preferences |
+| shortcut command bridge | `GlobalShortcuts` | Hyprland-triggered command bridge for global shortcuts |
 | `fileManager` | `FileManager` | Local file navigation and file actions |
 
-The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `SettingsPanel.qml`, `GameSettingsPanel.qml`, `FirstSetupPanel.qml` and `FpsOverlay.qml`.
+The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `SettingsPanel.qml`, `GameSettingsPanel.qml`, `FirstSetupPanel.qml`, `FilesPanel.qml` and `FpsOverlay.qml`.
 
 ---
 
@@ -71,7 +73,7 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 
 - theme selection and persistence;
 - English/PT-BR localization state;
-- wallpaper and particles;
+- official wallpaper image, particles and animated line layer;
 - top bar;
 - login flow;
 - system side dock;
@@ -85,7 +87,8 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - Game Settings;
 - First Setup;
 - uNexus Files;
-- shared brand logo resource.
+- shared brand logo resource;
+- global shortcut command dispatch.
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
@@ -101,7 +104,7 @@ Dock icon behavior:
 
 ## Visual Identity and Assets
 
-Official uNexus logo PNG variants live in `assets/logo`.
+Official uNexus logo PNG variants live in `assets/logo`. Official wallpaper PNGs live in `assets/wallpapers`.
 
 The base visual system starts in `qml/DesignTokens.qml`. `Main.qml` binds those tokens into root aliases for spacing, radius, motion, typography, surfaces, borders, text, shadows and status colors. Panels should prefer the root aliases so visual changes can be made centrally.
 
@@ -115,7 +118,20 @@ Motion is tokenized as well. Panel entrance/dismissal and dock interaction use Q
 qrc:/UNexusShell/assets/logo/SF%20White.png
 ```
 
-`packages/unexus-shell/CMakeLists.txt` registers that logo through Qt resources so QML can load it at runtime without depending on an absolute filesystem path.
+`Main.qml` also exposes a default `desktopWallpaperSource` pointing at:
+
+```qml
+qrc:/UNexusShell/assets/wallpapers/unexus-core.png
+```
+
+The first wallpaper set includes:
+
+- `unexus-core.png`;
+- `particle-drift.png`;
+- `aurora-ice.png`;
+- `ember-circuit.png`.
+
+`packages/unexus-shell/CMakeLists.txt` registers logo and wallpaper assets through Qt resources so QML can load them at runtime without depending on absolute filesystem paths. Wallpapers are also installed to `${CMAKE_INSTALL_DATADIR}/unexus/wallpapers`.
 
 The current logo is used on:
 
@@ -124,11 +140,10 @@ The current logo is used on:
 - Settings About section;
 - README hero.
 
-The First Setup header intentionally no longer includes a small logo badge; the panel is kept text-first and minimal.
-
-Old screenshot/demo assets with previous branding were removed from tracked media.
+The First Setup header intentionally no longer includes a small logo badge; the panel is kept text-first and minimal. Old screenshot/demo assets with previous branding were removed from tracked media.
 
 ---
+
 ## App Launching and Window Control
 
 `AppLauncher` is the central bridge between QML and the real desktop session.
@@ -138,6 +153,7 @@ Current responsibilities:
 - launch apps with `QProcess::startDetached`;
 - detect native commands with `QStandardPaths::findExecutable`;
 - detect Flatpak apps with `flatpak info`;
+- start real Flatpak installs for approved gaming launcher IDs;
 - copy helper commands to the clipboard;
 - focus existing windows before opening duplicate instances;
 - close windows through Hyprland when available;
@@ -159,6 +175,32 @@ hyprctl dispatch fullscreen 1
 hyprctl dispatch movetoworkspace <workspace>,address:<address>
 hyprctl dispatch movetoworkspacesilent special:minimized,address:<address>
 ```
+
+---
+
+## Global Shortcuts
+
+Global shell shortcuts are handled through Hyprland binds that call:
+
+```bash
+unexus-shell --shortcut launcher
+unexus-shell --shortcut settings
+unexus-shell --shortcut gameSettings
+unexus-shell --shortcut stats
+```
+
+`GlobalShortcuts` writes and watches a small command file under the runtime directory. The running shell receives the command and opens the matching panel/toggle without starting a duplicate UI instance.
+
+Default shortcuts:
+
+| Shortcut | Action |
+|---|---|
+| `Super+S` | Launcher |
+| `Super+I` | Settings |
+| `Super+G` | Stats overlay |
+| `Super+Alt+G` | Game Settings |
+
+Settings includes a shortcut editor, explicit apply buttons, default restore and a help panel.
 
 ---
 
@@ -197,6 +239,8 @@ Each app can define:
 - process names;
 - gaming flag.
 
+Game Settings can start real Flatpak installs for those supported launcher IDs. Native/pacman installs are not automated yet.
+
 ### MangoHud
 
 MangoHud is currently integrated as a launch wrapper for gaming apps and documented in the Game Settings / First Setup panels.
@@ -230,10 +274,14 @@ Current settings:
 - selected theme index;
 - selected interface language (`en` or `pt-BR`);
 - stats overlay visibility;
+- persistent notification preference;
+- global shortcut strings for Launcher, Settings, Game Settings and stats overlay;
 - first setup completion state;
 - active Settings control center section.
 
 These values are restored when `unexus-shell` starts.
+
+---
 
 ## OS Session and Control Layer
 
@@ -262,6 +310,8 @@ Persistent logs live in:
 
 The recovery session starts Hyprland with only a terminal and basic keybinds, giving a safe path back into the system if the shell breaks.
 
+---
+
 ## uNexus Control CLI
 
 `unexusctl` is the command-line control surface for the OS layer.
@@ -281,35 +331,26 @@ Current commands:
 | `unexusctl update --yes` | Pull, build and install from the Git repository |
 | `unexusctl version` | Show repo, branch, commit and shell binary status |
 
-The next architectural step is to add `unexusctl provision` so Settings can apply named provisioning profiles instead of copying individual commands.
+The next architectural step is to add `unexusctl provision` so future provisioning UI can apply named profiles instead of copying individual commands.
 
-## Settings Control Center and OS Provisioning
+---
 
-`SettingsPanel.qml` now uses section navigation with persisted active section:
+## Settings Control Center
+
+`SettingsPanel.qml` uses section navigation with persisted active section:
 
 - System;
 - Appearance;
 - Language;
+- Shortcuts;
+- Help;
 - About.
 
-The System section includes an OS Provisioning checklist. It detects available tools through `AppLauncher::isInstalled` and copies command recipes for:
+The previous OS Provisioning checklist was removed from Settings to keep the control center cleaner. System-level provisioning should return later through a safer backend such as `unexusctl provision` with manifests, dry-run output and explicit privilege boundaries.
 
-- global dark mode;
-- Hyprland keyboard workflow;
-- minimal metrics/status;
-- Kitty/Alacritty;
-- Zsh/Fish;
-- Starship;
-- Git SSH + GitHub CLI;
-- Python venv + SQL clients;
-- Neovim/VSCode;
-- dotfiles repository;
-- post-install restore;
-- package cleanup;
-- btop/htop;
-- power and network tools.
+Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
 
-For safety, this panel currently copies commands instead of executing privileged system changes directly.
+---
 
 ## Localization
 
@@ -324,6 +365,8 @@ QML uses:
 The first localized target is PT-BR. English remains the source/fallback language, so internal app metadata and logic can continue using stable English keys while display text is translated at render time.
 
 The language selector is available in `SettingsPanel.qml`.
+
+---
 
 ## uNexus Files
 
@@ -344,7 +387,7 @@ Current responsibilities:
 - multi-select rows from QML;
 - move files/folders to trash through `gio trash` when available.
 
-uNexus Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property. The panel now supports common desktop shortcuts such as Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+A, Delete, Return, F2 and Escape.
+uNexus Files is currently an embedded panel, not a standalone process. Its dock state is driven by the panel's `dockActive` property. The panel supports common desktop shortcuts such as Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+A, Delete, Return, F2 and Escape, plus a right-click context menu for rows and blank list space.
 
 ---
 
@@ -360,7 +403,7 @@ uNexus Files is currently an embedded panel, not a standalone process. Its dock 
 - Heroic;
 - Bottles.
 
-It shows install status and copies install commands for the user to run.
+It shows install status and still copies manual commands for dependencies that are not safe to install automatically yet. Game Settings separately starts real Flatpak installs for the supported gaming launchers.
 
 ---
 
@@ -386,7 +429,8 @@ Components communicate through:
 - Qt signals and slots;
 - QML context properties;
 - Linux process APIs;
-- Hyprland command-line IPC through `hyprctl`.
+- Hyprland command-line IPC through `hyprctl`;
+- runtime command files for global shortcut dispatch.
 
 Future versions may add D-Bus or direct compositor protocols where needed.
 
@@ -397,7 +441,7 @@ Future versions may add D-Bus or direct compositor protocols where needed.
 Near-term architecture work:
 
 - add `unexusctl provision` with manifest-driven profiles and dry-run;
-- connect Settings provisioning rows to safe backend actions;
+- design a safer provisioning UI after the backend exists;
 - add systemd user service definitions for session health and startup tasks;
 - move repeated app metadata into a model or config file;
 - evolve Liquid Glass from a QML material into shader/compositor-backed blur and refraction;

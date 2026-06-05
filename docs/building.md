@@ -41,7 +41,7 @@ Optional test utilities:
 sudo pacman -S mesa-utils
 ```
 
-Optional OS provisioning tools shown in `Settings > System`:
+Optional developer/system tools that may be useful while testing uNexus:
 
 ```bash
 sudo pacman -S kitty alacritty zsh fish zsh-syntax-highlighting zsh-autosuggestions starship github-cli openssh python python-pip python-virtualenv sqlite postgresql-libs neovim code btop htop power-profiles-daemon tlp networkmanager
@@ -86,6 +86,7 @@ This script:
 - configures and builds `unexus-shell`;
 - installs the shell binary;
 - installs `uNexus` and `uNexus Recovery` Wayland sessions;
+- installs current logo and wallpaper runtime assets;
 - installs `unexusctl` and `unexus-doctor`;
 - initializes user XDG state directories;
 - writes an install log;
@@ -188,7 +189,7 @@ The shell currently relies on Hyprland for the best window-management behavior.
 
 ## Optional Gaming Apps
 
-Native packages or Flatpaks can be used.
+Native packages or Flatpaks can be used. Game Settings can start Flatpak installs for these supported launcher IDs when Flatpak/Flathub are available.
 
 Steam:
 

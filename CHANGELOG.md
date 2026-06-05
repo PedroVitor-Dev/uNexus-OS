@@ -9,129 +9,110 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- `unexus-session` install flow with generated Hyprland session config.
-- `uNexus Recovery` Wayland session for terminal-only recovery.
-- `unexus-doctor` install validation command.
-- `unexusctl` with `init`, `paths`, `doctor`, `session-info`, `logs`, `backup`, `rollback`, `update` and `version`.
-- Persistent XDG state, cache, data, config and log directories under the user's home.
-- Session, install, doctor and update log paths under `~/.local/state/unexus/logs`.
-- Arch `PKGBUILD` and package helper script.
-- Panel state views for empty, loading, error and unavailable states.
-- Reusable `StatusChip`, `ControlButton` and `SegmentedControl` QML controls.
-- OS Provisioning checklist inside `Settings > System`.
-- Recovery and update/rollback workflow documentation through CLI output.
-- Official uNexus logo PNG variants under `assets/logo`.
-- Official logo usage on the desktop, login screen, First Setup, Settings About and README.
-- Qt resource registration for the current logo asset.
-- uNexus Files MVP with local directory navigation, places sidebar, file opening, folder creation, rename and move-to-trash actions.
-- uNexus Files breadcrumbs and sorting by name, type, date and size.
-- System and gaming side dock app states for open, minimized/hidden and closed apps.
-- PT-BR interface localization with English/PT-BR language selection in uNexus Settings.
-- Persistent language preference through `QSettings`.
-- Persistent Settings control center section through `QSettings`.
+- Official wallpaper set under `assets/wallpapers`: `unexus-core`, `particle-drift`, `aurora-ice` and `ember-circuit`.
+- Wallpaper resources registered in Qt and installed to the uNexus data directory.
+- Windows-style global shortcuts for Launcher, Settings, Game Settings and stats overlay.
+- Shortcut customization, explicit apply buttons, default restore and shortcut help panel in uNexus Settings.
+- Real Flatpak install start actions for Steam, Lutris, Heroic and Bottles in Game Settings.
+- Extra uNexus Files keyboard shortcuts and blank-space context-menu behavior.
+- Installable `uNexus` and `uNexus Recovery` Wayland sessions.
+- `unexus-doctor` install validation command and `unexusctl` state/log/update helpers.
 
 ### Changed
-- Lock screen now uses a larger centered white logo without the old rounded logo card.
-- Settings was redesigned as a control center with section navigation.
-- Game Settings now has a compact gaming dashboard summary.
-- Launcher, Settings, Game Settings, First Setup and Files panels use faster consistent transitions.
-- Panels now respond better to compact laptop and desktop resolutions.
-- Dock icons now use real icon lookup with drawn fallbacks instead of text initials.
-- Gaming dock now follows the active theme accent instead of a fixed orange accent.
-- First Setup header no longer shows the small logo badge.
-- System commands that close apps, finish setup or trash files now use confirmation states.
-- `scripts/setup.sh` now logs install steps and runs validation after install.
-- `unexus-session` writes persistent session logs and falls back to a terminal if the shell fails.
-- README now uses the official logo instead of old screenshots/demo media.
-- uNexus Files panel title is now `File Manager` / `Gerenciador de Arquivos`.
-- uNexus Files folder rows now use a simpler folder visual and type label instead of oversized `DIR` text.
-- Shell startup now requests fullscreen for Hyprland testing.
-- Launcher, dock, settings, game settings, first setup, context menu, login, stats overlay and uNexus Files now route user-facing text through the shell localization helper.
-- Internal panel dock state is recalculated when panels open/close so closed internal apps no longer remain visually active.
+- README Feature Status was reduced to the latest shipping focus instead of the full feature inventory.
+- Settings documentation now reflects the removal of the old OS Provisioning checklist.
+- Main desktop now uses the official `unexus-core` wallpaper image under the animated background layer.
+- Settings now focuses on shell preferences, shortcuts, help, language and About.
+- Game Settings now starts supported Flatpak installs instead of only copying commands.
+- uNexus Files panel layout, context-click behavior and shortcut handling were tightened.
+- Shell session packaging now includes stronger logging/recovery behavior.
+- Visual language is now documented through tokenized spacing, typography, surfaces and motion.
 
 ### Removed
 - Old tracked screenshots and demo GIFs with previous branding.
+- OS Provisioning checklist from uNexus Settings.
 - First Setup dock item from the system dock.
 
 ### Planned
-- `unexusctl provision` profiles with dry-run support
-- GPU driver manager
-- Controller support out of the box
-- Per-game performance profiles
-- Arch packaging and installable shell
-- Bootable ISO path
+- `unexusctl provision` profiles with dry-run support.
+- GPU driver manager.
+- Controller support out of the box.
+- Per-game performance profiles.
+- Graphical installer MVP.
+- Bootable ISO path.
+
 ---
 
-## [0.3.0] — 2026-05-31
+## [0.3.0] - 2026-05-31
 
 ### Added
-- Dual boot Arch Linux + Hyprland on real hardware
-- uNexus Shell running natively on Hyprland
-- AppLauncher C++ class with real app detection
-- `isWindowOpen` via hyprctl and wmctrl fallback
-- `isProcessRunning` via pgrep
-- `focusWindow` and `focusOrLaunch` via hyprctl
-- `closeWindow` via hyprctl (functional on Hyprland)
-- Dock active indicator based on real process state
-- Right-click dock menu with Open/Focus and Close actions
-- Steam and Lutris in launcher with installed/not installed status
-- Flatpak fallback for gaming apps
-- Emoji icons via noto-fonts-emoji
-- Exo 2 font installed on real hardware
+- Dual boot Arch Linux + Hyprland on real hardware.
+- uNexus Shell running natively on Hyprland.
+- AppLauncher C++ class with real app detection.
+- `isWindowOpen` via hyprctl and wmctrl fallback.
+- `isProcessRunning` via pgrep.
+- `focusWindow` and `focusOrLaunch` via hyprctl.
+- `closeWindow` via hyprctl.
+- Dock active indicator based on real process state.
+- Right-click dock menu with Open/Focus and Close actions.
+- Steam and Lutris in launcher with installed/not installed status.
+- Flatpak fallback for gaming apps.
+- Emoji icons via noto-fonts-emoji.
+- Exo 2 font installed on real hardware.
 
 ### Fixed
-- AppLauncher header contained implementations causing MOC errors
-- Right-click on dock was leaking to desktop context menu
-- closeWindow missing implementation causing linker error
+- AppLauncher header contained implementations causing MOC errors.
+- Right-click on dock was leaking to desktop context menu.
+- `closeWindow` missing implementation caused linker errors.
 
 ### Environment
-- Moved from Ubuntu VM to Arch Linux + Hyprland on real hardware
-- hyprctl now available and functional
-- sudo password issue resolved (keyboard layout)
+- Moved from Ubuntu VM to Arch Linux + Hyprland on real hardware.
+- `hyprctl` now available and functional.
+- Sudo password issue resolved through keyboard-layout correction.
 
 ---
 
-## [0.2.0] — 2026-05-30
+## [0.2.0] - 2026-05-30
 
 ### Changed
-- Project scope shifted to gaming-focused OS
-- Updated philosophy: "Gaming on Linux should be effortless"
-- Rewrote README, roadmap and architecture docs for gaming focus
+- Project scope shifted to a gaming-focused OS.
+- Updated philosophy around effortless Linux gaming.
+- Rewrote README, roadmap and architecture docs for gaming focus.
 
 ### Added
-- Real battery indicator via C++ (`SystemInfo` class)
-- Real network indicator via C++ (`SystemInfo` class)
-- Login screen with avatar, clock and password field
-- uNexus Launcher with search and categories (All, System, Media)
-- Right-click context menu on desktop
-- Notification system with auto-dismiss (4s)
-- Active app indicator on dock (blue dot)
-- Bounce animation on dock item click
-- Geometric wallpaper with glow effects
-- Tooltip above dock items (RocketDock style)
-- Game Mode toggle via gamemoded
+- Real battery indicator via C++ (`SystemInfo` class).
+- Real network indicator via C++ (`SystemInfo` class).
+- Login screen with avatar, clock and password field.
+- uNexus Launcher with search and categories.
+- Right-click context menu on desktop.
+- Notification system with auto-dismiss.
+- Active app indicator on dock.
+- Bounce animation on dock item click.
+- Geometric wallpaper with glow effects.
+- Tooltip above dock items.
+- Game Mode toggle via gamemoded.
 
 ---
 
-## [0.1.0] — 2026-05-30
+## [0.1.0] - 2026-05-30
 
 ### Added
-- Initial monorepo structure
-- `unexus-shell` component with CMake + Qt6 build system
-- Top bar with live clock and date
-- Minimalist floating dock with 5 app slots
-- Dock hover zoom effect
-- Entrance animations on startup (fade + slide)
-- Center logo with tagline
-- Initial visual identity (dark theme, blue accent #4d9eff)
+- Initial monorepo structure.
+- `unexus-shell` component with CMake + Qt6 build system.
+- Top bar with live clock and date.
+- Minimalist floating dock with 5 app slots.
+- Dock hover zoom effect.
+- Entrance animations on startup.
+- Center logo with tagline.
+- Initial visual identity.
 
 ### Docs
-- README with screenshots and demo GIF
-- Architecture document
-- Roadmap document
-- Contributing guide
-- Building guide
+- README with screenshots and demo GIF.
+- Architecture document.
+- Roadmap document.
+- Contributing guide.
+- Building guide.
 
 ---
 
-<sub>uNexus — built for gamers. Powered by Linux.</sub>
+<sub>uNexus - built for gamers. Powered by Linux.</sub>

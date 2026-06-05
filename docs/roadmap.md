@@ -19,6 +19,7 @@ uNexus currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] Qt6/QML shell starts and runs on Hyprland
 - [x] Login screen with password flow
 - [x] Animated geometric wallpaper with particles
+- [x] First official wallpaper set (`unexus-core`, `particle-drift`, `aurora-ice`, `ember-circuit`)
 - [x] Top bar with clock, date, network, battery and Game Mode
 - [x] System side dock
 - [x] Gaming side dock
@@ -44,7 +45,6 @@ uNexus currently has a working Qt6/QML shell running on Arch Linux + Hyprland re
 - [x] uNexus Recovery session
 - [x] `unexus-doctor` install validation
 - [x] `unexusctl` state, logs, backup, rollback and update controls
-- [x] OS Provisioning checklist in Settings
 - [x] Project docs updated for the current shell state
 - [x] Official logo assets tracked and used in core shell surfaces
 - [x] Design token system for spacing, borders, shadows, typography, motion and surfaces
@@ -76,7 +76,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 
 - [x] Add official uNexus logo assets and integrate them into shell surfaces
 - [x] Define the core visual language: spacing, shadows, borders, motion and typography
-- [ ] Create the first official wallpaper set
+- [x] Create the first official wallpaper set
 - [x] Replace temporary text/icon fallbacks with consistent visual app icons
 - [x] Polish the side docks so system and gaming areas feel distinct but related
 - [x] Refine panel transitions for Launcher, Settings, Game Settings and First Setup
@@ -116,7 +116,7 @@ Goal: make the current shell feel intentional, original and pleasant enough to u
 
 - [ ] A user can boot into Hyprland, see uNexus Shell, open apps, close apps and understand the interface without reading code
 - [x] The shell has an official logo integrated into core surfaces
-- [ ] The full shell visual language is cohesive beyond the first logo pass
+- [x] The full shell visual language is cohesive beyond the first logo pass
 - [ ] The current feature set works after a clean clone/build on the target Arch machine
 
 ---
@@ -144,7 +144,7 @@ Goal: make uNexus Settings and Game Settings useful, not just informational.
 - [x] First Setup completion persists through `QSettings`
 - [x] Game Settings can copy Steam launch options
 - [x] uNexus Files can open files, create folders, rename items and move items to trash
-- [ ] Add real install actions for Flatpak apps instead of only copying commands
+- [x] Add real install actions for Flatpak apps instead of only copying commands
 - [ ] Add Flatpak remote detection and Flathub setup status
 - [ ] Add MangoHud configuration status
 - [ ] Add GameMode service status
@@ -160,9 +160,9 @@ Goal: make uNexus Settings and Game Settings useful, not just informational.
 - [x] Define where uNexus stores user config
 - [ ] Define where uNexus stores system config
 - [ ] Add config migration rules for future versions
-- [ ] Add documentation for every privileged provisioning action
+- [ ] Add documentation for every future privileged provisioning action
 - [ ] Add `unexusctl provision` with profile manifests and dry-run
-- [ ] Connect Settings OS Provisioning to safe backend provisioning profiles
+- [ ] Connect future provisioning UI to safe backend provisioning profiles
 
 ### Exit Criteria
 
@@ -217,7 +217,7 @@ Goal: make uNexus genuinely useful for launching, configuring and monitoring gam
 
 ### Exit Criteria
 
-- [ ] A user can install/open Steam, Lutris, Heroic and Bottles from uNexus flows
+- [ ] A user can install/open Steam, Lutris, Heroic and Bottles from uNexus flows after Flathub/status validation
 - [ ] At least one real game can be launched with MangoHud + GameMode
 - [ ] The system can explain what is missing when a game environment is incomplete
 
@@ -255,7 +255,7 @@ Goal: make the shell behave less like an overlay and more like an operating-syst
 - [ ] Decide whether uNexus will remain a Hyprland shell or fork deeper behavior
 - [ ] Document required Hyprland rules for uNexus Shell
 - [ ] Add default Hyprland config for uNexus
-- [ ] Add session environment variables
+- [x] Add session environment variables
 - [ ] Add startup order for shell, portals, notifications and services
 - [ ] Add xdg-desktop-portal setup for Wayland apps
 
@@ -293,7 +293,7 @@ Goal: stop treating uNexus Shell as a manually built project and make it install
 - [x] Create Arch `PKGBUILD` for `unexus-shell`
 - [ ] Package Qt/QML dependencies correctly
 - [x] Register the current logo through Qt resources
-- [ ] Package all runtime assets correctly
+- [x] Package current logo and wallpaper runtime assets
 - [x] Add a clean uninstall path
 - [x] Add repeatable local setup/package scripts
 - [ ] Add package signing plan later
