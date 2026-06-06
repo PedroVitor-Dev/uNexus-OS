@@ -132,6 +132,7 @@ Window {
         "Move": "Mover",
         "Minimize": "Minimizar",
         "Restore": "Restaurar",
+        "Minimized": "Minimizadas",
         "left": "esquerda",
         "right": "direita",
         "up": "cima",
@@ -389,7 +390,10 @@ Window {
         "Workspaces": "Areas de trabalho",
         "No windows": "Sem janelas",
         "Window moved": "Janela movida",
-        "Window moved to workspace {label}.": "Janela movida para area {label}."
+        "Window moved to workspace {label}.": "Janela movida para area {label}.",
+        "Window minimized": "Janela minimizada",
+        "Window maximized": "Janela maximizada",
+        "Window closed": "Janela fechada"
     })
 
     function tr(text) {
@@ -657,6 +661,7 @@ Window {
         workspaceStateVersion
         var workspaces = workspaceModel()
         var windows = appLauncher.workspaceWindows()
+        var minimized = appLauncher.minimizedWindows()
 
         for (var i = 0; i < workspaces.length; i++) {
             workspaces[i].clients = []
@@ -664,6 +669,18 @@ Window {
                 if (windows[j].workspaceId === workspaces[i].id)
                     workspaces[i].clients.push(windows[j])
             }
+        }
+
+        if (minimized.length > 0) {
+            workspaces.push({
+                id: -1,
+                name: root.tr("Minimized"),
+                windows: minimized.length,
+                monitor: "",
+                active: false,
+                special: true,
+                clients: minimized
+            })
         }
 
         return workspaces
@@ -682,6 +699,51 @@ Window {
             workspaceStateVersion++
             dockStateVersion++
         }
+    }
+
+    function minimizeWindowAddress(address) {
+        if (appLauncher.minimizeWindowAddress(address)) {
+            workspaceStateVersion++
+            dockStateVersion++
+            notifCenter.send(root.tr("Window minimized"), "", "SYS")
+            return true
+        }
+
+        return false
+    }
+
+    function restoreWindowAddress(address) {
+        if (appLauncher.restoreWindowAddress(address)) {
+            workspaceSwitcherOpen = false
+            workspaceStateVersion++
+            dockStateVersion++
+            return true
+        }
+
+        return false
+    }
+
+    function maximizeWindowAddress(address) {
+        if (appLauncher.maximizeWindowAddress(address)) {
+            workspaceSwitcherOpen = false
+            workspaceStateVersion++
+            dockStateVersion++
+            notifCenter.send(root.tr("Window maximized"), "", "SYS")
+            return true
+        }
+
+        return false
+    }
+
+    function closeWindowAddress(address) {
+        if (appLauncher.closeWindowAddress(address)) {
+            workspaceStateVersion++
+            dockStateVersion++
+            notifCenter.send(root.tr("Window closed"), "", "SYS")
+            return true
+        }
+
+        return false
     }
 
     function moveWindowAddressToWorkspace(address, workspaceId, workspaceLabel) {
@@ -818,6 +880,7 @@ Window {
         }
 
         appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
+        root.workspaceStateVersion++
         root.dockStateVersion++
     }
 
@@ -830,14 +893,26 @@ Window {
             return true
         }
 
-        return appLauncher.focusWindow(app.windowClasses || [])
+        var focused = appLauncher.focusWindow(app.windowClasses || [])
+        if (focused) {
+            root.workspaceStateVersion++
+            root.dockStateVersion++
+        }
+
+        return focused
     }
 
     function maximizeDesktopApp(app) {
         if (!app || app.internalAction)
             return false
 
-        return appLauncher.maximizeWindow(app.windowClasses || [])
+        var maximized = appLauncher.maximizeWindow(app.windowClasses || [])
+        if (maximized) {
+            root.workspaceStateVersion++
+            root.dockStateVersion++
+        }
+
+        return maximized
     }
 
     function moveDesktopApp(app) {
@@ -845,6 +920,7 @@ Window {
             return false
 
         var moved = appLauncher.moveWindowToNextWorkspace(app.windowClasses || [])
+        root.workspaceStateVersion++
         root.dockStateVersion++
         return moved
     }
@@ -870,6 +946,7 @@ Window {
 
         var hidden = appLauncher.isWindowHidden(app.windowClasses || [])
         var ok = hidden ? appLauncher.restoreWindow(app.windowClasses || []) : appLauncher.minimizeWindow(app.windowClasses || [])
+        root.workspaceStateVersion++
         root.dockStateVersion++
         return ok
     }
@@ -1208,7 +1285,7 @@ Window {
                         property var workspaceData: modelData
                         property var clients: modelData.clients || []
 
-                        width: Math.max(root.compactLayout ? 86 : 104, Math.floor((workspaceSwitcher.width - 20 - 8 * Math.max(0, root.workspaceModel().length - 1)) / Math.max(1, root.workspaceModel().length)))
+                        width: Math.max(root.compactLayout ? 86 : 104, Math.floor((workspaceSwitcher.width - 20 - 8 * Math.max(0, root.workspaceDetailModel().length - 1)) / Math.max(1, root.workspaceDetailModel().length)))
                         height: 206
                         radius: root.radiusMd
                         color: workspaceDrop.containsDrag ? root.surfaceStrongHover : (modelData.active ? root.themeAccentDim : root.surfaceRaised)
@@ -1220,7 +1297,7 @@ Window {
                             anchors.fill: parent
                             keys: ["unexus-window"]
                             onDropped: function(drop) {
-                                if (drop.source && drop.source.windowAddress)
+                                if (!workspaceCard.workspaceData.special && drop.source && drop.source.windowAddress)
                                     root.moveWindowAddressToWorkspace(drop.source.windowAddress, workspaceCard.workspaceData.id, workspaceCard.workspaceData.name)
                             }
                         }
@@ -1303,12 +1380,42 @@ Window {
                                             anchors.right: parent.right
                                             anchors.top: parent.top
                                             anchors.margins: 6
+                                            anchors.rightMargin: 58
                                             text: modelData.title && modelData.title.length > 0 ? modelData.title : modelData.className
                                             color: root.textPrimary
                                             font.pixelSize: 9
                                             font.family: root.uiFont
                                             font.bold: true
                                             elide: Text.ElideRight
+                                        }
+
+                                        Row {
+                                            anchors.top: parent.top
+                                            anchors.right: parent.right
+                                            anchors.topMargin: 4
+                                            anchors.rightMargin: 4
+                                            spacing: 3
+                                            z: 4
+
+                                            WindowThumbAction {
+                                                symbol: modelData.minimized ? "↗" : "-"
+                                                label: modelData.minimized ? root.tr("Restore") : root.tr("Minimize")
+                                                onClicked: modelData.minimized ? root.restoreWindowAddress(windowThumb.windowAddress) : root.minimizeWindowAddress(windowThumb.windowAddress)
+                                            }
+
+                                            WindowThumbAction {
+                                                visible: !modelData.minimized
+                                                symbol: "□"
+                                                label: root.tr("Maximize")
+                                                onClicked: root.maximizeWindowAddress(windowThumb.windowAddress)
+                                            }
+
+                                            WindowThumbAction {
+                                                symbol: "×"
+                                                label: root.tr("Close")
+                                                danger: true
+                                                onClicked: root.closeWindowAddress(windowThumb.windowAddress)
+                                            }
                                         }
 
                                         Text {
@@ -1329,7 +1436,7 @@ Window {
                                             drag.target: windowThumb
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: root.focusWindowAddress(windowThumb.windowAddress)
+                                            onClicked: modelData.minimized ? root.restoreWindowAddress(windowThumb.windowAddress) : root.focusWindowAddress(windowThumb.windowAddress)
                                             onReleased: {
                                                 windowThumb.x = 0
                                                 windowThumb.y = 0
@@ -1811,6 +1918,48 @@ Window {
         settingsPanel: unexusSettings
         gameSettingsPanel: gameSettings
         filesPanel: unexusFiles
+    }
+
+    component WindowThumbAction: Rectangle {
+        id: thumbAction
+
+        property string symbol: ""
+        property string label: ""
+        property bool danger: false
+
+        signal clicked()
+
+        width: 15
+        height: 15
+        radius: 4
+        color: actionMouse.containsMouse ? (danger ? "#4a1f2a" : root.surfaceStrongHover) : "#172233"
+        border.color: danger ? "#7a3348" : root.borderMuted
+        border.width: 1
+        opacity: actionMouse.containsMouse ? 1.0 : 0.9
+
+        Text {
+            anchors.centerIn: parent
+            text: thumbAction.symbol
+            color: thumbAction.danger ? "#ff8a8a" : root.textPrimary
+            font.pixelSize: 9
+            font.family: root.uiFont
+            font.bold: true
+        }
+
+        MouseArea {
+            id: actionMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: function(mouse) {
+                mouse.accepted = true
+                thumbAction.clicked()
+            }
+        }
+
+        ToolTip.visible: actionMouse.containsMouse
+        ToolTip.text: thumbAction.label
+        ToolTip.delay: 450
     }
 
     ContextMenu {

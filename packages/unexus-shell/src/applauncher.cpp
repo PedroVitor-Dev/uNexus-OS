@@ -558,22 +558,21 @@ bool AppLauncher::closeWindow(const QStringList &windowClasses)
 
 bool AppLauncher::closeApp(const QStringList &windowClasses, const QStringList &processNames)
 {
-    const bool windowClosed = closeWindow(windowClasses);
-    const bool processesClosed = terminateProcesses(processNames);
+    if (closeWindow(windowClasses))
+        return true;
 
-    return windowClosed || processesClosed;
+    return terminateProcesses(processNames);
 }
 
 bool AppLauncher::maximizeWindow(const QStringList &windowClasses)
 {
-    if (!focusWindow(windowClasses))
+    const QJsonObject client = findHyprlandClient(windowClasses);
+    const QString address = client.value(QStringLiteral("address")).toString();
+
+    if (address.isEmpty())
         return false;
 
-    return dispatchHyprctl({
-        QStringLiteral("dispatch"),
-        QStringLiteral("fullscreen"),
-        QStringLiteral("1")
-    });
+    return maximizeWindowAddress(address);
 }
 
 bool AppLauncher::moveWindowToNextWorkspace(const QStringList &windowClasses)
@@ -602,11 +601,7 @@ bool AppLauncher::minimizeWindow(const QStringList &windowClasses)
     if (address.isEmpty())
         return false;
 
-    return dispatchHyprctl({
-        QStringLiteral("dispatch"),
-        QStringLiteral("movetoworkspacesilent"),
-        QStringLiteral("special:unexus-minimized,address:") + address
-    });
+    return minimizeWindowAddress(address);
 }
 
 bool AppLauncher::restoreWindow(const QStringList &windowClasses)
@@ -617,18 +612,7 @@ bool AppLauncher::restoreWindow(const QStringList &windowClasses)
     if (address.isEmpty())
         return false;
 
-    const int currentWorkspace = activeWorkspace();
-    const QString targetWorkspace = currentWorkspace > 0 ? QString::number(currentWorkspace) : QStringLiteral("current");
-
-    if (!dispatchHyprctl({
-            QStringLiteral("dispatch"),
-            QStringLiteral("movetoworkspace"),
-            targetWorkspace + QStringLiteral(",address:") + address
-        })) {
-        return false;
-    }
-
-    return focusWindow(windowClasses);
+    return restoreWindowAddress(address);
 }
 
 QVariantMap AppLauncher::windowPreviewDirection(const QStringList &windowClasses)
@@ -764,6 +748,43 @@ QVariantList AppLauncher::workspaceWindows()
     return result;
 }
 
+QVariantList AppLauncher::minimizedWindows()
+{
+    QVariantList result;
+    const QJsonArray clients = hyprctlJsonArray({QStringLiteral("clients"), QStringLiteral("-j")});
+
+    for (const QJsonValue &value : clients) {
+        const QJsonObject client = value.toObject();
+        const QJsonObject workspace = client.value(QStringLiteral("workspace")).toObject();
+        const QString workspaceName = workspace.value(QStringLiteral("name")).toString();
+        const QString address = client.value(QStringLiteral("address")).toString();
+
+        if (address.isEmpty() ||
+            !workspaceName.startsWith(QStringLiteral("special:unexus-minimized"), Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        const QJsonArray at = client.value(QStringLiteral("at")).toArray();
+        const QJsonArray size = client.value(QStringLiteral("size")).toArray();
+        QVariantMap item;
+        item.insert(QStringLiteral("address"), address);
+        item.insert(QStringLiteral("workspaceId"), -1);
+        item.insert(QStringLiteral("workspaceName"), QStringLiteral("Minimized"));
+        item.insert(QStringLiteral("title"), client.value(QStringLiteral("title")).toString());
+        item.insert(QStringLiteral("className"), client.value(QStringLiteral("class")).toString());
+        item.insert(QStringLiteral("monitor"), client.value(QStringLiteral("monitor")).toInt(-1));
+        item.insert(QStringLiteral("floating"), client.value(QStringLiteral("floating")).toBool(false));
+        item.insert(QStringLiteral("x"), at.size() > 0 ? at.at(0).toDouble() : 0.0);
+        item.insert(QStringLiteral("y"), at.size() > 1 ? at.at(1).toDouble() : 0.0);
+        item.insert(QStringLiteral("width"), size.size() > 0 ? size.at(0).toDouble() : 800.0);
+        item.insert(QStringLiteral("height"), size.size() > 1 ? size.at(1).toDouble() : 500.0);
+        item.insert(QStringLiteral("minimized"), true);
+        result << item;
+    }
+
+    return result;
+}
+
 bool AppLauncher::focusWorkspace(int workspaceId)
 {
     if (workspaceId < 1)
@@ -787,6 +808,68 @@ bool AppLauncher::focusWindowAddress(const QString &address)
         QStringLiteral("focuswindow"),
         QStringLiteral("address:") + normalizedAddress
     });
+}
+
+bool AppLauncher::closeWindowAddress(const QString &address)
+{
+    const QString normalizedAddress = address.trimmed();
+    if (normalizedAddress.isEmpty())
+        return false;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("closewindow"),
+        QStringLiteral("address:") + normalizedAddress
+    });
+}
+
+bool AppLauncher::maximizeWindowAddress(const QString &address)
+{
+    const QString normalizedAddress = address.trimmed();
+    if (normalizedAddress.isEmpty())
+        return false;
+
+    if (!focusWindowAddress(normalizedAddress))
+        return false;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("fullscreen"),
+        QStringLiteral("0")
+    });
+}
+
+bool AppLauncher::minimizeWindowAddress(const QString &address)
+{
+    const QString normalizedAddress = address.trimmed();
+    if (normalizedAddress.isEmpty())
+        return false;
+
+    return dispatchHyprctl({
+        QStringLiteral("dispatch"),
+        QStringLiteral("movetoworkspacesilent"),
+        QStringLiteral("special:unexus-minimized,address:") + normalizedAddress
+    });
+}
+
+bool AppLauncher::restoreWindowAddress(const QString &address)
+{
+    const QString normalizedAddress = address.trimmed();
+    if (normalizedAddress.isEmpty())
+        return false;
+
+    const int currentWorkspace = activeWorkspace();
+    const QString targetWorkspace = currentWorkspace > 0 ? QString::number(currentWorkspace) : QStringLiteral("current");
+
+    if (!dispatchHyprctl({
+            QStringLiteral("dispatch"),
+            QStringLiteral("movetoworkspace"),
+            targetWorkspace + QStringLiteral(",address:") + normalizedAddress
+        })) {
+        return false;
+    }
+
+    return focusWindowAddress(normalizedAddress);
 }
 
 bool AppLauncher::moveWindowAddressToWorkspace(const QString &address, int workspaceId)

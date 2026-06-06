@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 Item {
     id: filesPanel
@@ -979,22 +980,44 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 30
+                height: 34
                 radius: 8
                 color: "#101927"
                 border.color: "#223247"
                 border.width: 1
 
-                Row {
+                RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 10
                     anchors.rightMargin: 10
-                    spacing: 14
+                    spacing: 10
 
-                    StatusText { text: root.tr("{count} items").replace("{count}", filesPanel.entries.length) }
-                    StatusText { text: filesPanel.selectionLabel() }
-                    StatusText { text: filesPanel.viewMode === "list" ? root.tr("List") : root.tr("Grid") }
-                    StatusText { text: filesPanel.clipboardPaths.length > 0 ? (root.tr("Clipboard") + ": " + root.tr(filesPanel.clipboardMode === "cut" ? "Cut" : "Copy") + " " + filesPanel.clipboardPaths.length) : root.tr("Clipboard") + ": -" }
+                    StatusText {
+                        text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
+                        Layout.preferredWidth: 84
+                        Layout.maximumWidth: 110
+                        Layout.fillHeight: true
+                    }
+
+                    StatusText {
+                        text: filesPanel.selectionLabel()
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
+
+                    StatusText {
+                        text: filesPanel.viewMode === "list" ? root.tr("List") : root.tr("Grid")
+                        horizontalAlignment: Text.AlignHCenter
+                        Layout.preferredWidth: 54
+                        Layout.maximumWidth: 70
+                        Layout.fillHeight: true
+                    }
+
+                    StatusText {
+                        text: filesPanel.clipboardPaths.length > 0 ? (root.tr("Clipboard") + ": " + root.tr(filesPanel.clipboardMode === "cut" ? "Cut" : "Copy") + " " + filesPanel.clipboardPaths.length) : root.tr("Clipboard") + ": -"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
                 }
             }
         }
@@ -1041,6 +1064,7 @@ Item {
         font.pixelSize: 10
         font.family: root.uiFont
         elide: Text.ElideRight
+        maximumLineCount: 1
         verticalAlignment: Text.AlignVCenter
     }
 
