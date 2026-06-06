@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/UNexusInstaller">
-    <file alias="qmldir">/home/pedro/uNexus-OS/packages/unexus-shell/build/UNexusInstaller/qmldir</file>
-  </qresource>
-</RCC>
-

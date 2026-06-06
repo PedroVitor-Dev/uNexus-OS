@@ -12,6 +12,7 @@ InstallerBackend::InstallerBackend(QObject *parent)
     connect(&m_process, &QProcess::readyReadStandardOutput, this, &InstallerBackend::readOutput);
     connect(&m_process, &QProcess::readyReadStandardError, this, &InstallerBackend::readOutput);
     connect(&m_process, &QProcess::finished, this, &InstallerBackend::processFinished);
+    connect(&m_process, &QProcess::errorOccurred, this, &InstallerBackend::processError);
 
     refresh();
     setStatus(m_installed ? QStringLiteral("uNexus is installed") : QStringLiteral("Ready to install"),
@@ -58,6 +59,12 @@ bool InstallerBackend::setupAvailable() const
 {
     return QFileInfo::exists(scriptPath(QStringLiteral("setup.sh"))) &&
            QFileInfo::exists(scriptPath(QStringLiteral("uninstall.sh")));
+}
+
+bool InstallerBackend::diagnosticsAvailable() const
+{
+    return !QStandardPaths::findExecutable(QStringLiteral("unexus-doctor")).isEmpty() ||
+           QFileInfo::exists(scriptPath(QStringLiteral("unexus-doctor.sh")));
 }
 
 QString InstallerBackend::repoRoot() const
@@ -122,6 +129,8 @@ void InstallerBackend::refresh()
 
     if (wasInstalled != m_installed)
         emit installedChanged();
+
+    emit prerequisitesChanged();
 }
 
 void InstallerBackend::clearLog()
@@ -141,19 +150,42 @@ void InstallerBackend::processFinished(int exitCode, QProcess::ExitStatus exitSt
     readOutput();
     setBusy(false);
 
+    const QString finishedAction = m_currentAction;
     const bool ok = exitStatus == QProcess::NormalExit && exitCode == 0;
     refresh();
 
     if (ok) {
-        setStatus(QStringLiteral("Action complete"),
-                  m_currentAction == QStringLiteral("diagnose")
-                      ? QStringLiteral("Diagnostics finished without reported failures.")
-                      : QStringLiteral("The requested installer action finished successfully."));
+        if (finishedAction == QStringLiteral("diagnose")) {
+            setStatus(QStringLiteral("Diagnostics complete"),
+                      QStringLiteral("Diagnostics finished without reported failures."));
+        } else if (finishedAction == QStringLiteral("uninstall")) {
+            setStatus(QStringLiteral("uNexus removed"),
+                      QStringLiteral("The local shell session and launcher entries were removed."));
+        } else if (finishedAction == QStringLiteral("repair")) {
+            setStatus(QStringLiteral("Repair complete"),
+                      QStringLiteral("The local shell session was rebuilt, reinstalled and validated."));
+        } else {
+            setStatus(QStringLiteral("uNexus installed"),
+                      QStringLiteral("The local shell session was built, installed and validated."));
+        }
     } else {
-        setStatus(QStringLiteral("Action failed"),
-                  QStringLiteral("Review the log output and retry after resolving the reported issue."));
+        setStatus(exitStatus == QProcess::CrashExit ? QStringLiteral("Action crashed") : QStringLiteral("Action failed"),
+                  QStringLiteral("Review the backend log and retry after resolving the reported issue."));
     }
 
+    setCurrentAction(QString());
+}
+
+void InstallerBackend::processError(QProcess::ProcessError error)
+{
+    appendLog(QStringLiteral("Process error: %1\n").arg(m_process.errorString()));
+
+    if (error != QProcess::FailedToStart)
+        return;
+
+    setBusy(false);
+    setStatus(QStringLiteral("Could not start action"),
+              QStringLiteral("The installer backend process did not start."));
     setCurrentAction(QString());
 }
 
@@ -161,6 +193,12 @@ void InstallerBackend::runAction(const QString &action, const QString &title, co
 {
     if (m_busy || programAndArguments.isEmpty())
         return;
+
+    if (action == QStringLiteral("diagnose") && !diagnosticsAvailable()) {
+        setStatus(QStringLiteral("Diagnostics unavailable"),
+                  QStringLiteral("Install uNexus first or run this installer from a complete repository checkout."));
+        return;
+    }
 
     if (!setupAvailable() && action != QStringLiteral("diagnose")) {
         setStatus(QStringLiteral("Installer files missing"),

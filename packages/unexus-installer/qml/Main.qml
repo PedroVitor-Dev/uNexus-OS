@@ -99,6 +99,13 @@ ApplicationWindow {
                     activeColor: root.backend.setupAvailable ? root.success : root.danger
                 }
 
+                StatusBlock {
+                    Layout.fillWidth: true
+                    label: "Diagnostics"
+                    value: root.backend.diagnosticsAvailable ? "Doctor available" : "Doctor missing"
+                    activeColor: root.backend.diagnosticsAvailable ? root.success : root.warning
+                }
+
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
@@ -207,7 +214,7 @@ ApplicationWindow {
                     ActionButton {
                         Layout.fillWidth: true
                         label: "Diagnose"
-                        enabled: !root.backend.busy && root.backend.setupAvailable
+                        enabled: !root.backend.busy && root.backend.diagnosticsAvailable
                         accentColor: root.warning
                         onClicked: root.backend.diagnose()
                     }

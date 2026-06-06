@@ -1,6 +1,0 @@
-module UNexusInstaller
-typeinfo unexus-installer.qmltypes
-prefer :/UNexusInstaller/
-Main 1.0 ../unexus-installer/qml/Main.qml
-depends QtQuick
-

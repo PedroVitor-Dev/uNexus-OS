@@ -13,8 +13,9 @@ class InstallerBackend : public QObject
     Q_PROPERTY(QString statusDetail READ statusDetail NOTIFY statusChanged)
     Q_PROPERTY(QString logText READ logText NOTIFY logChanged)
     Q_PROPERTY(bool installed READ installed NOTIFY installedChanged)
-    Q_PROPERTY(bool pkexecAvailable READ pkexecAvailable CONSTANT)
-    Q_PROPERTY(bool setupAvailable READ setupAvailable CONSTANT)
+    Q_PROPERTY(bool pkexecAvailable READ pkexecAvailable NOTIFY prerequisitesChanged)
+    Q_PROPERTY(bool setupAvailable READ setupAvailable NOTIFY prerequisitesChanged)
+    Q_PROPERTY(bool diagnosticsAvailable READ diagnosticsAvailable NOTIFY prerequisitesChanged)
     Q_PROPERTY(QString repoRoot READ repoRoot CONSTANT)
 
 public:
@@ -28,6 +29,7 @@ public:
     bool installed() const;
     bool pkexecAvailable() const;
     bool setupAvailable() const;
+    bool diagnosticsAvailable() const;
     QString repoRoot() const;
 
     Q_INVOKABLE void install();
@@ -43,10 +45,12 @@ signals:
     void statusChanged();
     void logChanged();
     void installedChanged();
+    void prerequisitesChanged();
 
 private slots:
     void readOutput();
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void processError(QProcess::ProcessError error);
 
 private:
     void runAction(const QString &action, const QString &title, const QStringList &programAndArguments);

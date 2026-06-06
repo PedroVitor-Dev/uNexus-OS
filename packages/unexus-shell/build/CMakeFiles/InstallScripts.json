@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/pedro/uNexus-OS/packages/unexus-shell/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

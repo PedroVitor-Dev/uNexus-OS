@@ -1,7 +1,0 @@
-<RCC>
-  <qresource prefix="/UNexusInstaller">
-    <file alias="assets/logo/SF White.png">/home/pedro/uNexus-OS/packages/unexus-shell/../../assets/logo/SF White.png</file>
-    <file alias="assets/wallpapers/unexus-core.png">/home/pedro/uNexus-OS/packages/unexus-shell/../../assets/wallpapers/unexus-core.png</file>
-  </qresource>
-</RCC>
-

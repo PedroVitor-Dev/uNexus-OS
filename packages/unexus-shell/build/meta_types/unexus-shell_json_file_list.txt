@@ -1,7 +1,0 @@
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_applauncher.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_filemanager.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_gamemode.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_globalshortcuts.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_systeminfo.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_systemstats.cpp.json
-/home/pedro/uNexus-OS/packages/unexus-shell/build/unexus-shell_autogen/include/../6YEA5652QU/moc_usersettings.cpp.json

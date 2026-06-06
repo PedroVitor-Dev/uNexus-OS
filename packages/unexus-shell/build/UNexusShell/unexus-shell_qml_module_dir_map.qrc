@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="/UNexusShell">/home/pedro/uNexus-OS/packages/unexus-shell/build/UNexusShell</file>
-
-  </qresource>
-</RCC>
