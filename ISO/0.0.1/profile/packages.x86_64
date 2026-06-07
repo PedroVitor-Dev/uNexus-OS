@@ -4,7 +4,6 @@ arch-install-scripts
 base
 base-devel
 btop
-calamares
 cmake
 edk2-shell
 efibootmgr
