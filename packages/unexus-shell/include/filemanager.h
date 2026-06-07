@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QHash>
 #include <QStringList>
 #include <QVariantList>
 #include <QVariantMap>
@@ -30,6 +31,8 @@ public:
     Q_INVOKABLE int movePathsAsync(const QStringList &paths, const QString &targetDirectory);
     Q_INVOKABLE int movePathsToTrashAsync(const QStringList &paths);
     Q_INVOKABLE QVariantMap previewInfo(const QString &path) const;
+    Q_INVOKABLE QVariantList childDirectories(const QString &path) const;
+    Q_INVOKABLE QVariantList searchIndexed(const QString &rootPath, const QString &query, const QString &typeFilter, const QString &dateFilter, const QString &sizeFilter) const;
 
 signals:
     void operationQueueChanged();
@@ -40,5 +43,6 @@ private:
     void updateOperation(int id, int current, int total, const QString &label, bool done = false, bool ok = true);
 
     QVariantList m_operationQueue;
+    mutable QHash<QString, QVariantList> m_indexCache;
     int m_nextOperationId = 1;
 };

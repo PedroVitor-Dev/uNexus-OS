@@ -18,9 +18,14 @@ Item {
     property var clipboardPaths: []
     property string clipboardMode: ""
     property var entries: []
+    property var filteredEntries: []
     property var places: []
     property string sortKey: "name"
     property bool sortAscending: true
+    property string searchText: ""
+    property string typeFilter: "any"
+    property string dateFilter: "any"
+    property string sizeFilter: "any"
     property string viewMode: "list"
     property string mode: "browse"
     property bool dockActive: false
@@ -32,6 +37,10 @@ Item {
     property bool contextMenuVisible: false
     property real contextMenuX: 0
     property real contextMenuY: 0
+    property bool breadcrumbMenuVisible: false
+    property real breadcrumbMenuX: 0
+    property real breadcrumbMenuY: 0
+    property var breadcrumbMenuEntries: []
     property string pendingPasteMode: ""
 
     function show(path) {
@@ -56,6 +65,7 @@ Item {
         deleteConfirmToken = ""
         trashConfirmTimer.stop()
         hideContextMenu()
+        hideBreadcrumbMenu()
         hideAnim.start()
     }
 
@@ -72,6 +82,7 @@ Item {
         trashConfirmPath = ""
         deleteConfirmToken = ""
         hideContextMenu()
+        hideBreadcrumbMenu()
     }
 
     function selectOnly(entry) {
@@ -114,9 +125,10 @@ Item {
         var paths = []
         var selected = []
 
-        for (var i = 0; i < entries.length; i++) {
-            paths.push(entries[i].path)
-            selected.push(entries[i])
+        var active = activeEntries()
+        for (var i = 0; i < active.length; i++) {
+            paths.push(active[i].path)
+            selected.push(active[i])
         }
 
         selectedPaths = paths
@@ -132,6 +144,7 @@ Item {
 
     function handleEntryClick(entry, modifiers) {
         hideContextMenu()
+        hideBreadcrumbMenu()
         if (modifiers & Qt.ControlModifier || modifiers & Qt.ShiftModifier)
             toggleSelection(entry)
         else
@@ -168,6 +181,17 @@ Item {
 
     function hideContextMenu() {
         contextMenuVisible = false
+    }
+
+    function hideBreadcrumbMenu() {
+        breadcrumbMenuVisible = false
+    }
+
+    function showBreadcrumbMenu(path, x, y) {
+        breadcrumbMenuEntries = fileManager.childDirectories(path)
+        breadcrumbMenuX = Math.max(8, Math.min(width - breadcrumbMenu.width - 8, x))
+        breadcrumbMenuY = Math.max(8, Math.min(height - breadcrumbMenu.height - 8, y))
+        breadcrumbMenuVisible = true
     }
 
     function showEmptyContextMenu(x, y) {
@@ -298,6 +322,9 @@ Item {
     }
 
     function breadcrumbParts() {
+        if (currentPath === "unexus://game-data")
+            return [{ label: "Game Data", path: "unexus://game-data" }]
+
         var clean = currentPath || "/"
         while (clean.length > 1 && clean.endsWith("/"))
             clean = clean.slice(0, -1)
@@ -355,6 +382,7 @@ Item {
             sortAscending = true
         }
         entries = sortedEntries(entries)
+        filteredEntries = sortedEntries(filteredEntries)
     }
 
     function sortLabel(key, label) {
@@ -369,6 +397,7 @@ Item {
             loading = false
             unavailableMessage = root.tr("No folder selected.")
             entries = []
+            filteredEntries = []
             return
         }
 
@@ -376,9 +405,75 @@ Item {
         pathInput.text = currentPath
         clearSelection()
         hideContextMenu()
+        hideBreadcrumbMenu()
         mode = "browse"
         entries = sortedEntries(fileManager.listDirectory(currentPath))
+        updateSearch()
         loading = false
+    }
+
+    function searchActive() {
+        return searchText.trim().length > 0 || typeFilter !== "any" || dateFilter !== "any" || sizeFilter !== "any"
+    }
+
+    function activeEntries() {
+        return searchActive() ? filteredEntries : entries
+    }
+
+    function updateSearch() {
+        if (!searchActive()) {
+            filteredEntries = []
+            return
+        }
+
+        filteredEntries = sortedEntries(fileManager.searchIndexed(currentPath, searchText, typeFilter, dateFilter, sizeFilter))
+        clearSelection()
+    }
+
+    function cycleTypeFilter() {
+        var values = ["any", "folder", "image", "video", "text", "pdf", "audio", "archive"]
+        typeFilter = values[(values.indexOf(typeFilter) + 1) % values.length]
+        updateSearch()
+    }
+
+    function cycleDateFilter() {
+        var values = ["any", "today", "week", "month"]
+        dateFilter = values[(values.indexOf(dateFilter) + 1) % values.length]
+        updateSearch()
+    }
+
+    function cycleSizeFilter() {
+        var values = ["any", "small", "medium", "large"]
+        sizeFilter = values[(values.indexOf(sizeFilter) + 1) % values.length]
+        updateSearch()
+    }
+
+    function typeFilterLabel() {
+        if (typeFilter === "folder")
+            return root.tr("Folders")
+        if (typeFilter === "any")
+            return root.tr("Any type")
+        return root.tr(typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1))
+    }
+
+    function dateFilterLabel() {
+        if (dateFilter === "today")
+            return root.tr("Today")
+        if (dateFilter === "week")
+            return root.tr("7 days")
+        if (dateFilter === "month")
+            return root.tr("30 days")
+        return root.tr("Any date")
+    }
+
+    function sizeFilterLabel() {
+        if (sizeFilter === "small")
+            return root.tr("Small")
+        if (sizeFilter === "medium")
+            return root.tr("Medium")
+        if (sizeFilter === "large")
+            return root.tr("Large")
+        return root.tr("Any size")
     }
 
     function openSelected() {
@@ -630,6 +725,7 @@ Item {
                             label: modelData.label
                             active: modelData.path === filesPanel.currentPath
                             onClicked: filesPanel.loadPath(modelData.path)
+                            onMenuRequested: function(x, y) { filesPanel.showBreadcrumbMenu(modelData.path, x, y) }
                         }
                     }
                 }
@@ -769,8 +865,8 @@ Item {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
-                            height: 24
-                            spacing: 4
+                            height: 58
+                            spacing: 6
 
                             Row {
                                 width: parent.width
@@ -778,7 +874,7 @@ Item {
 
                                 Text {
                                     width: Math.max(120, parent.width - sortActions.width - 8)
-                                    text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
+                                    text: root.tr("{count} items").replace("{count}", filesPanel.activeEntries().length)
                                     color: "#8ea4bd"
                                     font.pixelSize: 11
                                     font.family: root.uiFont
@@ -816,6 +912,59 @@ Item {
                                     }
                                 }
                             }
+
+                            Row {
+                                width: parent.width
+                                height: 28
+                                spacing: 6
+
+                                Rectangle {
+                                    width: Math.max(160, parent.width - filterActions.width - 8)
+                                    height: 28
+                                    radius: 7
+                                    color: "#172233"
+                                    border.color: filesPanel.searchActive() ? root.themeAccent : "#2a3a55"
+                                    border.width: 1
+
+                                    TextInput {
+                                        id: searchInput
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 10
+                                        anchors.rightMargin: 10
+                                        verticalAlignment: TextInput.AlignVCenter
+                                        color: "#ffffff"
+                                        selectionColor: root.themeAccent
+                                        font.pixelSize: 11
+                                        font.family: root.uiFont
+                                        clip: true
+                                        text: filesPanel.searchText
+                                        onTextChanged: {
+                                            filesPanel.searchText = text
+                                            filesPanel.updateSearch()
+                                        }
+
+                                        Text {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            text: root.tr("Search files...")
+                                            color: "#526a83"
+                                            font.pixelSize: 11
+                                            font.family: root.uiFont
+                                            visible: searchInput.text.length === 0 && !searchInput.activeFocus
+                                        }
+                                    }
+                                }
+
+                                Row {
+                                    id: filterActions
+                                    width: childrenRect.width
+                                    height: parent.height
+                                    spacing: 6
+
+                                    MiniAction { label: filesPanel.typeFilterLabel(); onClicked: filesPanel.cycleTypeFilter() }
+                                    MiniAction { label: filesPanel.dateFilterLabel(); onClicked: filesPanel.cycleDateFilter() }
+                                    MiniAction { label: filesPanel.sizeFilterLabel(); onClicked: filesPanel.cycleSizeFilter() }
+                                }
+                            }
                         }
 
                         Rectangle {
@@ -839,14 +988,14 @@ Item {
                             PanelStateView {
                                 anchors.fill: parent
                                 visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
-                                         filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
+                                         filesPanel.unavailableMessage.length > 0 || filesPanel.activeEntries().length === 0
                                 state: filesPanel.loading ? "loading" : (filesPanel.errorMessage.length > 0 ? "error" : (filesPanel.unavailableMessage.length > 0 ? "unavailable" : "empty"))
                                 title: filesPanel.loading ? root.tr("Loading folder") :
                                        (filesPanel.errorMessage.length > 0 ? root.tr("Folder error") :
-                                       (filesPanel.unavailableMessage.length > 0 ? root.tr("Folder unavailable") : root.tr("Folder is empty")))
+                                       (filesPanel.unavailableMessage.length > 0 ? root.tr("Folder unavailable") : (filesPanel.searchActive() ? root.tr("No matches") : root.tr("Folder is empty"))))
                                 message: filesPanel.loading ? root.tr("Reading local files.") :
                                          (filesPanel.errorMessage.length > 0 ? filesPanel.errorMessage :
-                                         (filesPanel.unavailableMessage.length > 0 ? filesPanel.unavailableMessage : root.tr("Create a folder or choose another place.")))
+                                         (filesPanel.unavailableMessage.length > 0 ? filesPanel.unavailableMessage : (filesPanel.searchActive() ? root.tr("Try another search or filter.") : root.tr("Create a folder or choose another place."))))
                                 actionLabel: filesPanel.loading ? "" : root.tr("Refresh")
                                 fontFamily: root.uiFont
                                 accentColor: root.themeAccent
@@ -858,7 +1007,7 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 visible: filesPanel.loading || filesPanel.errorMessage.length > 0 ||
-                                         filesPanel.unavailableMessage.length > 0 || filesPanel.entries.length === 0
+                                         filesPanel.unavailableMessage.length > 0 || filesPanel.activeEntries().length === 0
                                 acceptedButtons: Qt.RightButton
                                 z: 18
                                 onClicked: function(mouse) {
@@ -871,10 +1020,10 @@ Item {
                                 id: filesList
                                 anchors.fill: parent
                                 visible: filesPanel.viewMode === "list" && !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
-                                         filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
+                                         filesPanel.unavailableMessage.length === 0 && filesPanel.activeEntries().length > 0
                                 clip: true
                                 spacing: 2
-                                model: filesPanel.entries
+                                model: filesPanel.activeEntries()
 
                                 TapHandler {
                                     acceptedButtons: Qt.RightButton
@@ -883,8 +1032,9 @@ Item {
                                         var localY = point.position.y
                                         var index = filesList.indexAt(localX, localY)
                                         var mapped = filesList.mapToItem(filesPanel, localX, localY)
-                                        if (index >= 0 && index < filesPanel.entries.length) {
-                                            filesPanel.selectOnly(filesPanel.entries[index])
+                                        var active = filesPanel.activeEntries()
+                                        if (index >= 0 && index < active.length) {
+                                            filesPanel.selectOnly(active[index])
                                             filesPanel.showContextMenu(mapped.x, mapped.y)
                                         } else {
                                             filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
@@ -919,19 +1069,20 @@ Item {
                                 id: filesGrid
                                 anchors.fill: parent
                                 visible: filesPanel.viewMode === "grid" && !filesPanel.loading && filesPanel.errorMessage.length === 0 &&
-                                         filesPanel.unavailableMessage.length === 0 && filesPanel.entries.length > 0
+                                         filesPanel.unavailableMessage.length === 0 && filesPanel.activeEntries().length > 0
                                 clip: true
                                 cellWidth: 132
                                 cellHeight: 118
-                                model: filesPanel.entries
+                                model: filesPanel.activeEntries()
 
                                 TapHandler {
                                     acceptedButtons: Qt.RightButton
                                     onTapped: function(point) {
                                         var index = filesGrid.indexAt(point.position.x, point.position.y)
                                         var mapped = filesGrid.mapToItem(filesPanel, point.position.x, point.position.y)
-                                        if (index >= 0 && index < filesPanel.entries.length) {
-                                            filesPanel.selectOnly(filesPanel.entries[index])
+                                        var active = filesPanel.activeEntries()
+                                        if (index >= 0 && index < active.length) {
+                                            filesPanel.selectOnly(active[index])
                                             filesPanel.showContextMenu(mapped.x, mapped.y)
                                         } else {
                                             filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
@@ -993,7 +1144,7 @@ Item {
                     spacing: 10
 
                     StatusText {
-                        text: root.tr("{count} items").replace("{count}", filesPanel.entries.length)
+                        text: root.tr("{count} items").replace("{count}", filesPanel.activeEntries().length)
                         Layout.preferredWidth: 84
                         Layout.maximumWidth: 110
                         Layout.fillHeight: true
@@ -1010,6 +1161,13 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         Layout.preferredWidth: 54
                         Layout.maximumWidth: 70
+                        Layout.fillHeight: true
+                    }
+
+                    StatusText {
+                        visible: filesPanel.searchActive()
+                        text: root.tr("Search") + ": " + filesPanel.typeFilterLabel() + " / " + filesPanel.dateFilterLabel() + " / " + filesPanel.sizeFilterLabel()
+                        Layout.fillWidth: true
                         Layout.fillHeight: true
                     }
 
@@ -1056,6 +1214,58 @@ Item {
             Rectangle { width: parent.width - root.spaceMd; height: 1; anchors.horizontalCenter: parent.horizontalCenter; color: root.borderSubtle }
             ContextMenuAction { label: root.tr("Rename"); enabled: filesPanel.selectionCount() === 1; onTriggered: filesPanel.beginRenameSelected() }
             ContextMenuAction { label: filesPanel.deleteConfirmToken === filesPanel.selectedPaths.join("|") && filesPanel.selectionCount() > 0 ? root.tr("Confirm trash") : root.tr("Trash"); enabled: filesPanel.selectionCount() > 0; danger: true; onTriggered: filesPanel.requestTrashSelected() }
+        }
+    }
+
+    LiquidGlass {
+        id: breadcrumbMenu
+        x: filesPanel.breadcrumbMenuX
+        y: filesPanel.breadcrumbMenuY
+        width: 190
+        height: Math.min(236, breadcrumbMenuColumn.height + root.spaceMd)
+        radius: root.radiusMd
+        tintColor: root.surfaceBase
+        accentColor: root.themeAccent
+        borderColor: root.borderMuted
+        materialOpacity: 0.84
+        borderOpacity: 0.58
+        highlightOpacity: 0.14
+        depth: 0.38
+        visible: filesPanel.breadcrumbMenuVisible
+        z: 255
+        clip: true
+
+        Column {
+            id: breadcrumbMenuColumn
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: root.spaceSm
+            spacing: 2
+
+            Text {
+                width: parent.width - root.spaceMd * 2
+                height: 24
+                x: root.spaceMd
+                text: filesPanel.breadcrumbMenuEntries.length > 0 ? root.tr("Folders") : root.tr("No folders")
+                color: root.themeAccent
+                font.pixelSize: root.textSmall
+                font.family: root.uiFont
+                font.bold: true
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Repeater {
+                model: filesPanel.breadcrumbMenuEntries
+
+                delegate: ContextMenuAction {
+                    label: modelData.name
+                    onTriggered: {
+                        filesPanel.hideBreadcrumbMenu()
+                        filesPanel.loadPath(modelData.path)
+                    }
+                }
+            }
         }
     }
 
@@ -1157,8 +1367,9 @@ Item {
         property string label: ""
         property bool active: false
         signal clicked()
+        signal menuRequested(real x, real y)
 
-        width: Math.max(28, breadcrumbText.width + 18)
+        width: Math.max(34, breadcrumbText.width + 28)
         height: 22
         radius: 6
         color: active ? "#1e2d45" : (breadcrumbMouse.containsMouse ? "#172233" : "transparent")
@@ -1167,7 +1378,11 @@ Item {
 
         Text {
             id: breadcrumbText
-            anchors.centerIn: parent
+            anchors.left: parent.left
+            anchors.leftMargin: 9
+            anchors.right: crumbArrow.left
+            anchors.rightMargin: 2
+            anchors.verticalCenter: parent.verticalCenter
             text: breadcrumbButton.label
             color: breadcrumbButton.active ? "#ffffff" : "#8ea4bd"
             font.pixelSize: 10
@@ -1175,11 +1390,29 @@ Item {
             elide: Text.ElideRight
         }
 
+        Text {
+            id: crumbArrow
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            text: "v"
+            color: breadcrumbButton.active ? "#ffffff" : "#526a83"
+            font.pixelSize: 9
+            font.family: root.uiFont
+        }
+
         MouseArea {
             id: breadcrumbMouse
             anchors.fill: parent
             hoverEnabled: true
-            onClicked: breadcrumbButton.clicked()
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: function(mouse) {
+                var point = breadcrumbMouse.mapToItem(filesPanel, mouse.x, mouse.y)
+                if (mouse.button === Qt.RightButton || mouse.x > breadcrumbButton.width - 18)
+                    breadcrumbButton.menuRequested(point.x, point.y + 6)
+                else
+                    breadcrumbButton.clicked()
+            }
         }
     }
     component ToolButton: Rectangle {
@@ -1594,17 +1827,88 @@ Item {
                 Image {
                     anchors.fill: parent
                     anchors.margins: 6
-                    visible: previewPaneRoot.selectedCount === 1 && previewPaneRoot.preview.previewSource && previewPaneRoot.preview.previewSource.length > 0
+                    visible: previewPaneRoot.selectedCount === 1 && previewPaneRoot.preview.previewMode === "image" && previewPaneRoot.preview.previewSource && previewPaneRoot.preview.previewSource.length > 0
                     source: visible ? previewPaneRoot.preview.previewSource : ""
                     fillMode: Image.PreserveAspectFit
                     smooth: true
+                }
+
+                Flickable {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    visible: previewPaneRoot.selectedCount === 1 && previewPaneRoot.preview.previewMode === "text" && previewPaneRoot.preview.textPreview && previewPaneRoot.preview.textPreview.length > 0
+                    contentWidth: width
+                    contentHeight: textPreviewText.height
+                    clip: true
+
+                    Text {
+                        id: textPreviewText
+                        width: parent.width
+                        text: previewPaneRoot.preview.textPreview || ""
+                        color: root.textPrimary
+                        font.pixelSize: 10
+                        font.family: "monospace"
+                        wrapMode: Text.WrapAnywhere
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    radius: 8
+                    color: "#172233"
+                    border.color: "#2a3a55"
+                    border.width: 1
+                    visible: previewPaneRoot.selectedCount === 1 && (previewPaneRoot.preview.previewMode === "pdf" || previewPaneRoot.preview.previewMode === "video")
+
+                    Column {
+                        anchors.centerIn: parent
+                        width: parent.width - 20
+                        spacing: 7
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: previewPaneRoot.preview.previewMode === "pdf" ? "PDF" : "VID"
+                            color: root.themeAccent
+                            font.pixelSize: 28
+                            font.family: root.uiFont
+                            font.bold: true
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: previewPaneRoot.preview.previewMode === "pdf" ? root.tr("PDF preview") : root.tr("Video preview")
+                            color: root.textPrimary
+                            font.pixelSize: 12
+                            font.family: root.uiFont
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: previewPaneRoot.preview.textPreview || previewPaneRoot.preview.size || ""
+                            color: root.textMuted
+                            font.pixelSize: 10
+                            font.family: root.uiFont
+                            horizontalAlignment: Text.AlignHCenter
+                            maximumLineCount: 2
+                            wrapMode: Text.WordWrap
+                        }
+                    }
                 }
 
                 Column {
                     anchors.centerIn: parent
                     width: parent.width - 20
                     spacing: 8
-                    visible: previewPaneRoot.selectedCount !== 1 || !previewPaneRoot.preview.previewSource || previewPaneRoot.preview.previewSource.length === 0
+                    visible: previewPaneRoot.selectedCount !== 1 ||
+                             (previewPaneRoot.preview.previewMode === "text" && (!previewPaneRoot.preview.textPreview || previewPaneRoot.preview.textPreview.length === 0)) ||
+                             (previewPaneRoot.preview.previewMode !== "image" &&
+                              previewPaneRoot.preview.previewMode !== "text" &&
+                              previewPaneRoot.preview.previewMode !== "pdf" &&
+                              previewPaneRoot.preview.previewMode !== "video")
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter

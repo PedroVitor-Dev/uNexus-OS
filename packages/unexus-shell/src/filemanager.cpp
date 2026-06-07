@@ -1,8 +1,10 @@
 #include "filemanager.h"
 
+#include <QDate>
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QMetaObject>
@@ -15,10 +17,16 @@
 #include <QVariantMap>
 
 namespace {
+constexpr int kMaxIndexedEntries = 5000;
+const QString kGameDataPath = QStringLiteral("unexus://game-data");
+
 QString cleanPath(const QString &path)
 {
     if (path.trimmed().isEmpty())
         return QDir::homePath();
+
+    if (path == kGameDataPath)
+        return path;
 
     return QDir::cleanPath(path);
 }
@@ -66,8 +74,11 @@ QString kindForFile(const QFileInfo &info)
     if (QStringList{QStringLiteral("mp3"), QStringLiteral("flac"), QStringLiteral("ogg"), QStringLiteral("wav")}.contains(suffix))
         return QStringLiteral("Audio");
 
-    if (QStringList{QStringLiteral("txt"), QStringLiteral("md"), QStringLiteral("log"), QStringLiteral("json"), QStringLiteral("qml"), QStringLiteral("cpp"), QStringLiteral("h")}.contains(suffix))
+    if (QStringList{QStringLiteral("txt"), QStringLiteral("md"), QStringLiteral("log"), QStringLiteral("json"), QStringLiteral("qml"), QStringLiteral("cpp"), QStringLiteral("h"), QStringLiteral("ini"), QStringLiteral("cfg"), QStringLiteral("conf"), QStringLiteral("xml"), QStringLiteral("csv")}.contains(suffix))
         return QStringLiteral("Text");
+
+    if (suffix == QStringLiteral("pdf"))
+        return QStringLiteral("PDF");
 
     if (QStringList{QStringLiteral("zip"), QStringLiteral("tar"), QStringLiteral("gz"), QStringLiteral("7z"), QStringLiteral("rar")}.contains(suffix))
         return QStringLiteral("Archive");
@@ -90,6 +101,8 @@ QString iconForKind(const QString &kind)
         return QStringLiteral("AUD");
     if (kind == QStringLiteral("Text"))
         return QStringLiteral("TXT");
+    if (kind == QStringLiteral("PDF"))
+        return QStringLiteral("PDF");
     if (kind == QStringLiteral("Archive"))
         return QStringLiteral("ZIP");
     if (kind == QStringLiteral("Executable"))
@@ -105,6 +118,125 @@ QVariantMap place(const QString &label, const QString &path, const QString &icon
     result.insert(QStringLiteral("path"), path);
     result.insert(QStringLiteral("icon"), icon);
     return result;
+}
+
+QVariantMap entryForInfo(const QFileInfo &info, const QString &displayName = QString(), const QString &displayPath = QString())
+{
+    const QString kind = kindForFile(info);
+    QVariantMap item;
+    item.insert(QStringLiteral("name"), displayName.isEmpty() ? info.fileName() : displayName);
+    item.insert(QStringLiteral("path"), displayPath.isEmpty() ? info.absoluteFilePath() : displayPath);
+    item.insert(QStringLiteral("realPath"), info.absoluteFilePath());
+    item.insert(QStringLiteral("isDir"), info.isDir());
+    item.insert(QStringLiteral("size"), info.isDir() ? QStringLiteral("-") : formatSize(info.size()));
+    item.insert(QStringLiteral("sizeBytes"), info.isDir() ? 0 : info.size());
+    item.insert(QStringLiteral("kind"), kind);
+    item.insert(QStringLiteral("icon"), iconForKind(kind));
+    item.insert(QStringLiteral("modified"), info.lastModified().toString(QStringLiteral("yyyy-MM-dd hh:mm")));
+    item.insert(QStringLiteral("modifiedEpoch"), info.lastModified().toSecsSinceEpoch());
+    item.insert(QStringLiteral("hidden"), info.isHidden());
+    return item;
+}
+
+QVariantList knownGameDataFolders()
+{
+    QVariantList result;
+    const QString home = QDir::homePath();
+    const QList<QPair<QString, QString>> candidates = {
+        {QStringLiteral("Steam userdata"), home + QStringLiteral("/.local/share/Steam/userdata")},
+        {QStringLiteral("Steam compatdata"), home + QStringLiteral("/.local/share/Steam/steamapps/compatdata")},
+        {QStringLiteral("Lutris"), home + QStringLiteral("/.local/share/lutris")},
+        {QStringLiteral("Heroic Games"), home + QStringLiteral("/.config/heroic")},
+        {QStringLiteral("Bottles"), home + QStringLiteral("/.local/share/bottles")},
+        {QStringLiteral("Wine prefix"), home + QStringLiteral("/.wine")},
+        {QStringLiteral("Games"), home + QStringLiteral("/Games")},
+        {QStringLiteral("Saved Games"), home + QStringLiteral("/Saved Games")},
+        {QStringLiteral("Proton saves"), home + QStringLiteral("/.steam/steam/steamapps/compatdata")}
+    };
+
+    for (const auto &candidate : candidates) {
+        const QFileInfo info(candidate.second);
+        if (info.exists() && info.isDir())
+            result << entryForInfo(info, candidate.first);
+    }
+
+    return result;
+}
+
+QString previewModeForKind(const QString &kind)
+{
+    if (kind == QStringLiteral("Image"))
+        return QStringLiteral("image");
+    if (kind == QStringLiteral("Video"))
+        return QStringLiteral("video");
+    if (kind == QStringLiteral("Text"))
+        return QStringLiteral("text");
+    if (kind == QStringLiteral("PDF"))
+        return QStringLiteral("pdf");
+    if (kind == QStringLiteral("Folder"))
+        return QStringLiteral("folder");
+
+    return QStringLiteral("generic");
+}
+
+QString readTextPreview(const QString &path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return QString();
+
+    QByteArray bytes = file.read(4096);
+    QString text = QString::fromUtf8(bytes);
+    if (text.contains(QChar::ReplacementCharacter))
+        text = QString::fromLocal8Bit(bytes);
+
+    text.replace(QLatin1Char('\t'), QStringLiteral("    "));
+    return text.trimmed();
+}
+
+bool matchesTypeFilter(const QFileInfo &info, const QString &filter)
+{
+    if (filter.isEmpty() || filter == QStringLiteral("any"))
+        return true;
+
+    const QString kind = kindForFile(info).toLower();
+    if (filter == QStringLiteral("folder"))
+        return info.isDir();
+
+    return kind == filter;
+}
+
+bool matchesDateFilter(const QFileInfo &info, const QString &filter)
+{
+    if (filter.isEmpty() || filter == QStringLiteral("any"))
+        return true;
+
+    const QDate modified = info.lastModified().date();
+    const QDate today = QDate::currentDate();
+    if (filter == QStringLiteral("today"))
+        return modified == today;
+    if (filter == QStringLiteral("week"))
+        return modified >= today.addDays(-7);
+    if (filter == QStringLiteral("month"))
+        return modified >= today.addMonths(-1);
+
+    return true;
+}
+
+bool matchesSizeFilter(const QFileInfo &info, const QString &filter)
+{
+    if (info.isDir() || filter.isEmpty() || filter == QStringLiteral("any"))
+        return true;
+
+    const qint64 size = info.size();
+    if (filter == QStringLiteral("small"))
+        return size < 1 * 1024 * 1024;
+    if (filter == QStringLiteral("medium"))
+        return size >= 1 * 1024 * 1024 && size < 100 * 1024 * 1024;
+    if (filter == QStringLiteral("large"))
+        return size >= 100 * 1024 * 1024;
+
+    return true;
 }
 
 QString uniqueTargetPath(const QString &targetDirectory, const QString &baseName)
@@ -183,6 +315,9 @@ QString FileManager::homePath() const
 
 QString FileManager::parentPath(const QString &path) const
 {
+    if (path == kGameDataPath)
+        return QDir::homePath();
+
     const QDir dir(cleanPath(path));
 
     if (dir.isRoot())
@@ -199,6 +334,7 @@ QVariantList FileManager::places() const
     const QString home = QDir::homePath();
 
     result << place(QStringLiteral("Home"), home, QStringLiteral("HOME"));
+    result << place(QStringLiteral("Game Data"), kGameDataPath, QStringLiteral("SAVE"));
 
     const QList<QPair<QString, QStandardPaths::StandardLocation>> standardPlaces = {
         {QStringLiteral("Desktop"), QStandardPaths::DesktopLocation},
@@ -229,6 +365,10 @@ QVariantList FileManager::places() const
 QVariantList FileManager::listDirectory(const QString &path) const
 {
     QVariantList result;
+
+    if (path == kGameDataPath)
+        return knownGameDataFolders();
+
     const QDir dir(cleanPath(path));
 
     if (!dir.exists())
@@ -240,18 +380,7 @@ QVariantList FileManager::listDirectory(const QString &path) const
     );
 
     for (const QFileInfo &info : entries) {
-        const QString kind = kindForFile(info);
-
-        QVariantMap item;
-        item.insert(QStringLiteral("name"), info.fileName());
-        item.insert(QStringLiteral("path"), info.absoluteFilePath());
-        item.insert(QStringLiteral("isDir"), info.isDir());
-        item.insert(QStringLiteral("size"), info.isDir() ? QStringLiteral("-") : formatSize(info.size()));
-        item.insert(QStringLiteral("kind"), kind);
-        item.insert(QStringLiteral("icon"), iconForKind(kind));
-        item.insert(QStringLiteral("modified"), info.lastModified().toString(QStringLiteral("yyyy-MM-dd hh:mm")));
-        item.insert(QStringLiteral("hidden"), info.isHidden());
-        result << item;
+        result << entryForInfo(info);
     }
 
     return result;
@@ -277,7 +406,10 @@ bool FileManager::createFolder(const QString &parentPath, const QString &name) c
     if (!dir.exists())
         return false;
 
-    return dir.mkdir(trimmedName);
+    const bool ok = dir.mkdir(trimmedName);
+    if (ok)
+        m_indexCache.clear();
+    return ok;
 }
 
 bool FileManager::renamePath(const QString &path, const QString &newName) const
@@ -291,7 +423,10 @@ bool FileManager::renamePath(const QString &path, const QString &newName) const
         return false;
 
     QDir parent(info.absolutePath());
-    return parent.rename(info.fileName(), trimmedName);
+    const bool ok = parent.rename(info.fileName(), trimmedName);
+    if (ok)
+        m_indexCache.clear();
+    return ok;
 }
 
 bool FileManager::moveToTrash(const QString &path) const
@@ -304,7 +439,10 @@ bool FileManager::moveToTrash(const QString &path) const
         return false;
 
     const int result = QProcess::execute(QStringLiteral("gio"), {QStringLiteral("trash"), info.absoluteFilePath()});
-    return result == 0;
+    const bool ok = result == 0;
+    if (ok)
+        m_indexCache.clear();
+    return ok;
 }
 
 bool FileManager::movePathsToTrash(const QStringList &paths) const
@@ -341,6 +479,7 @@ bool FileManager::copyPaths(const QStringList &paths, const QString &targetDirec
             return false;
     }
 
+    m_indexCache.clear();
     return true;
 }
 
@@ -379,6 +518,7 @@ bool FileManager::movePaths(const QStringList &paths, const QString &targetDirec
         }
     }
 
+    m_indexCache.clear();
     return true;
 }
 
@@ -404,7 +544,8 @@ QVariantMap FileManager::previewInfo(const QString &path) const
     result.insert(QStringLiteral("executable"), info.isExecutable());
     result.insert(QStringLiteral("extension"), info.suffix().isEmpty() ? QStringLiteral("-") : info.suffix().toUpper());
     result.insert(QStringLiteral("parent"), info.absolutePath());
-    result.insert(QStringLiteral("previewSource"), kind == QStringLiteral("Image") ? QStringLiteral("file://") + info.absoluteFilePath() : QString());
+    result.insert(QStringLiteral("previewMode"), previewModeForKind(kind));
+    result.insert(QStringLiteral("previewSource"), (kind == QStringLiteral("Image") || kind == QStringLiteral("Video") || kind == QStringLiteral("PDF")) ? QStringLiteral("file://") + info.absoluteFilePath() : QString());
 
     if (info.isDir()) {
         const QDir dir(info.absoluteFilePath());
@@ -422,6 +563,104 @@ QVariantMap FileManager::previewInfo(const QString &path) const
         result.insert(QStringLiteral("childSummary"), QStringLiteral("%1 folders, %2 files").arg(folders).arg(files));
     } else {
         result.insert(QStringLiteral("childSummary"), QString());
+    }
+
+    if (kind == QStringLiteral("Text")) {
+        result.insert(QStringLiteral("textPreview"), readTextPreview(info.absoluteFilePath()));
+    } else if (kind == QStringLiteral("PDF")) {
+        result.insert(QStringLiteral("textPreview"), QStringLiteral("PDF document\n%1\n%2").arg(info.fileName(), formatSize(info.size())));
+    } else if (kind == QStringLiteral("Video")) {
+        result.insert(QStringLiteral("textPreview"), QStringLiteral("Video preview\n%1").arg(info.fileName()));
+    } else {
+        result.insert(QStringLiteral("textPreview"), QString());
+    }
+
+    return result;
+}
+
+QVariantList FileManager::childDirectories(const QString &path) const
+{
+    QVariantList result;
+
+    if (path == kGameDataPath)
+        return knownGameDataFolders();
+
+    const QDir dir(cleanPath(path));
+    if (!dir.exists())
+        return result;
+
+    const QFileInfoList entries = dir.entryInfoList(
+        QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable,
+        QDir::IgnoreCase | QDir::Name
+    );
+
+    for (const QFileInfo &info : entries)
+        result << entryForInfo(info);
+
+    return result;
+}
+
+QVariantList FileManager::searchIndexed(const QString &rootPath, const QString &query, const QString &typeFilter, const QString &dateFilter, const QString &sizeFilter) const
+{
+    const QString cleanRoot = cleanPath(rootPath);
+    const QString cacheKey = cleanRoot;
+    QVariantList indexed;
+
+    if (cleanRoot == kGameDataPath) {
+        indexed = knownGameDataFolders();
+        for (const QVariant &folderValue : knownGameDataFolders()) {
+            const QVariantMap folder = folderValue.toMap();
+            const QString folderPath = folder.value(QStringLiteral("path")).toString();
+            const QVariantList childResults = searchIndexed(folderPath, QString(), QStringLiteral("any"), QStringLiteral("any"), QStringLiteral("any"));
+            for (const QVariant &child : childResults)
+                indexed << child;
+        }
+    } else if (m_indexCache.contains(cacheKey)) {
+        indexed = m_indexCache.value(cacheKey);
+    } else {
+        const QFileInfo rootInfo(cleanRoot);
+        if (!rootInfo.exists() || !rootInfo.isDir())
+            return indexed;
+
+        QDirIterator iterator(
+            cleanRoot,
+            QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Readable,
+            QDirIterator::Subdirectories
+        );
+
+        int count = 0;
+        while (iterator.hasNext() && count < kMaxIndexedEntries) {
+            iterator.next();
+            const QFileInfo info = iterator.fileInfo();
+            indexed << entryForInfo(info);
+            ++count;
+        }
+
+        m_indexCache.insert(cacheKey, indexed);
+    }
+
+    QVariantList result;
+    const QString needle = query.trimmed().toLower();
+
+    for (const QVariant &value : indexed) {
+        const QVariantMap item = value.toMap();
+        const QFileInfo info(item.value(QStringLiteral("realPath"), item.value(QStringLiteral("path"))).toString());
+        if (!info.exists())
+            continue;
+
+        const QString haystack = (item.value(QStringLiteral("name")).toString() + QStringLiteral(" ") + item.value(QStringLiteral("path")).toString()).toLower();
+        if (!needle.isEmpty() && !haystack.contains(needle))
+            continue;
+        if (!matchesTypeFilter(info, typeFilter))
+            continue;
+        if (!matchesDateFilter(info, dateFilter))
+            continue;
+        if (!matchesSizeFilter(info, sizeFilter))
+            continue;
+
+        result << item;
+        if (result.size() >= 500)
+            break;
     }
 
     return result;
@@ -466,6 +705,8 @@ void FileManager::updateOperation(int id, int current, int total, const QString 
         operation.insert(QStringLiteral("done"), done);
         operation.insert(QStringLiteral("ok"), ok);
         m_operationQueue[i] = operation;
+        if (done && ok)
+            m_indexCache.clear();
         emit operationQueueChanged();
 
         if (done)
