@@ -1,10 +1,12 @@
 alacritty
+amd-ucode
 arch-install-scripts
 base
 base-devel
 btop
 calamares
 cmake
+edk2-shell
 efibootmgr
 firefox
 fish
@@ -38,6 +40,7 @@ qt6-wayland
 rsync
 starship
 sudo
+syslinux
 unzip
 vulkan-intel
 vulkan-radeon
