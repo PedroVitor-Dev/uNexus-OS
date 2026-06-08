@@ -7,7 +7,10 @@ prefix="${PREFIX:-/usr}"
 install_home="$HOME"
 
 if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ] && command -v getent >/dev/null 2>&1; then
-    install_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    _home="$(getent passwd "$SUDO_USER" 2>/dev/null | cut -d: -f6)"
+    if [ -n "$_home" ]; then
+        install_home="$_home"
+    fi
 fi
 
 state_home="${XDG_STATE_HOME:-$install_home/.local/state}"
@@ -41,8 +44,16 @@ run_logged() {
 log "checking build tools"
 need_command cmake
 mkdir -p "$(dirname "$install_log")"
-if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ] && command -v chown >/dev/null 2>&1; then
-    chown -R "$SUDO_USER" "$(dirname "$(dirname "$install_log")")" 2>/dev/null || true
+
+_real_user=""
+if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+    if getent passwd "$SUDO_USER" >/dev/null 2>&1; then
+        _real_user="$SUDO_USER"
+    fi
+fi
+
+if [ -n "$_real_user" ] && command -v chown >/dev/null 2>&1; then
+    chown -R "$_real_user" "$(dirname "$(dirname "$install_log")")" 2>/dev/null || true
 fi
 log "install log: $install_log"
 
@@ -53,11 +64,11 @@ run_logged cmake --build "$build_dir"
 run_logged cmake --install "$build_dir"
 
 log "initializing user state"
-if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ] && command -v sudo >/dev/null 2>&1; then
+if [ -n "$_real_user" ] && command -v sudo >/dev/null 2>&1; then
     if [ -x "${prefix}/bin/unexusctl" ]; then
-        sudo -u "$SUDO_USER" "${prefix}/bin/unexusctl" init >/dev/null
+        sudo -u "$_real_user" "${prefix}/bin/unexusctl" init >/dev/null
     else
-        sudo -u "$SUDO_USER" sh "${repo_root}/scripts/unexusctl.sh" init >/dev/null
+        sudo -u "$_real_user" sh "${repo_root}/scripts/unexusctl.sh" init >/dev/null
     fi
 else
     if command -v unexusctl >/dev/null 2>&1; then
@@ -76,8 +87,8 @@ else
     run_logged env PREFIX="$prefix" sh "${repo_root}/scripts/unexus-doctor.sh"
 fi
 
-if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ] && command -v chown >/dev/null 2>&1; then
-    chown -R "$SUDO_USER" "$(dirname "$(dirname "$install_log")")" 2>/dev/null || true
+if [ -n "$_real_user" ] && command -v chown >/dev/null 2>&1; then
+    chown -R "$_real_user" "$(dirname "$(dirname "$install_log")")" 2>/dev/null || true
 fi
 
 log "done"
