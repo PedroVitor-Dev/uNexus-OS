@@ -23,6 +23,8 @@ linux-firmware
 man-db
 mangohud
 mesa
+mkinitcpio
+mkinitcpio-archiso
 nano
 neovim
 networkmanager
