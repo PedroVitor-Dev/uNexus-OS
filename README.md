@@ -74,6 +74,18 @@
       <sub><b>Wallpapers</b> with alternate desktop styles.</sub>
     </td>
   </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/09-desktop-particle-drift.png" alt="uNexus Particle Drift wallpaper">
+      <br>
+      <sub><b>Particle Drift</b> wallpaper.</sub>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/10-desktop-aurora-ice.png" alt="uNexus Aurora Ice wallpaper">
+      <br>
+      <sub><b>Aurora Ice</b> wallpaper.</sub>
+    </td>
+  </tr>
 </table>
 
 ---

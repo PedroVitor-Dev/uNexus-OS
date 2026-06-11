@@ -37,6 +37,7 @@ Item {
 
     width: 72
     height: dockPanel.height
+    visible: !root.captureMode
     y: Math.max(topSafeMargin, Math.min((parent ? parent.height : 720) - height - root.spaceLg, ((parent ? parent.height : 720) - height) / 2))
     x: leftSide
        ? (expanded ? edgeMargin : -60)
