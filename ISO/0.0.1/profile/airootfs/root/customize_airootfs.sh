@@ -23,6 +23,16 @@ if command -v unexusctl >/dev/null 2>&1; then
     su - "$live_user" -c 'unexusctl init' || true
 fi
 
+log "configuring live session autostart"
+install -d -m 0755 "/home/$live_user"
+cat > "/home/$live_user/.bash_profile" <<'EOF'
+if [ -z "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    exec unexus-session
+fi
+EOF
+chown "$live_user:$live_user" "/home/$live_user/.bash_profile"
+chmod 0644 "/home/$live_user/.bash_profile"
+
 log "enabling live services"
 systemctl enable NetworkManager.service
 systemctl enable systemd-timesyncd.service
