@@ -4,6 +4,8 @@ This is the first bootable ISO profile for uNexus OS.
 
 It is an Archiso-based live image that boots into a `unexus` live user, starts Hyprland, and launches the uNexus shell through `unexus-session`.
 
+Project website: <https://unexus-os.vercel.app>
+
 ## Build
 
 Run on Arch Linux:
@@ -19,6 +21,28 @@ The generated image is written to:
 ISO/0.0.1/out/
 ```
 
+If the build host is missing archiso tools:
+
+```sh
+sudo pacman -S archiso rsync
+```
+
+## Write to USB
+
+Find the USB disk:
+
+```sh
+lsblk -o NAME,SIZE,MODEL,TRAN,MOUNTPOINTS
+```
+
+Write the generated ISO to the whole USB device, not a partition:
+
+```sh
+sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
+```
+
+Replace `/dev/sdX` with the correct USB disk. The script shows the target with `lsblk` and requires typing `WRITE` before erasing it.
+
 ## What 0.0.1 Includes
 
 - Arch Linux live base
@@ -30,6 +54,12 @@ ISO/0.0.1/out/
 - Qt6 runtime/build stack
 - GameMode, MangoHud and Vulkan tools
 - Flatpak ready for Flathub
+- Graphical Polkit authentication agent
+- Papirus, Breeze, Adwaita and hicolor icon themes
+- Qt SVG/imageformat plugins for app icons and image previews
+- Noto, emoji, DejaVu and Liberation fonts
+- GTK/Qt session defaults for dark styling and cursor consistency
+- Fonts and disk maintenance tools for live recovery work
 - Kitty, Neovim, btop and common recovery tools
 
 ## Notes

@@ -27,6 +27,10 @@ export XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-uNexus:Hyprland}"
 export DESKTOP_SESSION="${DESKTOP_SESSION:-uNexus}"
 export GDK_BACKEND="${GDK_BACKEND:-wayland,x11}"
 export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland;xcb}"
+export QT_QUICK_CONTROLS_STYLE="${QT_QUICK_CONTROLS_STYLE:-Fusion}"
+export GTK_THEME="${GTK_THEME:-Adwaita:dark}"
+export XCURSOR_THEME="${XCURSOR_THEME:-Adwaita}"
+export XCURSOR_SIZE="${XCURSOR_SIZE:-24}"
 export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-wayland}"
 export CLUTTER_BACKEND="${CLUTTER_BACKEND:-wayland}"
 
@@ -54,6 +58,7 @@ session_config="$runtime_root/hyprland.conf"
 session_log="$log_root/session.log"
 user_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf"
 fallback_terminal="$(find_terminal || true)"
+polkit_agent="/usr/lib/polkit-kde-authentication-agent-1"
 
 mkdir -p "$runtime_root"
 mkdir -p "$log_root"
@@ -67,6 +72,10 @@ mkdir -p "$log_root"
     echo "env = DESKTOP_SESSION,uNexus"
     echo "env = GDK_BACKEND,wayland,x11"
     echo "env = QT_QPA_PLATFORM,wayland;xcb"
+    echo "env = QT_QUICK_CONTROLS_STYLE,Fusion"
+    echo "env = GTK_THEME,Adwaita:dark"
+    echo "env = XCURSOR_THEME,Adwaita"
+    echo "env = XCURSOR_SIZE,24"
     echo "env = SDL_VIDEODRIVER,wayland"
     echo "env = CLUTTER_BACKEND,wayland"
     if [ -n "${BROWSER:-}" ]; then
@@ -76,6 +85,8 @@ mkdir -p "$log_root"
         printf 'source = %s\n' "$user_config"
     fi
 
+    echo "exec-once = sh -lc 'mkdir -p \"\${XDG_CONFIG_HOME:-\$HOME/.config}/gtk-3.0\" \"\${XDG_CONFIG_HOME:-\$HOME/.config}/gtk-4.0\"; for gtk_dir in \"\${XDG_CONFIG_HOME:-\$HOME/.config}/gtk-3.0\" \"\${XDG_CONFIG_HOME:-\$HOME/.config}/gtk-4.0\"; do printf \"[Settings]\\ngtk-theme-name=Adwaita\\ngtk-icon-theme-name=Papirus-Dark\\ngtk-cursor-theme-name=Adwaita\\ngtk-application-prefer-dark-theme=1\\n\" > \"\$gtk_dir/settings.ini\"; done; if command -v xdg-icon-resource >/dev/null 2>&1; then xdg-icon-resource forceupdate || true; fi; if command -v update-mime-database >/dev/null 2>&1; then update-mime-database \"\${XDG_DATA_HOME:-\$HOME/.local/share}/mime\" >/dev/null 2>&1 || true; fi'"
+
     echo "bind = SUPER, S, exec, unexus-shell --shortcut launcher"
     echo "bind = SUPER, SPACE, exec, unexus-shell --shortcut launcher"
     echo "bind = SUPER, I, exec, unexus-shell --shortcut settings"
@@ -83,6 +94,9 @@ mkdir -p "$log_root"
     echo "bind = SUPER ALT, G, exec, unexus-shell --shortcut gameSettings"
     if [ -n "$browser_desktop" ]; then
         printf "exec-once = sh -lc 'if command -v xdg-settings >/dev/null 2>&1; then env -u BROWSER xdg-settings set default-web-browser %s; fi; if command -v xdg-mime >/dev/null 2>&1; then xdg-mime default %s x-scheme-handler/http x-scheme-handler/https text/html application/xhtml+xml; fi'\n" "$browser_desktop" "$browser_desktop"
+    fi
+    if [ -x "$polkit_agent" ]; then
+        printf 'exec-once = %s\n' "$polkit_agent"
     fi
     if command -v unexus-shell >/dev/null 2>&1; then
         printf "exec-once = sh -lc 'unexus-shell >>\"%s\" 2>&1 || %s'\n" "$session_log" "${fallback_terminal:-true}"

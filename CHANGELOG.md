@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Project website link: <https://unexus-os.vercel.app>.
+- First bootable `archiso` live image profile under `ISO/0.0.1`.
+- ISO build script that stages the repository into the live image and writes output to `ISO/0.0.1/out/`.
+- USB writing helper with block-device validation, target display and explicit `WRITE` confirmation.
+- Live ISO autologin flow for the `unexus` user on tty1.
+- Archiso boot loader files for current systemd boot mode and BIOS/syslinux support.
+- Live ISO packages for graphical Polkit authentication, Noto fonts, emoji fallback and disk recovery tools.
+- Live ISO icon stack with Papirus, Breeze, Adwaita, hicolor, Qt SVG/imageformats and desktop/MIME metadata support.
 - Official wallpaper set under `assets/wallpapers`: `unexus-core`, `particle-drift`, `aurora-ice` and `ember-circuit`.
 - Wallpaper resources registered in Qt and installed to the uNexus data directory.
 - Windows-style global shortcuts for Launcher, Settings, Game Settings and stats overlay.
@@ -19,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `unexus-doctor` install validation command and `unexusctl` state/log/update helpers.
 
 ### Changed
+- Documentation now treats the bootable ISO as an existing 0.0.1 foundation instead of a purely future path.
+- `unexus-session` starts the KDE Polkit authentication agent when it is installed.
+- `unexus-session` and `unexus-recovery-session` now export consistent Qt/GTK style, icon and cursor defaults.
+- uNexus Shell now sets a default Qt icon theme and hicolor fallback at startup.
 - README Feature Status was reduced to the latest shipping focus instead of the full feature inventory.
 - Settings documentation now reflects the removal of the old OS Provisioning checklist.
 - Main desktop now uses the official `unexus-core` wallpaper image under the animated background layer.
@@ -39,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Controller support out of the box.
 - Per-game performance profiles.
 - Graphical installer MVP.
-- Bootable ISO path.
+- ISO hardware validation, boot polish and disk installer integration.
 
 ---
 

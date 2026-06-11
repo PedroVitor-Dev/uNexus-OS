@@ -20,6 +20,8 @@
 
 ## Current State (June 2026)
 
+Project website: <https://unexus-os.vercel.app>
+
 ### Already Done
 
 - [x] Qt6/QML shell running on Hyprland on real hardware
@@ -41,6 +43,9 @@
 - [x] Wallpaper selector in Settings > Appearance with `QSettings` persistence
 - [x] Game Settings starts real Flatpak installs for supported launchers
 - [x] `unexusctl`, `unexus-doctor`, `PKGBUILD`, `.desktop` and session files exist
+- [x] Bootable `ISO/0.0.1` Archiso live profile exists with Hyprland, uNexus Shell, autologin, Flatpak, GameMode, MangoHud, Vulkan tools, Polkit agent, fonts and recovery utilities
+- [x] USB writer exists with target validation and explicit erase confirmation
+- [x] ISO visual baseline includes icon themes, Qt SVG/imageformats, desktop/MIME metadata, font fallbacks and Qt/GTK/cursor session defaults
 
 ---
 
@@ -87,7 +92,7 @@
 - [ ] **Innovation:** **Settings Sync via Git:** export/import `.unexus-config.json` and optionally sync with a private Git repository
 - [ ] **UI:** Redesign First Setup as full product onboarding with step progress and persistent checklist state
 - [~] **Feature:** Add safe reset settings flow; `unexusctl reset-settings` exists, but Settings still needs the full visual flow and automatic backup
-- [ ] **Innovation:** **uNexus Assistant:** lightweight shell-side assistant using a local LLM through `ollama` when available
+- [ ] **Innovation:** **uNexus Copilot:** fully optional local AI assistant for shell settings, troubleshooting, localization help and guided configuration, using a local model when available and keeping prompts/files on-device by default
 
 ### Exit Criteria - Phase 2
 
@@ -165,6 +170,7 @@
 - [ ] **Innovation:** **Dual-Pane Mode:** `F3` splits Files into two independent panes
 - [ ] **UI:** Add visual custom tags for files/folders persisted in `~/.local/share/unexus/tags.json`
 - [x] **Feature:** Add multi-select with copy, cut, paste, rename and trash actions
+- [ ] **Innovation:** **Copilot File Organizer:** optional local-only suggestions for finding files, grouping downloads, naming folders and cleaning duplicates without uploading file names or contents
 - [ ] **Innovation:** **Cloud Drive Integration:** connect Google Drive, Dropbox or WebDAV through `rclone mount`
 
 ### Exit Criteria - Phase 5
@@ -238,16 +244,16 @@
 **Goal:** create the first bootable USB image that opens into a uNexus session.
 
 - [ ] **UI:** Create Plymouth boot splash with animated uNexus logo
-- [ ] **Feature:** Create `archiso` profile with Hyprland, Qt6, unexus-shell, Flatpak/Flathub, MangoHud, GameMode, Vulkan tools, terminal, browser and PipeWire
+- [x] **Feature:** Create `archiso` profile with Hyprland, Qt6, unexus-shell, Flatpak, MangoHud, GameMode, Vulkan tools, terminal, browser layer and PipeWire
 - [ ] **Innovation:** **uNexus Recovery Shell:** automatic TUI recovery menu if the shell crashes
-- [ ] **UI:** Create first-boot welcome flow before the first desktop session
-- [ ] **Feature:** Define default Hyprland config optimized for uNexus and gaming
+- [~] **UI:** Create first-boot welcome/readiness flow; First Setup opens on first login, while a pre-desktop readiness gate is still planned
+- [~] **Feature:** Define default Hyprland config optimized for uNexus and gaming; the session wrapper now generates the live config and starts the Polkit agent when available
 - [ ] **Innovation:** **Live Gaming Mode:** bootable ISO can run games directly from live environment with optimizations enabled
 
 ### Exit Criteria - Phase 9
 
-- [ ] uNexus boots from USB on real hardware
-- [ ] User reaches the shell without manual terminal work
+- [~] uNexus boots from USB on real hardware; broader hardware validation is pending
+- [x] User reaches the shell without manual terminal work through live-user autologin
 - [ ] Basic apps open
 - [ ] First Setup is visible and useful
 
@@ -305,13 +311,13 @@
 - [ ] **UI:** Final polish pass over all loading, error, success and motion states
 - [ ] **Feature:** Update mechanism with stable/beta channels, delta updates and system snapshot before update
 - [ ] **Innovation:** **uNexus Community Stats (opt-in):** anonymous hardware/game stats dashboard to guide compatibility priorities
-- [ ] **UI:** Official website with generated docs, screenshots, downloads and contribution guide
+- [~] **UI:** Official website exists at <https://unexus-os.vercel.app>; generated docs, screenshots, downloads and contribution guide are still pending
 - [ ] **Feature:** Public hardware compatibility matrix
 - [ ] **Innovation:** **uNexus Portable Profile:** `.unexus-profile` file containing settings, themes, keybinds, game list and performance profiles
 
 ### Exit Criteria - Phase 12 (uNexus 1.0)
 
-- [ ] Public ISO available for download
+- [~] Public ISO foundation exists; hosted public download flow is still pending
 - [ ] Installer works on at least 5 tested hardware configurations
 - [ ] Update mechanism is functional
 - [ ] At least 3 non-technical gamers use uNexus as their main OS for 30 days
@@ -328,8 +334,9 @@
 - If a feature requires system privileges, design the permission model before polishing the UI.
 - If a feature helps gaming, prefer real integrations over fake indicators.
 - If hardware data is unavailable, show honest states like `N/A` instead of misleading numbers.
+- AI features must be optional, local-first and privacy-preserving; no file names, prompts, configs or telemetry should leave the device unless the user explicitly enables an external provider.
 - Innovations should be useful first and impressive second.
-- Keep Arch + Hyprland as the development truth until the ISO path is ready.
+- Keep Arch + Hyprland as the development truth while the ISO path is validated on more hardware.
 
 ---
 

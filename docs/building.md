@@ -2,6 +2,8 @@
 
 This guide explains how to build and run uNexus Shell from source.
 
+Project website: <https://unexus-os.vercel.app>
+
 ---
 
 ## Current Target Environment
@@ -117,7 +119,8 @@ The selected installer experience is graphical and double-click friendly:
 - use `packaging/arch/PKGBUILD`, `makepkg` and `pacman` behind the installer;
 - use Flatpak behind the installer for user applications where appropriate;
 - keep `scripts/setup.sh` for development and local repair installs;
-- use `archiso` + Calamares later for the bootable uNexus OS image.
+- use the existing `ISO/0.0.1` Archiso profile as the live image foundation;
+- add Calamares or the native graphical installer later for disk installation.
 
 See [installer-technology.md](installer-technology.md) for the decision record.
 
@@ -168,6 +171,44 @@ cmake -B build
 cmake --build build
 ./build/unexus-shell
 ```
+
+---
+
+## Build the Live ISO
+
+The first bootable uNexus OS image profile lives in `ISO/0.0.1`.
+
+Install Archiso tools on the build host:
+
+```bash
+sudo pacman -S archiso rsync
+```
+
+Build the image:
+
+```bash
+cd ~/uNexus-OS
+sudo sh ISO/0.0.1/build-iso.sh
+```
+
+The generated image is written to:
+
+```text
+ISO/0.0.1/out/
+```
+
+The live profile includes Hyprland, the uNexus shell/session, Qt6, PipeWire, NetworkManager, Flatpak, GameMode, MangoHud, Vulkan tools, graphical Polkit authentication, Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts and recovery utilities.
+
+The normal session also writes GTK settings and exports Qt/GTK/cursor defaults so the first boot does not depend on a manually configured desktop theme.
+
+Write it to a USB disk:
+
+```bash
+lsblk -o NAME,SIZE,MODEL,TRAN,MOUNTPOINTS
+sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
+```
+
+Use the whole USB disk, not a partition. The writer shows the target and requires typing `WRITE` before erasing it.
 
 ---
 

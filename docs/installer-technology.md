@@ -11,7 +11,8 @@ The installer should be a Qt/QML app that wraps native Linux installation backen
 - `pacman` / Arch packages for system-level uNexus components;
 - Flatpak for user applications where sandboxed app delivery makes sense;
 - `scripts/setup.sh` only as the development and recovery fallback;
-- `archiso` + Calamares later for installing the full uNexus OS onto disk.
+- the existing `ISO/0.0.1` Archiso profile as the live image foundation;
+- Calamares or the native graphical installer later for installing the full uNexus OS onto disk.
 
 In short: graphical installer first, native package backend underneath.
 
@@ -31,7 +32,8 @@ In short: graphical installer first, native package backend underneath.
 | Package backend | Arch `PKGBUILD` / `makepkg` / `pacman -U` | Proper install, upgrade and uninstall on Arch |
 | Application backend | Flatpak / Flathub | Friendly install path for user apps |
 | Development install | `scripts/setup.sh` | Fast local install from a cloned repository |
-| Full OS installer | `archiso` + Calamares | Bootable uNexus OS image and disk installation |
+| Live OS image | `ISO/0.0.1` / Archiso | Bootable uNexus OS live image |
+| Full OS installer | Calamares or native installer | Disk installation from the live environment |
 
 ## Non-goals For Now
 
@@ -47,4 +49,5 @@ In short: graphical installer first, native package backend underneath.
 4. Use `pkexec` for privilege escalation instead of asking users to run terminal commands.
 5. Add `.desktop` entries so the installer can be launched by double-click.
 6. Keep `sudo sh scripts/setup.sh` documented for development and repair.
-7. Add `archiso` + Calamares once the shell session, recovery session and provisioning flows are mature.
+7. Harden `ISO/0.0.1` with boot polish, hardware validation, hosted downloads and clearer recovery behavior.
+8. Add Calamares or native disk installation once the shell session, recovery session and provisioning flows are mature.

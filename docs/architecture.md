@@ -446,7 +446,7 @@ Near-term architecture work:
 - move repeated app metadata into a model or config file;
 - evolve Liquid Glass from a QML material into shader/compositor-backed blur and refraction;
 - build a graphical double-click installer while keeping `setup.sh` as the dev/recovery path;
-- start an `archiso` profile;
+- harden the existing `ISO/0.0.1` Archiso profile with boot polish, hardware validation and installer integration;
 - eventually replace ad hoc command wrappers with stronger service APIs.
 
 Long term, uNexus may grow beyond a Hyprland-based shell toward a custom compositor/window manager tailored for gaming.

@@ -9,6 +9,8 @@
   ![Focus](https://img.shields.io/badge/focus-Gaming-red)
   ![Environment](https://img.shields.io/badge/environment-Arch%20%2B%20Hyprland-purple)
 
+  <p><a href="https://unexus-os.vercel.app">Project website</a></p>
+
 </div>
 
 ---
@@ -28,6 +30,7 @@ uNexus Shell is currently running natively on **Arch Linux + Hyprland** on real 
 The current prototype manages:
 
 - branded desktop wallpaper set, animated background layer and top bar;
+- first bootable `archiso` live image profile under `ISO/0.0.1`;
 - fullscreen login screen;
 - system and gaming side docks with real icon lookup and drawn fallbacks;
 - app launcher with search, categories and installed/running/missing status chips;
@@ -45,6 +48,7 @@ The current prototype manages:
 - `unexusctl` for doctor, logs, backup, rollback, update and state management.
 
 The shell can be installed as a Wayland session through `scripts/setup.sh`.
+The first live ISO profile can be built with `ISO/0.0.1/build-iso.sh`.
 
 ---
 
@@ -73,6 +77,9 @@ Recent shipping focus:
 | Game launcher installs | Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles |
 | uNexus Files polish | Context menu, copy/cut/paste hotkeys, sorting, previews and layout fixes are in place |
 | Visual language | Tokens now cover spacing, radius, typography, surfaces and motion |
+| Bootable ISO 0.0.1 | Archiso live profile with Hyprland, uNexus Shell, autologin, recovery tools and USB writer |
+| Session authentication | The normal session starts the KDE Polkit agent when available for graphical privilege prompts |
+| Visual defaults | ISO/session now include icon themes, Qt SVG support, fonts, MIME metadata and Qt/GTK style defaults |
 
 For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 
@@ -104,6 +111,7 @@ For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 | `packages/unexus-shell/qml` | Shell UI, design tokens, docks, launcher, settings and overlays |
 | `packaging/linux` | Desktop entries, Wayland sessions and session launchers |
 | `packaging/arch` | Arch Linux PKGBUILD |
+| `ISO/0.0.1` | First bootable Archiso live image profile and USB writer |
 | `docs` | Architecture, build guide, roadmap and contribution docs |
 | `assets` | Logo, wallpaper and media assets |
 | `scripts` | Build, install, package, uninstall, doctor and control scripts |
@@ -118,7 +126,8 @@ uNexus targets a graphical, double-click installer experience.
 - Arch packages and `pacman` remain the native backend.
 - Flatpak can power friendly user-app installs.
 - `scripts/setup.sh` remains the development/local repair installer.
-- `archiso` + Calamares is the planned path for a future bootable uNexus OS image.
+- `ISO/0.0.1` is the first `archiso` live image foundation.
+- Calamares or a native graphical installer remains the planned disk-install path.
 
 See [docs/installer-technology.md](docs/installer-technology.md).
 
@@ -174,6 +183,23 @@ cmake --build build
 
 Default login password: `1234` or blank.
 
+Build the first live ISO profile on Arch Linux:
+
+```bash
+cd ~/uNexus-OS
+sudo sh ISO/0.0.1/build-iso.sh
+```
+
+Write the generated ISO to a USB disk:
+
+```bash
+sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
+```
+
+Replace `/dev/sdX` with the whole USB disk, not a partition.
+
+The live image is expected to boot with the uNexus visual baseline already present: Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts, GTK dark defaults, Adwaita cursor settings and the First Setup checklist on first login.
+
 ---
 
 ## Roadmap
@@ -187,7 +213,7 @@ Current near-term focus:
 - package Qt/QML dependencies and runtime assets correctly;
 - add Flathub setup/status and safer provisioning backends;
 - start the Game Library and per-game profile data model;
-- start the bootable ISO path with `archiso`.
+- validate and iterate on the bootable ISO 0.0.1 live environment.
 
 ---
 

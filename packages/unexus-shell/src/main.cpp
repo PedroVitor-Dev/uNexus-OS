@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+#include <QIcon>
 #include <QStringList>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -13,6 +14,8 @@
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
+    QIcon::setThemeName(QStringLiteral("Papirus-Dark"));
+    QIcon::setFallbackThemeName(QStringLiteral("hicolor"));
 
     const QStringList args = app.arguments();
     const int shortcutIndex = args.indexOf("--shortcut");
