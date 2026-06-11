@@ -597,6 +597,7 @@ Window {
     function captureSetScene(scene) {
         captureMode = true
         captureScene = scene
+        setWallpaper("unexus-core", false)
 
         dockActionMenu.hideMenu()
         contextMenu.hide()
@@ -622,10 +623,19 @@ Window {
             unexusFiles.show()
         } else if (scene === "settings") {
             unexusSettings.show()
+        } else if (scene === "settings-appearance") {
+            unexusSettings.show()
+            unexusSettings.setSection("appearance")
         } else if (scene === "game-settings") {
             gameSettings.show()
         } else if (scene === "first-setup") {
             firstSetup.show()
+        } else if (scene === "desktop-particle-drift") {
+            setWallpaper("particle-drift", false)
+        } else if (scene === "desktop-aurora-ice") {
+            setWallpaper("aurora-ice", false)
+        } else if (scene === "desktop-ember-circuit") {
+            setWallpaper("ember-circuit", false)
         }
     }
 

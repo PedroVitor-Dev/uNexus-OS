@@ -20,7 +20,7 @@
 <div align="center">
   <img src="assets/gifs/unexus-shell-tour.gif" width="900" alt="uNexus Shell tour">
   <br>
-  <sub>Desktop, launcher, file manager, settings and gaming panels.</sub>
+  <sub>Desktop workflow with a slow pointer movement opening uNexus Files.</sub>
 </div>
 
 <br>
@@ -72,6 +72,8 @@
 
 <div align="center">
   <img src="assets/gifs/unexus-panels.gif" width="900" alt="uNexus panels animation">
+  <br>
+  <sub>Appearance settings and wallpaper customization in motion.</sub>
 </div>
 
 ---

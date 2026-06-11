@@ -234,7 +234,11 @@ void runAssetCapture(QGuiApplication &app, QObject *root, QQuickWindow *window, 
         { "files", "04-file-manager.png" },
         { "settings", "05-settings.png" },
         { "game-settings", "06-game-settings.png" },
-        { "first-setup", "07-first-setup.png" }
+        { "first-setup", "07-first-setup.png" },
+        { "settings-appearance", "08-settings-appearance.png" },
+        { "desktop-particle-drift", "09-desktop-particle-drift.png" },
+        { "desktop-aurora-ice", "10-desktop-aurora-ice.png" },
+        { "desktop-ember-circuit", "11-desktop-ember-circuit.png" }
     };
 
     auto index = std::make_shared<int>(0);
