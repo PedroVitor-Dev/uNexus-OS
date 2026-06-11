@@ -18,15 +18,9 @@
 ## Preview
 
 <div align="center">
-  <img src="assets/gifs/unexus-shell-tour.gif" width="900" alt="uNexus Shell tour">
-  <br>
-  <sub>Desktop workflow with a slow pointer movement opening uNexus Files.</sub>
-</div>
-
-<br>
-
-<div align="center">
   <img src="assets/screenshots/02-desktop.png" width="900" alt="uNexus desktop">
+  <br>
+  <sub>uNexus desktop with the default visual identity.</sub>
 </div>
 
 <br>
@@ -68,13 +62,19 @@
       <sub><b>First Setup</b> for initial system and gaming readiness checks.</sub>
     </td>
   </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/08-settings-appearance.png" alt="uNexus Appearance Settings">
+      <br>
+      <sub><b>Appearance</b> with theme and wallpaper customization.</sub>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/11-desktop-ember-circuit.png" alt="uNexus Ember Circuit wallpaper">
+      <br>
+      <sub><b>Wallpapers</b> with alternate desktop styles.</sub>
+    </td>
+  </tr>
 </table>
-
-<div align="center">
-  <img src="assets/gifs/unexus-panels.gif" width="900" alt="uNexus panels animation">
-  <br>
-  <sub>Appearance settings and wallpaper customization in motion.</sub>
-</div>
 
 ---
 
