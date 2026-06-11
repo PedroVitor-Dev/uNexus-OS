@@ -133,7 +133,7 @@ The first public ISO is available under [release v0.0.1](https://github.com/Pedr
 
 This build is **not recommended for daily use yet**. It was generated for boot, visual and workflow testing, and it should be treated as an early live-image snapshot while the installer, packaging and hardware validation continue to mature.
 
-Use it only in a VM, spare machine or disposable test environment.
+Because this ISO targets the real Hyprland/uNexus session stack, test it on spare hardware or a disposable machine, not as a daily driver.
 
 ---
 
