@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Post-install welcome quick actions in the graphical installer.
 - Stable/beta update channel preference in Settings > About.
 - Integrated bug report generator available through `Super+B`.
+- Redesigned uNexus Files with stronger sidebar, grid/list controls, operation queue and bottom status bar.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.1 foundation instead of a purely future path.

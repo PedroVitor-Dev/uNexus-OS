@@ -159,8 +159,8 @@ Project website: <https://unexus-os.vercel.app>
 
 **Goal:** evolve the Files MVP into a file manager that can compete with Nautilus and Dolphin while keeping uNexus-specific advantages.
 
-- [ ] **UI:** Redesign uNexus Files with sidebar, grid/list views and a bottom status bar
-- [~] **Feature:** Copy/cut/paste, multi-select and real file actions exist; visible operation queue, per-file progress and worker thread are still pending
+- [x] **UI:** Redesign uNexus Files with sidebar, grid/list views and a bottom status bar
+- [~] **Feature:** Copy/cut/paste, multi-select, real file actions, visible operation queue, item progress and worker thread exist; cancel/retry and byte-level progress are still pending
 - [ ] **Innovation:** **uNexus Files Preview Engine:** render image, video, text and PDF previews without opening external apps
 - [~] **UI:** Clickable breadcrumbs exist; per-segment dropdown and direct path editing are still planned
 - [ ] **Feature:** Add indexed file search with filters for type, date and size
@@ -176,7 +176,7 @@ Project website: <https://unexus-os.vercel.app>
 ### Exit Criteria - Phase 5
 
 - [ ] uNexus Files competes functionally with mainstream file managers
-- [ ] File operations do not block the UI
+- [x] File operations do not block the UI
 - [ ] Preview works for images, videos and text
 - [ ] Search returns results in under 2 seconds
 

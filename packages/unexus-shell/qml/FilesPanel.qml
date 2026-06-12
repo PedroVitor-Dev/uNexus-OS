@@ -43,6 +43,28 @@ Item {
     property var breadcrumbMenuEntries: []
     property string pendingPasteMode: ""
 
+    function activeOperationCount() {
+        var count = 0
+        var operations = fileManager.operationQueue || []
+        for (var i = 0; i < operations.length; i++) {
+            if (!operations[i].done)
+                count++
+        }
+        return count
+    }
+
+    function operationSummary() {
+        var operations = fileManager.operationQueue || []
+        if (operations.length === 0)
+            return root.tr("Operations") + ": -"
+
+        var active = activeOperationCount()
+        if (active > 0)
+            return root.tr("Operations") + ": " + active + " " + root.tr("running")
+
+        return root.tr("Operations") + ": " + root.tr("idle")
+    }
+
     function show(path) {
         hideAnim.stop()
         visible = true
@@ -596,10 +618,10 @@ Item {
 
     Rectangle {
         id: panel
-        width: Math.min(1040, parent.width - root.panelMargin * 2)
-        height: Math.min(root.compactLayout ? 640 : 620, parent.height - root.panelMargin * 2)
+        width: Math.min(1180, parent.width - root.panelMargin * 2)
+        height: Math.min(root.compactLayout ? 680 : 700, parent.height - root.panelMargin * 2)
         anchors.centerIn: parent
-        radius: 14
+        radius: 12
         color: "#0e1520"
         border.color: root.themeAccent
         border.width: 1
@@ -610,11 +632,11 @@ Item {
         Column {
             anchors.fill: parent
             anchors.margins: root.panelPadding
-            spacing: root.compactLayout ? 8 : 12
+            spacing: root.compactLayout ? 8 : 10
 
             Row {
                 width: parent.width
-                height: 38
+                height: 42
                 spacing: root.panelGap
 
                 Column {
@@ -622,9 +644,9 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: root.tr("File Manager")
+                        text: root.tr("uNexus Files")
                         color: "#ffffff"
-                        font.pixelSize: 22
+                        font.pixelSize: 23
                         font.family: root.uiFont
                         font.bold: true
                     }
@@ -686,7 +708,7 @@ Item {
                 }
 
                 ToolButton {
-                    label: root.tr("NEW")
+                    label: root.tr("New")
                     onClicked: {
                         filesPanel.mode = "newFolder"
                         actionInput.text = root.tr("New Folder")
@@ -696,7 +718,7 @@ Item {
                 }
 
                 ToolButton {
-                    label: root.tr("REF")
+                    label: root.tr("Refresh")
                     onClicked: filesPanel.refresh()
                 }
             }
@@ -790,11 +812,11 @@ Item {
 
             Row {
                 width: parent.width
-                height: parent.height - 225 - (filesPanel.mode !== "browse" ? 42 : 0)
+                height: parent.height - 229 - (filesPanel.mode !== "browse" ? 42 : 0)
                 spacing: root.panelGap
 
                 Rectangle {
-                    width: root.compactLayout ? 150 : 170
+                    width: root.compactLayout ? 164 : 212
                     height: parent.height
                     radius: 10
                     color: "#111a28"
@@ -804,10 +826,11 @@ Item {
                     Column {
                         anchors.fill: parent
                         anchors.margins: 10
-                        spacing: 6
+                        spacing: 8
 
                         Text {
-                            text: root.tr("PLACES")
+                            width: parent.width
+                            text: root.tr("Places")
                             color: root.themeAccent
                             font.pixelSize: 10
                             font.family: root.uiFont
@@ -840,6 +863,18 @@ Item {
                             }
                         }
 
+                        Rectangle { width: parent.width; height: 1; color: "#223247" }
+
+                        Text {
+                            width: parent.width
+                            text: root.tr("Queue")
+                            color: root.themeAccent
+                            font.pixelSize: 10
+                            font.family: root.uiFont
+                            font.bold: true
+                            opacity: 0.9
+                        }
+
                         OperationQueue {
                             width: parent.width
                             operations: fileManager.operationQueue
@@ -848,7 +883,7 @@ Item {
                 }
 
                 Rectangle {
-                    width: parent.width - (root.compactLayout ? 150 : 170) - root.panelGap
+                    width: parent.width - (root.compactLayout ? 164 : 212) - root.panelGap
                     height: parent.height
                     radius: 10
                     color: "#101927"
@@ -874,7 +909,7 @@ Item {
 
                                 Text {
                                     width: Math.max(120, parent.width - sortActions.width - 8)
-                                    text: root.tr("{count} items").replace("{count}", filesPanel.activeEntries().length)
+                                    text: root.tr("{count} items").replace("{count}", filesPanel.activeEntries().length) + (filesPanel.searchActive() ? " / " + root.tr("filtered") : "")
                                     color: "#8ea4bd"
                                     font.pixelSize: 11
                                     font.family: root.uiFont
@@ -907,8 +942,15 @@ Item {
                                     }
 
                                     MiniAction {
-                                        label: filesPanel.viewMode === "list" ? root.tr("List") : root.tr("Grid")
-                                        onClicked: filesPanel.viewMode = filesPanel.viewMode === "list" ? "grid" : "list"
+                                        label: root.tr("List")
+                                        active: filesPanel.viewMode === "list"
+                                        onClicked: filesPanel.viewMode = "list"
+                                    }
+
+                                    MiniAction {
+                                        label: root.tr("Grid")
+                                        active: filesPanel.viewMode === "grid"
+                                        onClicked: filesPanel.viewMode = "grid"
                                     }
                                 }
                             }
@@ -1097,6 +1139,7 @@ Item {
                                     path: modelData.path
                                     icon: modelData.icon
                                     kind: modelData.kind
+                                    size: modelData.size
                                     isDir: modelData.isDir
                                     selected: filesPanel.selectedPaths.indexOf(modelData.path) >= 0
                                     cutMarked: filesPanel.clipboardMode === "cut" && filesPanel.clipboardPaths.indexOf(modelData.path) >= 0
@@ -1174,6 +1217,14 @@ Item {
                     StatusText {
                         text: filesPanel.clipboardPaths.length > 0 ? (root.tr("Clipboard") + ": " + root.tr(filesPanel.clipboardMode === "cut" ? "Cut" : "Copy") + " " + filesPanel.clipboardPaths.length) : root.tr("Clipboard") + ": -"
                         Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
+
+                    StatusText {
+                        text: filesPanel.operationSummary()
+                        horizontalAlignment: Text.AlignRight
+                        Layout.preferredWidth: 128
+                        Layout.maximumWidth: 170
                         Layout.fillHeight: true
                     }
                 }
@@ -1282,8 +1333,8 @@ Item {
         id: queueRoot
         property var operations: []
 
-        height: operations.length > 0 ? Math.min(142, queueColumn.height + 16) : 0
-        visible: operations.length > 0
+        height: operations.length > 0 ? Math.min(164, queueColumn.height + 16) : 86
+        visible: true
         radius: 9
         color: "#101927"
         border.color: "#223247"
@@ -1299,11 +1350,21 @@ Item {
 
             Text {
                 width: parent.width
-                text: root.tr("Operations")
-                color: root.themeAccent
+                text: operations.length > 0 ? root.tr("Operations") : root.tr("No active operations")
+                color: operations.length > 0 ? root.themeAccent : root.textMuted
                 font.pixelSize: 10
                 font.family: root.uiFont
                 font.bold: true
+            }
+
+            Text {
+                width: parent.width
+                visible: operations.length === 0
+                text: root.tr("Copy, move and trash progress appears here.")
+                color: root.textMuted
+                font.pixelSize: 10
+                font.family: root.uiFont
+                wrapMode: Text.WordWrap
             }
 
             Repeater {
@@ -1420,7 +1481,7 @@ Item {
         property string label: ""
         signal clicked()
 
-        width: 50
+        width: Math.max(50, toolText.width + 18)
         height: 34
         radius: 8
         color: toolMouse.containsMouse ? "#254160" : "#172233"
@@ -1428,6 +1489,7 @@ Item {
         border.width: 1
 
         Text {
+            id: toolText
             anchors.centerIn: parent
             text: toolButton.label
             color: "#ffffff"
@@ -1448,13 +1510,14 @@ Item {
         id: action
         property string label: ""
         property bool danger: false
+        property bool active: false
         signal clicked()
 
         width: actionText.width + 16
         height: 24
         radius: 7
-        color: actionMouse.containsMouse ? (danger ? "#3a1f2a" : "#254160") : "#172233"
-        border.color: danger ? "#7a3348" : "#2a3a55"
+        color: active ? "#1e2d45" : (actionMouse.containsMouse ? (danger ? "#3a1f2a" : "#254160") : "#172233")
+        border.color: active ? root.themeAccent : (danger ? "#7a3348" : "#2a3a55")
         border.width: 1
 
         Text {
@@ -1464,6 +1527,7 @@ Item {
             color: action.danger ? "#ff9a9a" : "#b7ddff"
             font.pixelSize: 10
             font.family: root.uiFont
+            font.bold: action.active
         }
 
         MouseArea {
@@ -1689,6 +1753,7 @@ Item {
         property string path: ""
         property string icon: ""
         property string kind: ""
+        property string size: ""
         property bool isDir: false
         property bool selected: false
         property bool cutMarked: false
@@ -1764,7 +1829,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: root.tr(fileTile.kind)
+                text: root.tr(fileTile.kind) + (fileTile.isDir || fileTile.size.length === 0 ? "" : " / " + fileTile.size)
                 color: root.textMuted
                 font.pixelSize: 9
                 font.family: root.uiFont
