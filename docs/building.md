@@ -197,6 +197,20 @@ The generated image is written to:
 ISO/0.0.1/out/
 ```
 
+Validate the generated ISO in QEMU:
+
+```bash
+sh scripts/test-iso-vm.sh
+```
+
+The VM test waits for the live ISO to emit `UNEXUS_SMOKE_OK` over the serial port after checking the installed uNexus session files, services and `unexus-doctor`. Install the VM dependencies on Arch Linux with:
+
+```bash
+sudo pacman -S qemu-full edk2-ovmf
+```
+
+Use `--bios-only` when OVMF is not installed yet.
+
 The live profile includes Hyprland, the uNexus shell/session, Qt6, PipeWire, NetworkManager, Flatpak, GameMode, MangoHud, Vulkan tools, graphical Polkit authentication, Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts and recovery utilities.
 
 The normal session also writes GTK settings and exports Qt/GTK/cursor defaults so the first boot does not depend on a manually configured desktop theme.
@@ -209,6 +223,20 @@ sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
 ```
 
 Use the whole USB disk, not a partition. The writer shows the target and requires typing `WRITE` before erasing it.
+
+Install the live system to a disk by previewing the native installer plan:
+
+```bash
+sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza
+```
+
+Then run the destructive install with explicit confirmation:
+
+```bash
+sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza --execute --confirm ERASE-AND-INSTALL
+```
+
+This first disk installer backend targets UEFI systems with systemd-boot and creates a 1 GiB EFI system partition plus a root partition.
 
 ---
 

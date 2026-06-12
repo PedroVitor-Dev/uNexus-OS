@@ -14,5 +14,6 @@ airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
 file_permissions=(
   ["/root/customize_airootfs.sh"]="0:0:755"
+  ["/usr/local/bin/unexus-live-smoke-test"]="0:0:755"
   ["/etc/sudoers.d/10-unexus-live"]="0:0:440"
 )

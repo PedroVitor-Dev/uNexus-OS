@@ -137,6 +137,12 @@ install(PROGRAMS
 )
 
 install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/install-os.sh"
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    RENAME unexus-install-os
+)
+
+install(PROGRAMS
     "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/unexusctl.sh"
     DESTINATION ${CMAKE_INSTALL_BINDIR}
     RENAME unexusctl

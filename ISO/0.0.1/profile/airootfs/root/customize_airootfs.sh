@@ -41,6 +41,7 @@ log "enabling live services"
 systemctl enable NetworkManager.service
 systemctl enable systemd-timesyncd.service
 systemctl enable getty@tty1.service
+systemctl enable unexus-live-smoke-test.service
 
 if command -v flatpak >/dev/null 2>&1; then
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true

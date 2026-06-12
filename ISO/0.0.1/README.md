@@ -21,6 +21,26 @@ The generated image is written to:
 ISO/0.0.1/out/
 ```
 
+## VM Smoke Test
+
+After building the image, boot it in QEMU and wait for the live system smoke marker:
+
+```sh
+sh scripts/test-iso-vm.sh
+```
+
+The test runs legacy BIOS and UEFI boots when QEMU and OVMF firmware are installed. On Arch Linux:
+
+```sh
+sudo pacman -S qemu-full edk2-ovmf
+```
+
+For quick BIOS-only validation:
+
+```sh
+sh scripts/test-iso-vm.sh --bios-only
+```
+
 If the build host is missing archiso tools:
 
 ```sh
@@ -42,6 +62,22 @@ sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
 ```
 
 Replace `/dev/sdX` with the correct USB disk. The script shows the target with `lsblk` and requires typing `WRITE` before erasing it.
+
+## Install to Disk
+
+The first native disk installer backend is available as a guarded script. Preview the plan first:
+
+```sh
+sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza
+```
+
+Run the destructive install only after confirming the target is the whole disk you want to erase:
+
+```sh
+sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza --execute --confirm ERASE-AND-INSTALL
+```
+
+The script creates a GPT UEFI install with a 1 GiB EFI system partition, a root partition, `pacstrap`, `fstab`, locale/timezone/hostname/user setup, systemd-boot and uNexus provisioning.
 
 ## What 0.0.1 Includes
 

@@ -299,7 +299,7 @@ ApplicationWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "This graphical installer installs the uNexus shell, configures the target user, prepares the Hyprland session, sets up Flathub, enables the gaming runtime layer and prepares safe boot defaults. Disk partitioning remains planned for the full OS installer."
+                    text: "This graphical installer installs the uNexus shell, configures the target user, prepares the Hyprland session, sets up Flathub, enables the gaming runtime layer and prepares safe boot defaults. The native disk installer backend is available from the live ISO terminal while the graphical disk flow is being built."
                     color: root.textSecondary
                     wrapMode: Text.WordWrap
                     font.family: root.uiFont
