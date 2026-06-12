@@ -206,7 +206,7 @@ Project website: <https://unexus-os.vercel.app>
 **Goal:** solve one of Linux gaming's biggest pain points: driver management.
 
 - [x] **UI:** Add Hardware section in Settings with GPU, VRAM, active driver, kernel and Mesa versions
-- [ ] **Feature:** Detect GPU through `lspci` and map it to recommended drivers
+- [x] **Feature:** Detect GPU through `lspci` and map it to recommended drivers
 - [ ] **Innovation:** **uNexus Driver Wizard:** guided GPU driver switching with rollback if the next boot fails
 - [ ] **UI:** Add exportable Hardware Report as PDF or JSON
 - [ ] **Feature:** Verify 32-bit gaming libraries and offer safe install paths

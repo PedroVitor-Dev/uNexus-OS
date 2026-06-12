@@ -8,8 +8,16 @@
 #include <QStandardPaths>
 #include <QSysInfo>
 #include <QTextStream>
+#include <QStringList>
 
 namespace {
+
+struct GpuDetection {
+    QString name;
+    QString vendorName;
+    QString vendorId;
+    QString deviceId;
+};
 
 QString unknownIfEmpty(const QString &value)
 {
@@ -72,6 +80,69 @@ QString formatBytes(qint64 bytes)
     }
 
     return QString::number(value, 'f', unitIndex >= 2 ? 1 : 0) + QStringLiteral(" ") + units.at(unitIndex);
+}
+
+QStringList quotedFields(const QString &line)
+{
+    QStringList fields;
+    QRegularExpressionMatchIterator it = QRegularExpression(QStringLiteral("\"([^\"]*)\"")).globalMatch(line);
+    while (it.hasNext())
+        fields.append(it.next().captured(1));
+
+    return fields;
+}
+
+GpuDetection detectGpuWithLspci()
+{
+    GpuDetection gpu;
+    const QString pciDevices = runCommand(QStringLiteral("lspci"), { QStringLiteral("-mm"), QStringLiteral("-nn") });
+    const QStringList lines = pciDevices.split(QLatin1Char('\n'));
+
+    for (const QString &line : lines) {
+        if (!line.contains(QStringLiteral("VGA compatible controller"), Qt::CaseInsensitive)
+            && !line.contains(QStringLiteral("3D controller"), Qt::CaseInsensitive)
+            && !line.contains(QStringLiteral("Display controller"), Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        const QStringList fields = quotedFields(line);
+        if (fields.size() >= 3) {
+            gpu.vendorName = fields.at(1).trimmed();
+            gpu.name = (gpu.vendorName + QStringLiteral(" ") + fields.at(2).trimmed()).trimmed();
+        }
+
+        const QRegularExpressionMatch idMatch = QRegularExpression(QStringLiteral("\\[([0-9a-fA-F]{4}):([0-9a-fA-F]{4})\\]")).match(line);
+        if (idMatch.hasMatch()) {
+            gpu.vendorId = idMatch.captured(1).toLower();
+            gpu.deviceId = idMatch.captured(2).toLower();
+        }
+
+        if (!gpu.name.isEmpty() || !gpu.vendorId.isEmpty())
+            return gpu;
+    }
+
+    const QString fallback = runCommand(QStringLiteral("lspci"), {});
+    gpu.name = firstMatchingLine(fallback, QRegularExpression(QStringLiteral("(?i)(?:VGA compatible controller|3D controller|Display controller):\\s*(.+)$")));
+    return gpu;
+}
+
+QString recommendedDriversForGpu(const GpuDetection &gpu, const QString &activeDriver)
+{
+    const QString probe = (gpu.vendorId + QLatin1Char(' ') + gpu.vendorName + QLatin1Char(' ') + gpu.name + QLatin1Char(' ') + activeDriver).toLower();
+
+    if (gpu.vendorId == QStringLiteral("10de") || probe.contains(QStringLiteral("nvidia")))
+        return QStringLiteral("nvidia-open or nvidia, nvidia-utils, lib32-nvidia-utils");
+
+    if (gpu.vendorId == QStringLiteral("1002") || gpu.vendorId == QStringLiteral("1022") || probe.contains(QStringLiteral("amd")) || probe.contains(QStringLiteral("advanced micro devices")))
+        return QStringLiteral("mesa, vulkan-radeon, lib32-mesa, lib32-vulkan-radeon");
+
+    if (gpu.vendorId == QStringLiteral("8086") || probe.contains(QStringLiteral("intel")))
+        return QStringLiteral("mesa, vulkan-intel, intel-media-driver, lib32-mesa");
+
+    if (probe.contains(QStringLiteral("virtio")) || probe.contains(QStringLiteral("vmware")) || probe.contains(QStringLiteral("virtualbox")))
+        return QStringLiteral("mesa, vulkan-swrast");
+
+    return QStringLiteral("Unknown vendor; verify PCI ID before installing drivers");
 }
 
 QString gpuNameFromSysfs(const QString &devicePath)
@@ -199,7 +270,8 @@ void SystemInfo::readNetwork() {
 
 void SystemInfo::readHardware()
 {
-    QString gpuName;
+    const GpuDetection gpu = detectGpuWithLspci();
+    QString gpuName = gpu.name;
     QString vram;
     QString activeDriver;
 
@@ -232,11 +304,6 @@ void SystemInfo::readHardware()
             break;
     }
 
-    if (gpuName.isEmpty()) {
-        const QString lspci = runCommand(QStringLiteral("lspci"), {});
-        gpuName = firstMatchingLine(lspci, QRegularExpression(QStringLiteral("(?i)(?:VGA compatible controller|3D controller|Display controller):\\s*(.+)$")));
-    }
-
     if (activeDriver.isEmpty()) {
         const QString lspciKernel = runCommand(QStringLiteral("lspci"), { QStringLiteral("-k") });
         activeDriver = firstMatchingLine(lspciKernel, QRegularExpression(QStringLiteral("^Kernel driver in use:\\s*(.+)$")));
@@ -245,6 +312,7 @@ void SystemInfo::readHardware()
     m_gpuName = unknownIfEmpty(gpuName);
     m_vram = unknownIfEmpty(vram);
     m_activeDriver = unknownIfEmpty(activeDriver);
+    m_recommendedGpuDrivers = unknownIfEmpty(recommendedDriversForGpu(gpu, activeDriver));
     m_kernelVersion = unknownIfEmpty(QSysInfo::kernelVersion());
     m_mesaVersion = unknownIfEmpty(mesaVersion());
     emit hardwareChanged();

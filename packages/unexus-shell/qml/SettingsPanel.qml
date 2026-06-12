@@ -340,7 +340,7 @@ Item {
 
                                 Text {
                                     width: parent.width
-                                    text: root.tr("Driver") + ": " + systemInfo.activeDriver + "  |  " + root.tr("VRAM") + ": " + systemInfo.vram
+                                    text: root.tr("Recommended drivers") + ": " + systemInfo.recommendedGpuDrivers
                                     color: root.textMuted
                                     font.pixelSize: 11
                                     font.family: root.uiFont
@@ -352,6 +352,7 @@ Item {
                         SettingsOptionRow { width: parent.width; label: root.tr("GPU"); value: systemInfo.gpuName }
                         SettingsOptionRow { width: parent.width; label: root.tr("VRAM"); value: systemInfo.vram }
                         SettingsOptionRow { width: parent.width; label: root.tr("Active driver"); value: systemInfo.activeDriver }
+                        SettingsOptionRow { width: parent.width; label: root.tr("Recommended drivers"); value: systemInfo.recommendedGpuDrivers }
                         SettingsOptionRow { width: parent.width; label: root.tr("Kernel"); value: systemInfo.kernelVersion }
                         SettingsOptionRow { width: parent.width; label: root.tr("Mesa"); value: systemInfo.mesaVersion }
                     }

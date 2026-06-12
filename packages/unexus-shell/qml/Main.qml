@@ -222,6 +222,7 @@ Window {
         "VRAM": "VRAM",
         "Driver": "Driver",
         "Active driver": "Driver ativo",
+        "Recommended drivers": "Drivers recomendados",
         "Kernel": "Kernel",
         "Mesa": "Mesa",
         "Network": "Rede",

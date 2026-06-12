@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 #include <QTimer>
 
 class SystemInfo : public QObject {
@@ -13,6 +14,7 @@ class SystemInfo : public QObject {
     Q_PROPERTY(QString gpuName READ gpuName NOTIFY hardwareChanged)
     Q_PROPERTY(QString vram READ vram NOTIFY hardwareChanged)
     Q_PROPERTY(QString activeDriver READ activeDriver NOTIFY hardwareChanged)
+    Q_PROPERTY(QString recommendedGpuDrivers READ recommendedGpuDrivers NOTIFY hardwareChanged)
     Q_PROPERTY(QString kernelVersion READ kernelVersion NOTIFY hardwareChanged)
     Q_PROPERTY(QString mesaVersion READ mesaVersion NOTIFY hardwareChanged)
 
@@ -27,6 +29,7 @@ public:
     QString gpuName() const { return m_gpuName; }
     QString vram() const { return m_vram; }
     QString activeDriver() const { return m_activeDriver; }
+    QString recommendedGpuDrivers() const { return m_recommendedGpuDrivers; }
     QString kernelVersion() const { return m_kernelVersion; }
     QString mesaVersion() const { return m_mesaVersion; }
 
@@ -48,6 +51,7 @@ private:
     QString m_gpuName = QStringLiteral("Unknown");
     QString m_vram = QStringLiteral("Unknown");
     QString m_activeDriver = QStringLiteral("Unknown");
+    QString m_recommendedGpuDrivers = QStringLiteral("Unknown");
     QString m_kernelVersion = QStringLiteral("Unknown");
     QString m_mesaVersion = QStringLiteral("Unknown");
     QTimer m_timer;
