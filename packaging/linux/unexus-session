@@ -113,6 +113,7 @@ mkdir -p "$log_root"
     echo "bind = SUPER, I, exec, unexus-shell --shortcut settings"
     echo "bind = SUPER, G, exec, unexus-shell --shortcut stats"
     echo "bind = SUPER ALT, G, exec, unexus-shell --shortcut gameSettings"
+    echo "bind = SUPER, B, exec, unexus-shell --shortcut bugReport"
     if [ -n "$browser_desktop" ]; then
         printf "exec-once = sh -lc 'if command -v xdg-settings >/dev/null 2>&1; then env -u BROWSER xdg-settings set default-web-browser %s; fi; if command -v xdg-mime >/dev/null 2>&1; then xdg-mime default %s x-scheme-handler/http x-scheme-handler/https text/html application/xhtml+xml; fi'\n" "$browser_desktop" "$browser_desktop"
     fi

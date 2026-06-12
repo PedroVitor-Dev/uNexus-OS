@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <QClipboard>
+#include <QDateTime>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QJsonArray>
@@ -14,6 +16,8 @@
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QSysInfo>
+#include <QTextStream>
 
 AppLauncher::AppLauncher(QObject *parent)
     : QObject(parent)
@@ -159,6 +163,87 @@ QString AppLauncher::findIcon(const QStringList &iconNames)
     }
 
     return QString();
+}
+
+QVariantMap AppLauncher::prepareBugReport(const QString &updateChannel)
+{
+    QVariantMap result;
+    const QString reportsRoot = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+        + QStringLiteral("/unexus/bug-reports");
+    QDir().mkpath(reportsRoot);
+
+    const QString stamp = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyyMMdd-HHmmss"));
+    const QString reportPath = QDir(reportsRoot).filePath(QStringLiteral("unexus-bug-%1.md").arg(stamp));
+    QFile report(reportPath);
+    if (!report.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        result.insert(QStringLiteral("ok"), false);
+        result.insert(QStringLiteral("path"), reportPath);
+        result.insert(QStringLiteral("error"), report.errorString());
+        return result;
+    }
+
+    const QString stateBase = QProcessEnvironment::systemEnvironment().value(
+        QStringLiteral("XDG_STATE_HOME"),
+        QDir::homePath() + QStringLiteral("/.local/state"));
+    const QString sessionLog = stateBase + QStringLiteral("/unexus/logs/session.log");
+    const QString doctorLog = stateBase + QStringLiteral("/unexus/logs/doctor.log");
+
+    QTextStream out(&report);
+    out << "# uNexus Bug Report\n\n";
+    out << "## Summary\n\n";
+    out << "- What happened:\n";
+    out << "- What you expected:\n";
+    out << "- Steps to reproduce:\n\n";
+    out << "## Environment\n\n";
+    out << "- Update channel: " << (updateChannel == QStringLiteral("beta") ? QStringLiteral("beta") : QStringLiteral("stable")) << "\n";
+    out << "- Generated UTC: " << QDateTime::currentDateTimeUtc().toString(Qt::ISODate) << "\n";
+    out << "- Kernel type: " << QSysInfo::kernelType() << "\n";
+    out << "- Kernel version: " << QSysInfo::kernelVersion() << "\n";
+    out << "- Product: " << QSysInfo::prettyProductName() << "\n";
+    out << "- CPU architecture: " << QSysInfo::currentCpuArchitecture() << "\n\n";
+    out << "## Versions\n\n";
+    out << "```text\n";
+    out << "uNexus shell: 0.1.0\n";
+    out << "git: " << commandOutput(QStringLiteral("git"), {QStringLiteral("rev-parse"), QStringLiteral("--short"), QStringLiteral("HEAD")}).trimmed() << "\n";
+    out << "hyprctl: " << commandOutput(QStringLiteral("hyprctl"), {QStringLiteral("version")}).left(800).trimmed() << "\n";
+    out << "flatpak: " << commandOutput(QStringLiteral("flatpak"), {QStringLiteral("--version")}).trimmed() << "\n";
+    out << "gamemoderun: " << commandOutput(QStringLiteral("gamemoderun"), {QStringLiteral("--version")}).trimmed() << "\n";
+    out << "mangohud: " << commandOutput(QStringLiteral("mangohud"), {QStringLiteral("--version")}).trimmed() << "\n";
+    out << "```\n\n";
+    out << "## Hardware\n\n";
+    out << "```text\n";
+    out << commandOutput(QStringLiteral("lscpu"), {}).left(4000);
+    out << commandOutput(QStringLiteral("lspci"), {}).left(4000);
+    out << "```\n\n";
+    out << "## Hyprland Clients\n\n";
+    out << "```json\n";
+    out << commandOutput(QStringLiteral("hyprctl"), {QStringLiteral("-j"), QStringLiteral("clients")}).left(12000);
+    out << "\n```\n\n";
+
+    auto appendLogTail = [&out](const QString &label, const QString &path) {
+        out << "## " << label << "\n\n";
+        out << "Path: `" << path << "`\n\n";
+        out << "```text\n";
+        QFile file(path);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            const QString text = QString::fromUtf8(file.readAll());
+            out << text.right(12000);
+        } else {
+            out << "Not available.\n";
+        }
+        out << "\n```\n\n";
+    };
+
+    appendLogTail(QStringLiteral("Session Log"), sessionLog);
+    appendLogTail(QStringLiteral("Doctor Log"), doctorLog);
+
+    report.close();
+    copyToClipboard(reportPath);
+
+    result.insert(QStringLiteral("ok"), true);
+    result.insert(QStringLiteral("path"), reportPath);
+    result.insert(QStringLiteral("issueUrl"), QStringLiteral("https://github.com/PedroVitor-Dev/uNexus-OS/issues/new"));
+    return result;
 }
 
 QJsonArray AppLauncher::hyprctlJsonArray(const QStringList &arguments) const
@@ -927,4 +1012,24 @@ bool AppLauncher::terminateProcesses(const QStringList &processNames)
     }
 
     return terminatedAny;
+}
+
+QString AppLauncher::commandOutput(const QString &program, const QStringList &arguments, int timeoutMs) const
+{
+    if (QStandardPaths::findExecutable(program).isEmpty())
+        return QStringLiteral("%1 not found\n").arg(program);
+
+    QProcess process;
+    process.start(program, arguments);
+    if (!process.waitForFinished(timeoutMs)) {
+        process.kill();
+        process.waitForFinished(300);
+        return QStringLiteral("%1 timed out\n").arg(program);
+    }
+
+    QString output = QString::fromLocal8Bit(process.readAllStandardOutput());
+    output += QString::fromLocal8Bit(process.readAllStandardError());
+    if (output.trimmed().isEmpty())
+        output = QStringLiteral("%1 produced no output\n").arg(program);
+    return output;
 }

@@ -468,7 +468,7 @@ ApplicationWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: root.backend.installed ? "uNexus is ready from your display manager as the uNexus Wayland session." : "Review the backend log before retrying."
+                    text: root.backend.installed ? "Welcome to uNexus" : "Installer finished"
                     color: root.textPrimary
                     wrapMode: Text.WordWrap
                     font.family: root.uiFont
@@ -478,7 +478,7 @@ ApplicationWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "The recovery session and automatic recovery TUI are installed with the shell. Use uNexus Recovery from the display manager if a future shell build breaks."
+                    text: root.backend.installed ? "Pick the uNexus Wayland session from your display manager after logout. These quick actions help validate the install before you switch sessions." : "Review the backend log before retrying."
                     color: root.textSecondary
                     wrapMode: Text.WordWrap
                     font.family: root.uiFont
@@ -490,8 +490,10 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     spacing: 10
 
-                    Button {
-                        text: "Run Doctor"
+                    QuickActionCard {
+                        Layout.fillWidth: true
+                        title: "Run Doctor"
+                        detail: "Validate binaries, sessions and recovery tools."
                         enabled: !root.backend.busy && root.backend.diagnosticsAvailable
                         onClicked: {
                             root.selectedAction = "diagnose"
@@ -499,10 +501,20 @@ ApplicationWindow {
                         }
                     }
 
-                    Button {
-                        text: "Clear Log"
-                        enabled: !root.backend.busy && root.backend.logText.length > 0
+                    QuickActionCard {
+                        Layout.fillWidth: true
+                        title: "Clear Log"
+                        detail: "Clear backend output after reviewing the install."
+                        enabled: root.backend.logText.length > 0
                         onClicked: root.backend.clearLog()
+                    }
+
+                    QuickActionCard {
+                        Layout.fillWidth: true
+                        title: "Update path"
+                        detail: "Use Settings > About inside uNexus to choose stable or beta updates."
+                        enabled: true
+                        onClicked: root.pageIndex = 0
                     }
                 }
             }
@@ -557,6 +569,51 @@ ApplicationWindow {
         MouseArea {
             anchors.fill: parent
             onClicked: nav.clicked()
+        }
+    }
+
+    component QuickActionCard: Rectangle {
+        id: quickCard
+        property string title: ""
+        property string detail: ""
+        property bool enabled: true
+        signal clicked()
+
+        Layout.preferredHeight: 118
+        radius: 8
+        color: enabled ? "#19304a" : "#111927"
+        border.color: enabled ? root.accent : root.border
+        opacity: enabled ? 1 : 0.55
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 14
+            spacing: 8
+
+            Text {
+                Layout.fillWidth: true
+                text: quickCard.title
+                color: root.textPrimary
+                font.family: root.uiFont
+                font.pixelSize: 15
+                font.bold: true
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: quickCard.detail
+                color: root.textSecondary
+                wrapMode: Text.WordWrap
+                font.family: root.uiFont
+                font.pixelSize: 12
+                lineHeight: 1.1
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: quickCard.enabled && !root.backend.busy
+            onClicked: quickCard.clicked()
         }
     }
 

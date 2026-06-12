@@ -122,6 +122,7 @@ The current prototype manages:
 - installable Hyprland session, recovery session and automatic TUI recovery menu after shell crashes;
 - `unexusctl` for doctor, logs, backup, rollback, update and state management.
 - graphical Qt/QML installer wizard for local install, repair, diagnostics, removal and system provisioning flows.
+- Settings > About update channel selection and a `Super+B` bug report generator for logs/specs/version capture.
 
 The shell can be installed as a Wayland session through `scripts/setup.sh`.
 The first live ISO profile can be built with `ISO/0.0.1/build-iso.sh`.

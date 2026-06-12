@@ -201,6 +201,16 @@ Window {
         "Settings shortcut": "Atalho das configuracoes",
         "Game Settings shortcut": "Atalho dos jogos",
         "Stats shortcut": "Atalho das estatisticas",
+        "Bug Reporter shortcut": "Atalho do relatorio de bug",
+        "Prepare Bug Report": "Preparar relatorio de bug",
+        "Bug report prepared": "Relatorio de bug preparado",
+        "Bug report failed": "Falha ao preparar relatorio",
+        "Report path copied. Review it before opening GitHub.": "Caminho copiado. Revise antes de abrir no GitHub.",
+        "Update channel": "Canal de atualizacao",
+        "Stable": "Estavel",
+        "Beta": "Beta",
+        "Updates": "Atualizacoes",
+        "Prepare bug report": "Preparar relatorio de bug",
         "Reset": "Redefinir",
         "Apply": "Aplicar",
         "Launcher": "Launcher",
@@ -594,6 +604,17 @@ Window {
         systemStats.visible = !systemStats.visible
     }
 
+    function prepareBugReport() {
+        var report = appLauncher.prepareBugReport(userSettings.updateChannel)
+        if (report.ok) {
+            notifCenter.send(root.tr("Bug report prepared"), root.tr("Report path copied. Review it before opening GitHub."), "BUG")
+            if (report.issueUrl && report.issueUrl.length > 0 && !appLauncher.launch("xdg-open", [report.issueUrl]))
+                appLauncher.launch("gio", ["open", report.issueUrl])
+        } else {
+            notifCenter.send(root.tr("Bug report failed"), report.error || "", "BUG")
+        }
+    }
+
     function captureSetScene(scene) {
         captureMode = true
         captureScene = scene
@@ -651,6 +672,8 @@ Window {
             toggleStatsOverlay()
         else if (action === "gameSettings")
             toggleGameSettingsPanel()
+        else if (action === "bugReport")
+            prepareBugReport()
     }
 
     function refreshDesktopState() {
@@ -692,6 +715,13 @@ Window {
         context: Qt.ApplicationShortcut
         enabled: !loginScreen || !loginScreen.visible
         onActivated: root.toggleStatsOverlay()
+    }
+
+    Shortcut {
+        sequence: userSettings.bugReportShortcut
+        context: Qt.ApplicationShortcut
+        enabled: !loginScreen || !loginScreen.visible
+        onActivated: root.prepareBugReport()
     }
 
     property var systemDockApps: [

@@ -21,6 +21,10 @@ UserSettings::UserSettings(QObject *parent)
     m_settingsShortcut = m_settings.value("shortcuts/settings", "Meta+I").toString();
     m_gameSettingsShortcut = m_settings.value("shortcuts/gameSettings", "Meta+Alt+G").toString();
     m_statsShortcut = m_settings.value("shortcuts/stats", "Meta+G").toString();
+    m_bugReportShortcut = m_settings.value("shortcuts/bugReport", "Meta+B").toString();
+    m_updateChannel = m_settings.value("updates/channel", "stable").toString();
+    if (m_updateChannel != "beta")
+        m_updateChannel = "stable";
     if (m_launcherShortcut.trimmed().isEmpty() || m_launcherShortcut == "Meta+Space")
         m_launcherShortcut = "Meta+S";
     if (m_settingsShortcut.trimmed().isEmpty())
@@ -33,10 +37,14 @@ UserSettings::UserSettings(QObject *parent)
     }
     if (m_statsShortcut.trimmed().isEmpty())
         m_statsShortcut = "Meta+G";
+    if (m_bugReportShortcut.trimmed().isEmpty())
+        m_bugReportShortcut = "Meta+B";
     m_settings.setValue("shortcuts/launcher", m_launcherShortcut);
     m_settings.setValue("shortcuts/settings", m_settingsShortcut);
     m_settings.setValue("shortcuts/gameSettings", m_gameSettingsShortcut);
     m_settings.setValue("shortcuts/stats", m_statsShortcut);
+    m_settings.setValue("shortcuts/bugReport", m_bugReportShortcut);
+    m_settings.setValue("updates/channel", m_updateChannel);
     m_controlCenterSection = m_settings.value("controlCenter/section", "system").toString();
     m_notificationTimeoutSeconds = m_settings.value("notifications/timeoutSeconds", 7).toInt();
     if (m_notificationTimeoutSeconds < 3)
@@ -163,6 +171,28 @@ void UserSettings::setStatsShortcut(const QString &shortcut)
     m_statsShortcut = normalizedShortcut;
     m_settings.setValue("shortcuts/stats", m_statsShortcut);
     emit statsShortcutChanged();
+}
+
+void UserSettings::setBugReportShortcut(const QString &shortcut)
+{
+    const QString normalizedShortcut = shortcut.trimmed().isEmpty() ? QStringLiteral("Meta+B") : shortcut.trimmed();
+    if (m_bugReportShortcut == normalizedShortcut)
+        return;
+
+    m_bugReportShortcut = normalizedShortcut;
+    m_settings.setValue("shortcuts/bugReport", m_bugReportShortcut);
+    emit bugReportShortcutChanged();
+}
+
+void UserSettings::setUpdateChannel(const QString &channel)
+{
+    const QString normalizedChannel = channel == QStringLiteral("beta") ? QStringLiteral("beta") : QStringLiteral("stable");
+    if (m_updateChannel == normalizedChannel)
+        return;
+
+    m_updateChannel = normalizedChannel;
+    m_settings.setValue("updates/channel", m_updateChannel);
+    emit updateChannelChanged();
 }
 
 void UserSettings::setControlCenterSection(const QString &section)

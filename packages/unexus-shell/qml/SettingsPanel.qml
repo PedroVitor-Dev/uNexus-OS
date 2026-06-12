@@ -43,6 +43,7 @@ Item {
         userSettings.settingsShortcut = "Meta+I"
         userSettings.gameSettingsShortcut = "Meta+Alt+G"
         userSettings.statsShortcut = "Meta+G"
+        userSettings.bugReportShortcut = "Meta+B"
         notifCenter.send(root.tr("Shortcuts restored"), root.tr("Default shortcuts applied."), "SYS")
     }
 
@@ -274,6 +275,7 @@ Item {
                         ShortcutEditRow { width: parent.width; label: root.tr("Settings shortcut"); value: userSettings.settingsShortcut; defaultValue: "Meta+I"; onShortcutAccepted: function(sequence) { userSettings.settingsShortcut = sequence } }
                         ShortcutEditRow { width: parent.width; label: root.tr("Game Settings shortcut"); value: userSettings.gameSettingsShortcut; defaultValue: "Meta+Alt+G"; onShortcutAccepted: function(sequence) { userSettings.gameSettingsShortcut = sequence } }
                         ShortcutEditRow { width: parent.width; label: root.tr("Stats shortcut"); value: userSettings.statsShortcut; defaultValue: "Meta+G"; onShortcutAccepted: function(sequence) { userSettings.statsShortcut = sequence } }
+                        ShortcutEditRow { width: parent.width; label: root.tr("Bug Reporter shortcut"); value: userSettings.bugReportShortcut; defaultValue: "Meta+B"; onShortcutAccepted: function(sequence) { userSettings.bugReportShortcut = sequence } }
                     }
 
 
@@ -289,6 +291,7 @@ Item {
                         ShortcutRow { width: parent.width; label: root.tr("Open Settings"); keys: userSettings.settingsShortcut }
                         ShortcutRow { width: parent.width; label: root.tr("Toggle Stats Overlay"); keys: userSettings.statsShortcut }
                         ShortcutRow { width: parent.width; label: root.tr("Open Game Settings"); keys: userSettings.gameSettingsShortcut }
+                        ShortcutRow { width: parent.width; label: root.tr("Prepare Bug Report"); keys: userSettings.bugReportShortcut }
 
                         SettingsSubheader { width: parent.width; label: root.tr("File Manager") }
                         ShortcutRow { width: parent.width; label: root.tr("Copy selected"); keys: "Ctrl+C" }
@@ -391,11 +394,24 @@ Item {
                         SettingsOptionRow { width: parent.width; label: root.tr("Name"); value: "uNexus" }
                         SettingsOptionRow { width: parent.width; label: root.tr("Shell"); value: "unexus-shell 0.1.0" }
                         SettingsOptionRow { width: parent.width; label: root.tr("License"); value: "GPL-3.0" }
+                        SettingsSubheader { width: parent.width; label: root.tr("Updates") }
+                        SettingsOptionRow { width: parent.width; label: root.tr("Update channel"); value: userSettings.updateChannel === "beta" ? root.tr("Beta") : root.tr("Stable") }
+                        Row {
+                            width: parent.width
+                            spacing: 8
+                            ChannelButton { label: root.tr("Stable"); active: userSettings.updateChannel === "stable"; onClicked: userSettings.updateChannel = "stable" }
+                            ChannelButton { label: root.tr("Beta"); active: userSettings.updateChannel === "beta"; onClicked: userSettings.updateChannel = "beta" }
+                        }
+                        SettingsActionButton {
+                            width: parent.width
+                            label: root.tr("Prepare bug report")
+                            onClicked: root.prepareBugReport()
+                        }
                         SettingsActionButton {
                             width: parent.width
                             label: root.tr("Copy repository URL")
                             onClicked: {
-                                appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/uNexus")
+                                appLauncher.copyToClipboard("https://github.com/PedroVitor-Dev/uNexus-OS")
                                 notifCenter.send(root.tr("Repository copied"), root.tr("uNexus repository URL copied."), "INFO")
                             }
                         }
@@ -448,6 +464,35 @@ Item {
         fontFamily: root.uiFont
         accentColor: root.themeAccent
         motionDuration: root.motionQuick
+    }
+
+    component ChannelButton: Rectangle {
+        id: channelButton
+        property string label: ""
+        property bool active: false
+        signal clicked()
+
+        width: Math.max(132, parent ? (parent.width - 8) / 2 : 132)
+        height: 36
+        radius: 8
+        color: active ? "#1e2d45" : "#172233"
+        border.color: active ? root.themeAccent : "#223247"
+        border.width: 1
+
+        Text {
+            anchors.centerIn: parent
+            text: channelButton.label
+            color: active ? root.textPrimary : root.textMuted
+            font.pixelSize: root.textSmall
+            font.family: root.uiFont
+            font.bold: active
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: channelButton.clicked()
+        }
     }
 
     component SettingsSection: Rectangle {

@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE bool isProcessRunning(const QStringList &processNames);
     Q_INVOKABLE void copyToClipboard(const QString &text);
     Q_INVOKABLE QString findIcon(const QStringList &iconNames);
+    Q_INVOKABLE QVariantMap prepareBugReport(const QString &updateChannel);
 
     Q_INVOKABLE bool focusWindow(const QStringList &windowClasses);
     Q_INVOKABLE bool focusOrLaunch(
@@ -70,4 +71,5 @@ private:
     bool focusWithHyprctl(const QStringList &windowClasses);
     bool focusWithWmctrl(const QStringList &windowClasses);
     bool terminateProcesses(const QStringList &processNames);
+    QString commandOutput(const QString &program, const QStringList &arguments, int timeoutMs = 1500) const;
 };

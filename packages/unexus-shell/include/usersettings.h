@@ -17,6 +17,8 @@ class UserSettings : public QObject
     Q_PROPERTY(QString settingsShortcut READ settingsShortcut WRITE setSettingsShortcut NOTIFY settingsShortcutChanged)
     Q_PROPERTY(QString gameSettingsShortcut READ gameSettingsShortcut WRITE setGameSettingsShortcut NOTIFY gameSettingsShortcutChanged)
     Q_PROPERTY(QString statsShortcut READ statsShortcut WRITE setStatsShortcut NOTIFY statsShortcutChanged)
+    Q_PROPERTY(QString bugReportShortcut READ bugReportShortcut WRITE setBugReportShortcut NOTIFY bugReportShortcutChanged)
+    Q_PROPERTY(QString updateChannel READ updateChannel WRITE setUpdateChannel NOTIFY updateChannelChanged)
     Q_PROPERTY(QString controlCenterSection READ controlCenterSection WRITE setControlCenterSection NOTIFY controlCenterSectionChanged)
     Q_PROPERTY(int notificationTimeoutSeconds READ notificationTimeoutSeconds WRITE setNotificationTimeoutSeconds NOTIFY notificationTimeoutSecondsChanged)
 
@@ -33,6 +35,8 @@ public:
     QString settingsShortcut() const { return m_settingsShortcut; }
     QString gameSettingsShortcut() const { return m_gameSettingsShortcut; }
     QString statsShortcut() const { return m_statsShortcut; }
+    QString bugReportShortcut() const { return m_bugReportShortcut; }
+    QString updateChannel() const { return m_updateChannel; }
     QString controlCenterSection() const { return m_controlCenterSection; }
     int notificationTimeoutSeconds() const { return m_notificationTimeoutSeconds; }
 
@@ -47,6 +51,8 @@ public slots:
     void setSettingsShortcut(const QString &shortcut);
     void setGameSettingsShortcut(const QString &shortcut);
     void setStatsShortcut(const QString &shortcut);
+    void setBugReportShortcut(const QString &shortcut);
+    void setUpdateChannel(const QString &channel);
     void setControlCenterSection(const QString &section);
     void setNotificationTimeoutSeconds(int seconds);
 
@@ -61,6 +67,8 @@ signals:
     void settingsShortcutChanged();
     void gameSettingsShortcutChanged();
     void statsShortcutChanged();
+    void bugReportShortcutChanged();
+    void updateChannelChanged();
     void controlCenterSectionChanged();
     void notificationTimeoutSecondsChanged();
 
@@ -76,6 +84,8 @@ private:
     QString m_settingsShortcut = "Meta+I";
     QString m_gameSettingsShortcut = "Meta+Alt+G";
     QString m_statsShortcut = "Meta+G";
+    QString m_bugReportShortcut = "Meta+B";
+    QString m_updateChannel = "stable";
     QString m_controlCenterSection = "system";
     int m_notificationTimeoutSeconds = 7;
 };

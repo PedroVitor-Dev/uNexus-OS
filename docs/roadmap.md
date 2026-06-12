@@ -266,9 +266,9 @@ Project website: <https://unexus-os.vercel.app>
 - [x] **UI:** Create graphical installer in Qt6/QML or themed Calamares
 - [x] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers
 - [ ] **Innovation:** **uNexus Migration Tool:** detect existing Windows/Linux installs and import Steam saves, game lists and app settings where possible
-- [ ] **UI:** Create post-install welcome flow with quick action cards
-- [ ] **Feature:** Add stable/beta update channel selection in Settings > About
-- [ ] **Innovation:** **Integrated Bug Reporter:** `Super+B` collects logs/specs/version and prepares a GitHub issue report
+- [x] **UI:** Create post-install welcome flow with quick action cards
+- [x] **Feature:** Add stable/beta update channel selection in Settings > About
+- [x] **Innovation:** **Integrated Bug Reporter:** `Super+B` collects logs/specs/version and prepares a GitHub issue report
 
 ### Exit Criteria - Phase 10
 
