@@ -264,7 +264,7 @@ Project website: <https://unexus-os.vercel.app>
 **Goal:** turn the bootable prototype into something testers can install and report on.
 
 - [x] **UI:** Create graphical installer in Qt6/QML or themed Calamares
-- [ ] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers
+- [x] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers
 - [ ] **Innovation:** **uNexus Migration Tool:** detect existing Windows/Linux installs and import Steam saves, game lists and app settings where possible
 - [ ] **UI:** Create post-install welcome flow with quick action cards
 - [ ] **Feature:** Add stable/beta update channel selection in Settings > About

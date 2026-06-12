@@ -59,6 +59,8 @@ bool InstallerBackend::pkexecAvailable() const
 bool InstallerBackend::setupAvailable() const
 {
     return QFileInfo::exists(scriptPath(QStringLiteral("setup.sh"))) &&
+           QFileInfo::exists(scriptPath(QStringLiteral("install-system.sh"))) &&
+           QFileInfo::exists(scriptPath(QStringLiteral("provision-system.sh"))) &&
            QFileInfo::exists(scriptPath(QStringLiteral("uninstall.sh")));
 }
 
@@ -103,6 +105,10 @@ QVariantList InstallerBackend::readinessChecks() const
                         installed() ? QStringLiteral("uNexus shell detected")
                                     : QStringLiteral("not installed yet"),
                         installed() ? QStringLiteral("ready") : QStringLiteral("warning"));
+    checks << checkItem(QStringLiteral("Provisioning"),
+                        setupAvailable() ? QStringLiteral("user, bootloader, Hyprland, Flathub, GameMode and launchers available")
+                                         : QStringLiteral("provisioning script missing"),
+                        setupAvailable() ? QStringLiteral("ready") : QStringLiteral("blocked"));
     return checks;
 }
 
@@ -121,10 +127,26 @@ QVariantList InstallerBackend::installSteps() const
     steps << stepItem(QStringLiteral("Install session"),
                       QStringLiteral("Install session launchers, desktop entries and shell assets."),
                       installing ? QStringLiteral("running") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
+    steps << stepItem(QStringLiteral("Provision system"),
+                      QStringLiteral("Configure user groups, Hyprland defaults, Flathub, GameMode, MangoHud and launchers."),
+                      installing ? QStringLiteral("running") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
+    steps << stepItem(QStringLiteral("Bootloader"),
+                      QStringLiteral("Prepare safe uNexus boot defaults and write a systemd-boot entry when detected."),
+                      installing ? QStringLiteral("running") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
     steps << stepItem(QStringLiteral("Validate"),
                       QStringLiteral("Run uNexus Doctor and initialize user state."),
                       m_busy ? QStringLiteral("pending") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
     return steps;
+}
+
+bool InstallerBackend::installGamingLaunchers() const
+{
+    return m_installGamingLaunchers;
+}
+
+bool InstallerBackend::configureBootloader() const
+{
+    return m_configureBootloader;
 }
 
 QString InstallerBackend::repoRoot() const
@@ -149,14 +171,14 @@ void InstallerBackend::install()
 {
     runAction(QStringLiteral("install"),
               QStringLiteral("Installing uNexus"),
-              {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("setup.sh"))});
+              {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("install-system.sh"))});
 }
 
 void InstallerBackend::repair()
 {
     runAction(QStringLiteral("repair"),
               QStringLiteral("Repairing uNexus"),
-              {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("setup.sh"))});
+              {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("install-system.sh"))});
 }
 
 void InstallerBackend::diagnose()
@@ -298,6 +320,8 @@ void InstallerBackend::runAction(const QString &action, const QString &title, co
 
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
     environment.insert(QStringLiteral("UNEXUS_INSTALLER"), QStringLiteral("1"));
+    environment.insert(QStringLiteral("UNEXUS_INSTALL_GAMING_LAUNCHERS"), m_installGamingLaunchers ? QStringLiteral("1") : QStringLiteral("0"));
+    environment.insert(QStringLiteral("UNEXUS_CONFIGURE_BOOTLOADER"), m_configureBootloader ? QStringLiteral("1") : QStringLiteral("0"));
     m_process.setProcessEnvironment(environment);
     m_process.setWorkingDirectory(repoRoot());
     m_process.start(programAndArguments.first(), programAndArguments.mid(1));
@@ -356,6 +380,24 @@ void InstallerBackend::appendLog(const QString &text)
 QString InstallerBackend::scriptPath(const QString &name) const
 {
     return QDir(repoRoot()).filePath(QStringLiteral("scripts/") + name);
+}
+
+void InstallerBackend::setInstallGamingLaunchers(bool enabled)
+{
+    if (m_installGamingLaunchers == enabled)
+        return;
+
+    m_installGamingLaunchers = enabled;
+    emit optionsChanged();
+}
+
+void InstallerBackend::setConfigureBootloader(bool enabled)
+{
+    if (m_configureBootloader == enabled)
+        return;
+
+    m_configureBootloader = enabled;
+    emit optionsChanged();
 }
 
 QVariantMap InstallerBackend::checkItem(const QString &label, const QString &value, const QString &status) const

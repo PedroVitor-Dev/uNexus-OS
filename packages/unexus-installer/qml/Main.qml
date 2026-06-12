@@ -299,7 +299,7 @@ ApplicationWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "This graphical installer installs the uNexus shell, Wayland sessions, recovery tools, desktop entries and bundled visual assets on the current Arch/Hyprland system. Disk installation and partitioning remain planned for the full OS installer."
+                    text: "This graphical installer installs the uNexus shell, configures the target user, prepares the Hyprland session, sets up Flathub, enables the gaming runtime layer and prepares safe boot defaults. Disk partitioning remains planned for the full OS installer."
                     color: root.textSecondary
                     wrapMode: Text.WordWrap
                     font.family: root.uiFont
@@ -324,7 +324,7 @@ ApplicationWindow {
 
         OptionCard {
             title: root.backend.installed ? "Reinstall uNexus Shell" : "Install uNexus Shell"
-            detail: "Build and install the shell session, recovery launcher, installer app, desktop entries and runtime assets."
+            detail: "Build and install the shell, then provision user groups, Hyprland, Flathub, GameMode, MangoHud and selected launchers."
             actionKey: "install"
             selected: root.selectedAction === "install"
             available: root.backend.canInstall
@@ -333,11 +333,32 @@ ApplicationWindow {
 
         OptionCard {
             title: "Repair existing install"
-            detail: "Run the same setup pipeline again, refresh installed files and validate with uNexus Doctor."
+            detail: "Run the same install and provisioning pipeline again, refresh system integration and validate with uNexus Doctor."
             actionKey: "repair"
             selected: root.selectedAction === "repair"
             available: root.backend.canInstall
             onPicked: root.selectedAction = actionKey
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 12
+
+            ToggleCard {
+                Layout.fillWidth: true
+                title: "Gaming launchers"
+                detail: "Install Steam, Lutris, Heroic and Bottles from Flathub for the target user."
+                checked: root.backend.installGamingLaunchers
+                onToggled: root.backend.installGamingLaunchers = checked
+            }
+
+            ToggleCard {
+                Layout.fillWidth: true
+                title: "Boot defaults"
+                detail: "Prepare uNexus kernel options and write a systemd-boot entry when detected."
+                checked: root.backend.configureBootloader
+                onToggled: root.backend.configureBootloader = checked
+            }
         }
 
         OptionCard {
@@ -379,9 +400,11 @@ ApplicationWindow {
             value: root.backend.progress / 100
         }
 
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: 12
+            columns: 3
+            columnSpacing: 12
+            rowSpacing: 12
 
             Repeater {
                 model: root.backend.installSteps
@@ -647,6 +670,58 @@ ApplicationWindow {
             anchors.fill: parent
             enabled: option.available && !root.backend.busy
             onClicked: option.picked()
+        }
+    }
+
+    component ToggleCard: Rectangle {
+        id: toggleCard
+        property string title: ""
+        property string detail: ""
+        property bool checked: false
+        signal toggled()
+
+        Layout.preferredHeight: 94
+        radius: 8
+        color: checked ? "#19304a" : root.raised
+        border.color: checked ? root.accent : root.border
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 14
+            spacing: 12
+
+            Switch {
+                checked: toggleCard.checked
+                enabled: !root.backend.busy
+                onToggled: {
+                    toggleCard.checked = checked
+                    toggleCard.toggled()
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+
+                Text {
+                    Layout.fillWidth: true
+                    text: toggleCard.title
+                    color: root.textPrimary
+                    font.family: root.uiFont
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: toggleCard.detail
+                    color: root.textSecondary
+                    wrapMode: Text.WordWrap
+                    font.family: root.uiFont
+                    font.pixelSize: 11
+                    lineHeight: 1.1
+                }
+            }
         }
     }
 

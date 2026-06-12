@@ -11,6 +11,11 @@ if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ] && command -v getent >/
     if [ -n "$_home" ]; then
         install_home="$_home"
     fi
+elif [ -n "${PKEXEC_UID:-}" ] && command -v getent >/dev/null 2>&1; then
+    _home="$(getent passwd "$PKEXEC_UID" 2>/dev/null | cut -d: -f6)"
+    if [ -n "$_home" ]; then
+        install_home="$_home"
+    fi
 fi
 
 state_home="${XDG_STATE_HOME:-$install_home/.local/state}"
@@ -50,6 +55,8 @@ if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
     if getent passwd "$SUDO_USER" >/dev/null 2>&1; then
         _real_user="$SUDO_USER"
     fi
+elif [ -n "${PKEXEC_UID:-}" ]; then
+    _real_user="$(getent passwd "$PKEXEC_UID" 2>/dev/null | cut -d: -f1 || true)"
 fi
 
 if [ -n "$_real_user" ] && command -v chown >/dev/null 2>&1; then

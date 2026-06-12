@@ -22,6 +22,8 @@ class InstallerBackend : public QObject
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QVariantList readinessChecks READ readinessChecks NOTIFY prerequisitesChanged)
     Q_PROPERTY(QVariantList installSteps READ installSteps NOTIFY installStepsChanged)
+    Q_PROPERTY(bool installGamingLaunchers READ installGamingLaunchers WRITE setInstallGamingLaunchers NOTIFY optionsChanged)
+    Q_PROPERTY(bool configureBootloader READ configureBootloader WRITE setConfigureBootloader NOTIFY optionsChanged)
     Q_PROPERTY(QString repoRoot READ repoRoot CONSTANT)
 
 public:
@@ -40,6 +42,10 @@ public:
     int progress() const;
     QVariantList readinessChecks() const;
     QVariantList installSteps() const;
+    bool installGamingLaunchers() const;
+    bool configureBootloader() const;
+    void setInstallGamingLaunchers(bool enabled);
+    void setConfigureBootloader(bool enabled);
     QString repoRoot() const;
 
     Q_INVOKABLE void install();
@@ -58,6 +64,7 @@ signals:
     void prerequisitesChanged();
     void progressChanged();
     void installStepsChanged();
+    void optionsChanged();
 
 private slots:
     void readOutput();
@@ -78,6 +85,8 @@ private:
     QProcess m_process;
     bool m_busy = false;
     bool m_installed = false;
+    bool m_installGamingLaunchers = true;
+    bool m_configureBootloader = true;
     int m_progress = 0;
     QString m_currentAction;
     QString m_statusTitle;

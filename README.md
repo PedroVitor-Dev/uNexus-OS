@@ -121,7 +121,7 @@ The current prototype manages:
 - workspace indicators and compositor-ready window preview direction;
 - installable Hyprland session, recovery session and automatic TUI recovery menu after shell crashes;
 - `unexusctl` for doctor, logs, backup, rollback, update and state management.
-- graphical Qt/QML installer wizard for local install, repair, diagnostics and removal flows.
+- graphical Qt/QML installer wizard for local install, repair, diagnostics, removal and system provisioning flows.
 
 The shell can be installed as a Wayland session through `scripts/setup.sh`.
 The first live ISO profile can be built with `ISO/0.0.1/build-iso.sh`.

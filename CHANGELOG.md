@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Animated Plymouth boot splash for the live ISO.
 - `uNexus Recovery Shell` TUI menu that opens automatically after shell crashes.
 - Graphical Qt/QML installer wizard with readiness checks, install options, progress steps and backend log view.
+- Installer provisioning for target user groups, Hyprland defaults, Flathub, GameMode/MangoHud, default gaming launchers and safe boot defaults.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.1 foundation instead of a purely future path.
