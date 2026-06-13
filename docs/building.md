@@ -213,6 +213,14 @@ sudo pacman -S qemu-full edk2-ovmf
 
 Use `--bios-only` when OVMF is not installed yet.
 
+Run the full release gate before publishing an ISO:
+
+```bash
+sh scripts/validate-iso-release.sh --build
+```
+
+The release gate runs static checks, builds the project, optionally rebuilds the ISO, writes `SHA256SUMS` and runs QEMU smoke tests when available. Use `--require-vm` for release builds that must fail if BIOS/UEFI VM validation cannot run. When `ISO/0.0.1/out/` is not writable, reports and fallback checksums are written to `/tmp/unexus-release-checks/`.
+
 The live profile includes Hyprland, the uNexus shell/session, Qt6, PipeWire, NetworkManager, Flatpak, GameMode, MangoHud, Vulkan tools, graphical Polkit authentication, Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts and recovery utilities.
 
 The normal session also writes GTK settings and exports Qt/GTK/cursor defaults so the first boot does not depend on a manually configured desktop theme.
@@ -249,6 +257,8 @@ sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone Amer
 ```
 
 `--online` forces pacman repository downloads. Without either flag, the installer uses the local cache when package files are present and falls back to online repositories otherwise.
+
+The installed user's first setup state is seeded from installer options such as `--locale`, `--timezone` and `--keymap`. The shell's First Setup panel then shows system defaults, network status, update channel access, runtime tools and optional game launchers.
 
 ---
 

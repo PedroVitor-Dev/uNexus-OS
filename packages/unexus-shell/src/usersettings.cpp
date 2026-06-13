@@ -10,6 +10,12 @@ UserSettings::UserSettings(QObject *parent)
     m_languageCode = m_settings.value("locale/languageCode", "en").toString();
     if (m_languageCode != "pt-BR")
         m_languageCode = "en";
+    m_setupTimezone = m_settings.value("setup/timezone", "UTC").toString().trimmed();
+    if (m_setupTimezone.isEmpty())
+        m_setupTimezone = "UTC";
+    m_setupKeymap = m_settings.value("setup/keymap", "us").toString().trimmed();
+    if (m_setupKeymap.isEmpty())
+        m_setupKeymap = "us";
     m_statsOverlayVisible = m_settings.value("appearance/statsOverlayVisible", false).toBool();
     m_firstSetupCompleted = m_settings.value("setup/firstSetupCompleted", false).toBool();
     m_notificationsEnabled = m_settings.value("notifications/enabled", true).toBool();
@@ -83,6 +89,28 @@ void UserSettings::setLanguageCode(const QString &languageCode)
     m_languageCode = normalizedLanguage;
     m_settings.setValue("locale/languageCode", m_languageCode);
     emit languageCodeChanged();
+}
+
+void UserSettings::setSetupTimezone(const QString &timezone)
+{
+    const QString normalizedTimezone = timezone.trimmed().isEmpty() ? QStringLiteral("UTC") : timezone.trimmed();
+    if (m_setupTimezone == normalizedTimezone)
+        return;
+
+    m_setupTimezone = normalizedTimezone;
+    m_settings.setValue("setup/timezone", m_setupTimezone);
+    emit setupTimezoneChanged();
+}
+
+void UserSettings::setSetupKeymap(const QString &keymap)
+{
+    const QString normalizedKeymap = keymap.trimmed().isEmpty() ? QStringLiteral("us") : keymap.trimmed();
+    if (m_setupKeymap == normalizedKeymap)
+        return;
+
+    m_setupKeymap = normalizedKeymap;
+    m_settings.setValue("setup/keymap", m_setupKeymap);
+    emit setupKeymapChanged();
 }
 
 void UserSettings::setStatsOverlayVisible(bool visible)

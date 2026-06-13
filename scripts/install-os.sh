@@ -318,12 +318,18 @@ if command -v unexus-shell >/dev/null 2>&1; then
     UNEXUS_TARGET_USER='$target_user' \\
     UNEXUS_INSTALL_GAMING_LAUNCHERS='$install_gaming_launchers' \\
     UNEXUS_CONFIGURE_BOOTLOADER='$configure_bootloader' \\
+    UNEXUS_SETUP_TIMEZONE='$target_timezone' \\
+    UNEXUS_SETUP_KEYMAP='$target_keymap' \\
+    UNEXUS_SETUP_LANGUAGE='$target_locale' \\
     PREFIX=/usr \\
     sh /opt/unexus-os/scripts/provision-system.sh
 else
     UNEXUS_TARGET_USER='$target_user' \\
     UNEXUS_INSTALL_GAMING_LAUNCHERS='$install_gaming_launchers' \\
     UNEXUS_CONFIGURE_BOOTLOADER='$configure_bootloader' \\
+    UNEXUS_SETUP_TIMEZONE='$target_timezone' \\
+    UNEXUS_SETUP_KEYMAP='$target_keymap' \\
+    UNEXUS_SETUP_LANGUAGE='$target_locale' \\
     PREFIX=/usr \\
     sh /opt/unexus-os/scripts/install-system.sh
 fi

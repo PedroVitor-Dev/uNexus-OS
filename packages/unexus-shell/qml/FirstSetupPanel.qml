@@ -40,7 +40,7 @@ Item {
     function complete() {
         userSettings.firstSetupCompleted = true
         hide()
-        notifCenter.send(root.tr("Setup complete"), root.tr("uNexus gaming setup is ready."), "SETUP")
+        notifCenter.send(root.tr("Setup complete"), root.tr("uNexus desktop setup is ready."), "SETUP")
     }
 
     function requestComplete() {
@@ -69,10 +69,19 @@ Item {
         return appLauncher.isInstalled("flatpak") &&
                appLauncher.isMangoHudInstalled() &&
                appLauncher.isGameModeRunInstalled() &&
-               (appLauncher.isInstalled("steam") || appLauncher.isFlatpakInstalled("com.valvesoftware.Steam")) &&
-               (appLauncher.isInstalled("lutris") || appLauncher.isFlatpakInstalled("net.lutris.Lutris")) &&
-               (appLauncher.isInstalled("heroic") || appLauncher.isInstalled("heroicgameslauncher") || appLauncher.isFlatpakInstalled("com.heroicgameslauncher.hgl")) &&
-               (appLauncher.isInstalled("bottles") || appLauncher.isFlatpakInstalled("com.usebottles.bottles"))
+               appLauncher.isInstalled("nmcli")
+    }
+
+    function openLanguageSettings() {
+        hide()
+        settingsPanel.setSection("language")
+        settingsPanel.show()
+    }
+
+    function openUpdateSettings() {
+        hide()
+        settingsPanel.setSection("about")
+        settingsPanel.show()
     }
 
     ParallelAnimation {
@@ -132,7 +141,7 @@ Item {
                     }
 
                     Text {
-                        text: root.tr("Check gaming essentials and prepare uNexus for play")
+                        text: root.tr("Review system defaults, recovery basics and gaming essentials")
                         color: "#8ea4bd"
                         font.pixelSize: 12
                         font.family: root.uiFont
@@ -154,7 +163,7 @@ Item {
                        (firstSetup.unavailableMessage.length > 0 ? root.tr("Setup partially unavailable") : root.tr("No setup steps pending")))
                 message: firstSetup.loading ? root.tr("Checking gaming essentials.") :
                          (firstSetup.errorMessage.length > 0 ? firstSetup.errorMessage :
-                         (firstSetup.unavailableMessage.length > 0 ? firstSetup.unavailableMessage : root.tr("Your gaming essentials are ready.")))
+                         (firstSetup.unavailableMessage.length > 0 ? firstSetup.unavailableMessage : root.tr("Your core desktop essentials are ready.")))
                 fontFamily: root.uiFont
                 accentColor: root.themeAccent
                 primaryTextColor: root.textPrimary
@@ -169,6 +178,36 @@ Item {
                 Column {
                     width: Math.floor((parent.width - root.panelGap) / 2)
                     spacing: 10
+
+                    SetupSection {
+                        width: parent.width
+                        title: root.tr("System")
+
+                        SetupRow {
+                            width: parent.width
+                            label: root.tr("Network")
+                            ready: firstSetup.refreshToken ? appLauncher.isInstalled("nmcli") : appLauncher.isInstalled("nmcli")
+                            command: "sudo systemctl enable --now NetworkManager"
+                        }
+
+                        SetupInfoRow {
+                            width: parent.width
+                            label: root.tr("System language")
+                            value: root.languageCode === "pt-BR" ? "Portuguese (Brasil)" : "English"
+                        }
+
+                        SetupInfoRow {
+                            width: parent.width
+                            label: root.tr("Timezone")
+                            value: userSettings.setupTimezone
+                        }
+
+                        SetupInfoRow {
+                            width: parent.width
+                            label: root.tr("Keyboard")
+                            value: userSettings.setupKeymap
+                        }
+                    }
 
                     SetupSection {
                         width: parent.width
@@ -208,8 +247,20 @@ Item {
 
                         SetupCommandButton {
                             width: parent.width
-                            label: root.tr("Copy Flathub setup")
-                            command: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
+                            label: root.tr("Open language settings")
+                            action: "language"
+                        }
+
+                        SetupCommandButton {
+                            width: parent.width
+                            label: root.tr("Copy timezone command")
+                            command: "sudo timedatectl set-timezone " + userSettings.setupTimezone
+                        }
+
+                        SetupCommandButton {
+                            width: parent.width
+                            label: root.tr("Copy keyboard command")
+                            command: "sudo localectl set-keymap " + userSettings.setupKeymap
                         }
                     }
                 }
@@ -217,6 +268,28 @@ Item {
                 Column {
                     width: Math.floor((parent.width - root.panelGap) / 2)
                     spacing: 10
+
+                    SetupSection {
+                        width: parent.width
+                        title: root.tr("Recommended")
+
+                        SetupHint {
+                            width: parent.width
+                            text: root.tr("Install Flatpak apps from Flathub for consistent game launcher support across uNexus builds.")
+                        }
+
+                        SetupCommandButton {
+                            width: parent.width
+                            label: root.tr("Copy Flathub setup")
+                            command: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
+                        }
+
+                        SetupCommandButton {
+                            width: parent.width
+                            label: root.tr("Open update settings")
+                            action: "updates"
+                        }
+                    }
 
                     SetupSection {
                         width: parent.width
@@ -336,8 +409,10 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
+            width: Math.max(80, parent.width - 124)
             text: setupRow.label
             color: "#ffffff"
+            elide: Text.ElideRight
             font.pixelSize: 12
             font.family: root.uiFont
         }
@@ -388,9 +463,46 @@ Item {
         }
     }
 
+    component SetupInfoRow: Rectangle {
+        id: infoRow
+        property string label: ""
+        property string value: ""
+
+        height: 42
+        radius: 8
+        color: "#172233"
+
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: Math.max(80, parent.width - valueText.width - 28)
+            text: infoRow.label
+            color: "#ffffff"
+            elide: Text.ElideRight
+            font.pixelSize: 12
+            font.family: root.uiFont
+        }
+
+        Text {
+            id: valueText
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: Math.min(150, implicitWidth)
+            text: infoRow.value
+            color: "#8ea4bd"
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignRight
+            font.pixelSize: 11
+            font.family: root.uiFont
+        }
+    }
+
     component SetupCommandButton: ControlButton {
         id: commandButton
         property string command: ""
+        property string action: ""
 
         height: 34
         variant: "subtle"
@@ -398,6 +510,16 @@ Item {
         accentColor: root.themeAccent
         motionDuration: root.motionQuick
         onClicked: {
+            if (commandButton.action === "language") {
+                firstSetup.openLanguageSettings()
+                return
+            }
+            if (commandButton.action === "updates") {
+                firstSetup.openUpdateSettings()
+                return
+            }
+            if (commandButton.command.length === 0)
+                return
             appLauncher.copyToClipboard(commandButton.command)
             notifCenter.send(root.tr("Command copied"), root.trLabelMessage("{label} copied.", commandButton.label), "SETUP", root.tr("Open Terminal"), function() {
                 appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"])

@@ -96,6 +96,34 @@ configure_user() {
     user_home="$(getent passwd "$user" | cut -d: -f6)"
     install -d -m 0755 -o "$user" -g "$user" "$user_home/.config/hypr"
     install -d -m 0755 -o "$user" -g "$user" "$user_home/.config/unexus"
+    install -d -m 0755 -o "$user" -g "$user" "$user_home/.config/uNexus"
+
+    setup_language="${UNEXUS_SETUP_LANGUAGE:-en}"
+    case "$setup_language" in
+        pt_BR*|pt-BR*) setup_language="pt-BR" ;;
+        *) setup_language="en" ;;
+    esac
+    setup_timezone="${UNEXUS_SETUP_TIMEZONE:-UTC}"
+    setup_keymap="${UNEXUS_SETUP_KEYMAP:-us}"
+    qt_settings_file="$user_home/.config/uNexus/unexus-shell.conf"
+
+    if [ ! -f "$qt_settings_file" ]; then
+        log "creating first setup defaults for $user"
+        cat > "$qt_settings_file" <<EOF
+[locale]
+languageCode=$setup_language
+
+[setup]
+firstSetupCompleted=false
+timezone=$setup_timezone
+keymap=$setup_keymap
+
+[updates]
+channel=stable
+EOF
+        chown "$user:$user" "$qt_settings_file"
+        chmod 0644 "$qt_settings_file"
+    fi
 
     if [ ! -f "$user_home/.config/hypr/hyprland.conf" ]; then
         log "creating default Hyprland config for $user"

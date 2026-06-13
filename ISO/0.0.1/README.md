@@ -43,6 +43,24 @@ For quick BIOS-only validation:
 sh scripts/test-iso-vm.sh --bios-only
 ```
 
+## Release Validation
+
+Before publishing an ISO, run the release gate:
+
+```sh
+sh scripts/validate-iso-release.sh --build
+```
+
+This runs static checks, rebuilds the project, optionally builds the ISO, writes `SHA256SUMS` and runs QEMU smoke tests when QEMU is available. Reports are stored under:
+
+```text
+ISO/0.0.1/out/release-checks/
+```
+
+If `out/` is not writable by the current user, reports and fallback checksums are written to `/tmp/unexus-release-checks/`.
+
+Use `--require-vm` when a release must fail if BIOS/UEFI VM smoke tests cannot run.
+
 ## Boot Recovery Modes
 
 The ISO boot menu includes additional recovery entries:
@@ -108,6 +126,7 @@ Use `--online` to force repository downloads instead.
 - Autologin on tty1
 - Normal, safe graphics, recovery, doctor and rollback boot modes
 - Pacman package cache retained for offline disk installs
+- First setup defaults for language, timezone, keyboard, updates and gaming essentials
 - NetworkManager, PipeWire, Polkit and XDG portals
 - Qt6 runtime/build stack
 - GameMode, MangoHud and Vulkan tools

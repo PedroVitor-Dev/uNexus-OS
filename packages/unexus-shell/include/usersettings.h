@@ -9,6 +9,8 @@ class UserSettings : public QObject
 
     Q_PROPERTY(int themeIndex READ themeIndex WRITE setThemeIndex NOTIFY themeIndexChanged)
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
+    Q_PROPERTY(QString setupTimezone READ setupTimezone WRITE setSetupTimezone NOTIFY setupTimezoneChanged)
+    Q_PROPERTY(QString setupKeymap READ setupKeymap WRITE setSetupKeymap NOTIFY setupKeymapChanged)
     Q_PROPERTY(bool statsOverlayVisible READ statsOverlayVisible WRITE setStatsOverlayVisible NOTIFY statsOverlayVisibleChanged)
     Q_PROPERTY(bool firstSetupCompleted READ firstSetupCompleted WRITE setFirstSetupCompleted NOTIFY firstSetupCompletedChanged)
     Q_PROPERTY(bool notificationsEnabled READ notificationsEnabled WRITE setNotificationsEnabled NOTIFY notificationsEnabledChanged)
@@ -27,6 +29,8 @@ public:
 
     int themeIndex() const { return m_themeIndex; }
     QString languageCode() const { return m_languageCode; }
+    QString setupTimezone() const { return m_setupTimezone; }
+    QString setupKeymap() const { return m_setupKeymap; }
     bool statsOverlayVisible() const { return m_statsOverlayVisible; }
     bool firstSetupCompleted() const { return m_firstSetupCompleted; }
     bool notificationsEnabled() const { return m_notificationsEnabled; }
@@ -43,6 +47,8 @@ public:
 public slots:
     void setThemeIndex(int themeIndex);
     void setLanguageCode(const QString &languageCode);
+    void setSetupTimezone(const QString &timezone);
+    void setSetupKeymap(const QString &keymap);
     void setStatsOverlayVisible(bool visible);
     void setFirstSetupCompleted(bool completed);
     void setNotificationsEnabled(bool enabled);
@@ -59,6 +65,8 @@ public slots:
 signals:
     void themeIndexChanged();
     void languageCodeChanged();
+    void setupTimezoneChanged();
+    void setupKeymapChanged();
     void statsOverlayVisibleChanged();
     void firstSetupCompletedChanged();
     void notificationsEnabledChanged();
@@ -76,6 +84,8 @@ private:
     QSettings m_settings;
     int m_themeIndex = 0;
     QString m_languageCode = "en";
+    QString m_setupTimezone = "UTC";
+    QString m_setupKeymap = "us";
     bool m_statsOverlayVisible = false;
     bool m_firstSetupCompleted = false;
     bool m_notificationsEnabled = true;
