@@ -62,7 +62,7 @@ Project website: <https://unexus-os.vercel.app>
 - [x] **Feature:** Add empty, loading, error and unavailable states to all major panels
 - [ ] **Innovation:** **Native Live Wallpaper Engine:** real-time shader wallpapers through QML `ShaderEffect`, with built-in presets and support for user-loaded GLSL
 - [x] **UI:** Refine panel transitions with standardized timing/easing, spring motion and responsive laptop/desktop behavior
-- [ ] **Feature:** Add actionable notifications: Open, Dismiss and Silence for 1h, with a visible queue and configurable timeout
+- [x] **Feature:** Add actionable notifications: Open, Dismiss and Silence for 1h, with a visible queue and configurable timeout
 - [ ] **Innovation:** **uNexus Focus Mode:** `Super+F` dims everything except the active window, useful for streaming, study or distraction-free gaming
 - [ ] **UI:** Design a custom SVG app icon pack for the 20 most common apps, using a monochrome accent-driven style
 - [x] **Feature:** Add a visible shortcut help/customization panel inside uNexus Settings

@@ -1,5 +1,7 @@
 #include "usersettings.h"
 
+#include <QtGlobal>
+
 UserSettings::UserSettings(QObject *parent)
     : QObject(parent)
     , m_settings("uNexus", "unexus-shell")
@@ -57,7 +59,11 @@ UserSettings::UserSettings(QObject *parent)
         m_notificationTimeoutSeconds = 3;
     if (m_notificationTimeoutSeconds > 30)
         m_notificationTimeoutSeconds = 30;
+    m_notificationSilencedUntil = m_settings.value("notifications/silencedUntil", 0.0).toDouble();
+    if (m_notificationSilencedUntil < 0.0)
+        m_notificationSilencedUntil = 0.0;
     if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" && m_controlCenterSection != "help" &&
+        m_controlCenterSection != "hardware" &&
         m_controlCenterSection != "appearance" &&
         m_controlCenterSection != "language" && m_controlCenterSection != "about")
         m_controlCenterSection = "system";
@@ -227,6 +233,7 @@ void UserSettings::setControlCenterSection(const QString &section)
 {
     QString normalizedSection = section;
     if (normalizedSection != "system" && normalizedSection != "shortcuts" && normalizedSection != "help" &&
+        normalizedSection != "hardware" &&
         normalizedSection != "appearance" &&
         normalizedSection != "language" && normalizedSection != "about")
         normalizedSection = "system";
@@ -253,4 +260,17 @@ void UserSettings::setNotificationTimeoutSeconds(int seconds)
     m_notificationTimeoutSeconds = seconds;
     m_settings.setValue("notifications/timeoutSeconds", m_notificationTimeoutSeconds);
     emit notificationTimeoutSecondsChanged();
+}
+
+void UserSettings::setNotificationSilencedUntil(double silencedUntil)
+{
+    if (silencedUntil < 0.0)
+        silencedUntil = 0.0;
+
+    if (qFuzzyCompare(m_notificationSilencedUntil + 1.0, silencedUntil + 1.0))
+        return;
+
+    m_notificationSilencedUntil = silencedUntil;
+    m_settings.setValue("notifications/silencedUntil", m_notificationSilencedUntil);
+    emit notificationSilencedUntilChanged();
 }

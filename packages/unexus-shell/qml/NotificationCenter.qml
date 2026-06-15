@@ -10,11 +10,16 @@ Item {
     property int timeoutMs: 7000
     property bool notificationsEnabled: true
     property double silencedUntil: 0
+    property bool queueExpanded: false
     property int clockTick: 0
     readonly property bool silenced: clockTick >= 0 && Date.now() < silencedUntil
     readonly property int queuedCount: Math.max(0, notifications.length - maxVisibleNotifications)
+    readonly property int visibleCount: queueExpanded ? notifications.length : Math.min(notifications.length, maxVisibleNotifications)
 
-    onNotificationsEnabledChanged: if (!notificationsEnabled) notifications = []
+    onNotificationsEnabledChanged: if (!notificationsEnabled) clearAll()
+    onSilencedUntilChanged: userSettings.notificationSilencedUntil = silencedUntil
+
+    Component.onCompleted: silencedUntil = userSettings.notificationSilencedUntil
 
     function nextId() {
         return Date.now() + Math.floor(Math.random() * 100000)
@@ -47,9 +52,16 @@ Item {
             if (list[i].id === id) {
                 list.splice(i, 1)
                 notifications = list
+                if (notifications.length <= maxVisibleNotifications)
+                    queueExpanded = false
                 return
             }
         }
+    }
+
+    function clearAll() {
+        notifications = []
+        queueExpanded = false
     }
 
     function openNotification(notification) {
@@ -60,13 +72,27 @@ Item {
 
     function silenceForOneHour() {
         silencedUntil = Date.now() + 60 * 60 * 1000
-        notifications = []
+        clearAll()
+    }
+
+    function unsilence() {
+        silencedUntil = 0
+    }
+
+    function silenceRemainingLabel() {
+        var remainingMs = Math.max(0, silencedUntil - Date.now())
+        var minutes = Math.ceil(remainingMs / 60000)
+        return root.tr("Notifications silenced") + " - " + minutes + "m"
+    }
+
+    function visibleNotifications() {
+        return notifications.slice(0, visibleCount)
     }
 
     Timer {
-        interval: 30000
+        interval: 1000
         repeat: true
-        running: true
+        running: notificationCenter.silenced
         onTriggered: notificationCenter.clockTick++
     }
 
@@ -138,19 +164,42 @@ Item {
 
                 Text {
                     width: parent.width
-                    text: notificationCenter.silenced ? root.tr("Notifications silenced for 1h.") :
-                          (notificationCenter.queuedCount > 0 ? ("+" + notificationCenter.queuedCount + " " + root.tr("queued")) :
+                    text: notificationCenter.silenced ? notificationCenter.silenceRemainingLabel() :
+                          (notificationCenter.queuedCount > 0 ? ("+" + notificationCenter.queuedCount + " " + root.tr("queued") + " - " + root.tr("Click to expand")) :
                            root.tr("Open, dismiss or silence alerts."))
                     color: root.textMuted
                     font.pixelSize: root.textTiny
                     font.family: root.uiFont
                     elide: Text.ElideRight
                 }
+
+                Row {
+                    width: parent.width
+                    spacing: root.spaceXs
+                    visible: notificationCenter.notifications.length > 0 || notificationCenter.silenced
+                    height: visible ? 26 : 0
+
+                    NotificationActionButton {
+                        width: Math.floor((parent.width - root.spaceXs) / 2)
+                        label: notificationCenter.queueExpanded ? root.tr("Collapse") : root.tr("Show queue")
+                        muted: notificationCenter.notifications.length <= notificationCenter.maxVisibleNotifications
+                        onClicked: notificationCenter.queueExpanded = !notificationCenter.queueExpanded
+                    }
+
+                    NotificationActionButton {
+                        width: parent.width - Math.floor((parent.width - root.spaceXs) / 2) - root.spaceXs
+                        label: notificationCenter.silenced ? root.tr("Unsilence") : root.tr("Clear")
+                        accent: notificationCenter.silenced
+                        muted: !notificationCenter.silenced && notificationCenter.notifications.length === 0
+                        onClicked: notificationCenter.silenced ? notificationCenter.unsilence() : notificationCenter.clearAll()
+                    }
+                }
+
             }
         }
 
         Repeater {
-            model: notificationCenter.notifications.slice(0, notificationCenter.maxVisibleNotifications)
+            model: notificationCenter.visibleNotifications()
 
             delegate: LiquidGlass {
                 id: notifItem

@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - GPU detection through `lspci` with NVIDIA, AMD, Intel and virtual-driver recommendations.
 - uNexus Driver Wizard for guided GPU driver switching with boot-confirmed rollback protection.
 - Startup loading screen with animated uNexus logo while shell backends finish initialization.
+- Actionable notification queue with Open, Dismiss, Silence 1h, clear controls and configurable timeout persistence.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.1 foundation instead of a purely future path.
