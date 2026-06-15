@@ -42,6 +42,12 @@ Item {
     property real breadcrumbMenuY: 0
     property var breadcrumbMenuEntries: []
     property string pendingPasteMode: ""
+    property bool rubberSelecting: false
+    property real rubberStartX: 0
+    property real rubberStartY: 0
+    property real rubberCurrentX: 0
+    property real rubberCurrentY: 0
+    property var rubberBasePaths: []
 
     function activeOperationCount() {
         var count = 0
@@ -162,6 +168,84 @@ Item {
             selectedName = last.name
             selectedIsDir = last.isDir
         }
+    }
+
+    function setSelectionFromPaths(paths) {
+        var active = activeEntries()
+        var nextPaths = []
+        var nextEntries = []
+
+        for (var i = 0; i < active.length; i++) {
+            if (paths.indexOf(active[i].path) < 0)
+                continue
+            nextPaths.push(active[i].path)
+            nextEntries.push(active[i])
+        }
+
+        selectedPaths = nextPaths
+        selectedEntries = nextEntries
+
+        if (nextEntries.length > 0) {
+            var last = nextEntries[nextEntries.length - 1]
+            selectedPath = last.path
+            selectedName = last.name
+            selectedIsDir = last.isDir
+        } else {
+            selectedPath = ""
+            selectedName = ""
+            selectedIsDir = false
+        }
+    }
+
+    function rectsIntersect(ax, ay, aw, ah, bx, by, bw, bh) {
+        return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
+    }
+
+    function beginRubberSelection(x, y, additive) {
+        hideContextMenu()
+        hideBreadcrumbMenu()
+        rubberSelecting = true
+        rubberStartX = x
+        rubberStartY = y
+        rubberCurrentX = x
+        rubberCurrentY = y
+        rubberBasePaths = additive ? selectedPaths.slice() : []
+        if (!additive)
+            clearSelection()
+    }
+
+    function updateRubberSelection(view, x, y) {
+        if (!rubberSelecting || !view)
+            return
+
+        rubberCurrentX = Math.max(0, Math.min(view.width, x))
+        rubberCurrentY = Math.max(0, Math.min(view.height, y))
+
+        var left = Math.min(rubberStartX, rubberCurrentX)
+        var top = Math.min(rubberStartY, rubberCurrentY)
+        var width = Math.abs(rubberCurrentX - rubberStartX)
+        var height = Math.abs(rubberCurrentY - rubberStartY)
+        var active = activeEntries()
+        var paths = rubberBasePaths.slice()
+
+        for (var i = 0; i < active.length; i++) {
+            var item = view.itemAtIndex(i)
+            if (!item)
+                continue
+
+            var point = item.mapToItem(view, 0, 0)
+            if (rectsIntersect(left, top, width, height, point.x, point.y, item.width, item.height) &&
+                    paths.indexOf(active[i].path) < 0) {
+                paths.push(active[i].path)
+            }
+        }
+
+        setSelectionFromPaths(paths)
+    }
+
+    function finishRubberSelection() {
+        rubberSelecting = false
+        rubberBasePaths = []
     }
 
     function handleEntryClick(entry, modifiers) {
@@ -1067,6 +1151,22 @@ Item {
                                 spacing: 2
                                 model: filesPanel.activeEntries()
 
+                                DragHandler {
+                                    id: listRubberDrag
+                                    target: null
+                                    acceptedButtons: Qt.LeftButton
+                                    enabled: filesList.visible
+                                    onActiveChanged: {
+                                        if (active) {
+                                            filesPanel.beginRubberSelection(centroid.position.x, centroid.position.y, false)
+                                            filesPanel.updateRubberSelection(filesList, centroid.position.x, centroid.position.y)
+                                        } else {
+                                            filesPanel.finishRubberSelection()
+                                        }
+                                    }
+                                    onTranslationChanged: filesPanel.updateRubberSelection(filesList, centroid.position.x, centroid.position.y)
+                                }
+
                                 TapHandler {
                                     acceptedButtons: Qt.RightButton
                                     onTapped: function(point) {
@@ -1082,6 +1182,19 @@ Item {
                                             filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
                                         }
                                     }
+                                }
+
+                                Rectangle {
+                                    visible: filesPanel.rubberSelecting && filesList.visible
+                                    x: Math.min(filesPanel.rubberStartX, filesPanel.rubberCurrentX)
+                                    y: Math.min(filesPanel.rubberStartY, filesPanel.rubberCurrentY)
+                                    width: Math.abs(filesPanel.rubberCurrentX - filesPanel.rubberStartX)
+                                    height: Math.abs(filesPanel.rubberCurrentY - filesPanel.rubberStartY)
+                                    z: 20
+                                    radius: 2
+                                    color: "#66000000"
+                                    border.color: "#aa38bdf8"
+                                    border.width: 1
                                 }
 
                                 delegate: FileRow {
@@ -1117,6 +1230,22 @@ Item {
                                 cellHeight: 118
                                 model: filesPanel.activeEntries()
 
+                                DragHandler {
+                                    id: gridRubberDrag
+                                    target: null
+                                    acceptedButtons: Qt.LeftButton
+                                    enabled: filesGrid.visible
+                                    onActiveChanged: {
+                                        if (active) {
+                                            filesPanel.beginRubberSelection(centroid.position.x, centroid.position.y, false)
+                                            filesPanel.updateRubberSelection(filesGrid, centroid.position.x, centroid.position.y)
+                                        } else {
+                                            filesPanel.finishRubberSelection()
+                                        }
+                                    }
+                                    onTranslationChanged: filesPanel.updateRubberSelection(filesGrid, centroid.position.x, centroid.position.y)
+                                }
+
                                 TapHandler {
                                     acceptedButtons: Qt.RightButton
                                     onTapped: function(point) {
@@ -1130,6 +1259,19 @@ Item {
                                             filesPanel.showEmptyContextMenu(mapped.x, mapped.y)
                                         }
                                     }
+                                }
+
+                                Rectangle {
+                                    visible: filesPanel.rubberSelecting && filesGrid.visible
+                                    x: Math.min(filesPanel.rubberStartX, filesPanel.rubberCurrentX)
+                                    y: Math.min(filesPanel.rubberStartY, filesPanel.rubberCurrentY)
+                                    width: Math.abs(filesPanel.rubberCurrentX - filesPanel.rubberStartX)
+                                    height: Math.abs(filesPanel.rubberCurrentY - filesPanel.rubberStartY)
+                                    z: 20
+                                    radius: 2
+                                    color: "#66000000"
+                                    border.color: "#aa38bdf8"
+                                    border.width: 1
                                 }
 
                                 delegate: FileTile {

@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Stable/beta update channel preference in Settings > About.
 - Integrated bug report generator available through `Super+B`.
 - Redesigned uNexus Files with stronger sidebar, grid/list controls, operation queue and bottom status bar.
+- Windows-style rubber-band selection in uNexus Files list and grid views.
 - uNexus Files preview engine for image, text, PDF and video previews without opening external apps.
 - Hardware section in Settings showing GPU, VRAM, active driver, kernel and Mesa versions.
 - GPU detection through `lspci` with NVIDIA, AMD, Intel and virtual-driver recommendations.
