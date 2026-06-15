@@ -35,7 +35,7 @@ In short: graphical shell installer first, native package/backend scripts undern
 | Development install | `scripts/setup.sh` | Fast local install from a cloned repository |
 | Live OS image | `ISO/0.0.2` / Archiso | Current bootable uNexus OS live image |
 | Full OS installer backend | `scripts/install-os.sh` | Guarded UEFI/systemd-boot disk installation from the live environment |
-| Graphical disk installer MVP | Qt/QML disk flow | Minimal user-facing disk install controls that preview and execute `scripts/install-os.sh` |
+| Graphical disk installer MVP | Qt/QML disk flow | Minimal user-facing disk selection, first-user configuration and install progress controls that preview and execute `scripts/install-os.sh` |
 | Future advanced disk installer | Expanded Qt/QML partitioning UX or Calamares | Guided disk selection, partitioning review, dual-boot safety and richer recovery paths |
 
 ## Non-goals For Now

@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QVariantMap>
 
@@ -158,6 +159,11 @@ QVariantList InstallerBackend::installSteps() const
     return steps;
 }
 
+QVariantList InstallerBackend::diskDevices() const
+{
+    return m_diskDevices;
+}
+
 bool InstallerBackend::installGamingLaunchers() const
 {
     return m_installGamingLaunchers;
@@ -253,14 +259,22 @@ void InstallerBackend::refresh()
     const bool wasInstalled = m_installed;
     m_installed = !QStandardPaths::findExecutable(QStringLiteral("unexus-shell")).isEmpty() ||
                   QFileInfo::exists(QStringLiteral("/usr/bin/unexus-shell"));
+    m_diskDevices = scanDiskDevices();
 
     if (wasInstalled != m_installed)
         emit installedChanged();
 
     emit prerequisitesChanged();
     emit diskOptionsChanged();
+    emit diskDevicesChanged();
     emit progressChanged();
     emit installStepsChanged();
+}
+
+void InstallerBackend::refreshDiskDevices()
+{
+    m_diskDevices = scanDiskDevices();
+    emit diskDevicesChanged();
 }
 
 void InstallerBackend::clearLog()
@@ -580,6 +594,62 @@ QStringList InstallerBackend::diskInstallArguments(bool execute) const
         args << QStringLiteral("--execute") << QStringLiteral("--confirm") << QStringLiteral("ERASE-AND-INSTALL");
 
     return args;
+}
+
+QVariantList InstallerBackend::scanDiskDevices() const
+{
+    QVariantList devices;
+    const QString lsblk = QStandardPaths::findExecutable(QStringLiteral("lsblk"));
+    if (lsblk.isEmpty())
+        return devices;
+
+    QProcess process;
+    const QStringList arguments = {
+        QStringLiteral("-dn"),
+        QStringLiteral("-P"),
+        QStringLiteral("-o"),
+        QStringLiteral("NAME,SIZE,MODEL,TRAN,TYPE")
+    };
+    process.start(lsblk, arguments);
+
+    if (!process.waitForFinished(2500))
+        return devices;
+
+    const QString output = QString::fromLocal8Bit(process.readAllStandardOutput());
+    const QRegularExpression pairExpression(QStringLiteral("(\\w+)=\"([^\"]*)\""));
+    const QStringList lines = output.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
+
+    for (const QString &line : lines) {
+        QVariantMap raw;
+        QRegularExpressionMatchIterator it = pairExpression.globalMatch(line);
+        while (it.hasNext()) {
+            const QRegularExpressionMatch match = it.next();
+            raw.insert(match.captured(1).toLower(), match.captured(2).trimmed());
+        }
+
+        if (raw.value(QStringLiteral("type")).toString() != QStringLiteral("disk"))
+            continue;
+
+        const QString name = raw.value(QStringLiteral("name")).toString();
+        if (name.isEmpty())
+            continue;
+
+        const QString path = QStringLiteral("/dev/") + name;
+        const QString model = raw.value(QStringLiteral("model")).toString();
+        const QString transport = raw.value(QStringLiteral("tran")).toString();
+        const QString size = raw.value(QStringLiteral("size")).toString();
+
+        QVariantMap device;
+        device.insert(QStringLiteral("path"), path);
+        device.insert(QStringLiteral("name"), name);
+        device.insert(QStringLiteral("size"), size.isEmpty() ? QStringLiteral("unknown size") : size);
+        device.insert(QStringLiteral("model"), model.isEmpty() ? QStringLiteral("Unknown disk") : model);
+        device.insert(QStringLiteral("transport"), transport.isEmpty() ? QStringLiteral("disk") : transport);
+        device.insert(QStringLiteral("selected"), path == m_diskTarget);
+        devices << device;
+    }
+
+    return devices;
 }
 
 bool InstallerBackend::commandExists(const QString &command)

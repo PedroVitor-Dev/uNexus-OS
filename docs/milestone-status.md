@@ -62,7 +62,7 @@ Implemented:
 Not implemented:
 
 - Calamares is not integrated in the ISO.
-- Minimal graphical disk-install controls exist in `unexus-installer` and call `scripts/install-os.sh` through `pkexec`.
+- Minimal graphical disk-install controls exist in `unexus-installer`, including disk selection, first-user configuration, progress display and `scripts/install-os.sh` execution through `pkexec`.
 - No graphical disk picker or advanced partitioning review yet.
 - No GRUB path yet; current supported bootloader path is systemd-boot.
 - No checked-in automated destructive install test result yet.

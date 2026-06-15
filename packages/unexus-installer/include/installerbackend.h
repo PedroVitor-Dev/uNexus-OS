@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QString>
+#include <QStringList>
 #include <QVariantList>
 #include <QVariantMap>
 
@@ -24,6 +25,7 @@ class InstallerBackend : public QObject
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QVariantList readinessChecks READ readinessChecks NOTIFY prerequisitesChanged)
     Q_PROPERTY(QVariantList installSteps READ installSteps NOTIFY installStepsChanged)
+    Q_PROPERTY(QVariantList diskDevices READ diskDevices NOTIFY diskDevicesChanged)
     Q_PROPERTY(bool installGamingLaunchers READ installGamingLaunchers WRITE setInstallGamingLaunchers NOTIFY optionsChanged)
     Q_PROPERTY(bool configureBootloader READ configureBootloader WRITE setConfigureBootloader NOTIFY optionsChanged)
     Q_PROPERTY(QString diskTarget READ diskTarget WRITE setDiskTarget NOTIFY diskOptionsChanged)
@@ -54,6 +56,7 @@ public:
     int progress() const;
     QVariantList readinessChecks() const;
     QVariantList installSteps() const;
+    QVariantList diskDevices() const;
     bool installGamingLaunchers() const;
     bool configureBootloader() const;
     void setInstallGamingLaunchers(bool enabled);
@@ -83,6 +86,7 @@ public:
     Q_INVOKABLE void previewDiskInstall();
     Q_INVOKABLE void installDisk();
     Q_INVOKABLE void refresh();
+    Q_INVOKABLE void refreshDiskDevices();
     Q_INVOKABLE void clearLog();
 
 signals:
@@ -96,6 +100,7 @@ signals:
     void installStepsChanged();
     void optionsChanged();
     void diskOptionsChanged();
+    void diskDevicesChanged();
 
 private slots:
     void readOutput();
@@ -112,6 +117,7 @@ private:
     QVariantMap checkItem(const QString &label, const QString &value, const QString &status) const;
     QVariantMap stepItem(const QString &label, const QString &detail, const QString &status) const;
     QStringList diskInstallArguments(bool execute) const;
+    QVariantList scanDiskDevices() const;
     static bool commandExists(const QString &command);
 
     QProcess m_process;
@@ -127,6 +133,7 @@ private:
     QString m_diskKeymap = QStringLiteral("us");
     QString m_diskFilesystem = QStringLiteral("btrfs");
     QString m_diskNetworkMode = QStringLiteral("auto");
+    QVariantList m_diskDevices;
     int m_progress = 0;
     QString m_currentAction;
     QString m_statusTitle;

@@ -306,7 +306,7 @@ ApplicationWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "This graphical installer installs the uNexus shell, configures the target user, prepares the Hyprland session, sets up Flathub, enables the gaming runtime layer and prepares safe boot defaults. The native disk installer backend is available from the live ISO terminal while the graphical disk flow is being built."
+                    text: "This graphical installer installs the uNexus shell, configures the target user, prepares the Hyprland session, sets up Flathub, enables the gaming runtime layer and prepares safe boot defaults. The disk install flow can select a target disk, configure the first user and call the guarded native backend."
                     color: root.textSecondary
                     wrapMode: Text.WordWrap
                     font.family: root.uiFont
@@ -395,7 +395,7 @@ ApplicationWindow {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 236
+            Layout.preferredHeight: 430
             radius: 8
             color: root.raised
             border.color: root.selectedAction.indexOf("disk-") === 0 ? root.accent : root.border
@@ -404,7 +404,7 @@ ApplicationWindow {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 14
-                spacing: 10
+                spacing: 12
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -425,7 +425,7 @@ ApplicationWindow {
 
                         Text {
                             Layout.fillWidth: true
-                            text: "Calls scripts/install-os.sh. Preview is safe; execute erases the selected whole disk."
+                            text: "Select a whole disk, configure the first user, preview the plan, then run the guarded installer."
                             color: root.textSecondary
                             wrapMode: Text.WordWrap
                             font.family: root.uiFont
@@ -439,37 +439,152 @@ ApplicationWindow {
                     }
                 }
 
-                GridLayout {
+                RowLayout {
                     Layout.fillWidth: true
-                    columns: 4
-                    columnSpacing: 8
-                    rowSpacing: 8
+                    Layout.fillHeight: true
+                    spacing: 12
 
-                    DiskField { Layout.fillWidth: true; label: "Target disk"; value: root.backend.diskTarget; placeholder: "/dev/sdX"; onAcceptedValue: function(v) { root.backend.diskTarget = v } }
-                    DiskField { Layout.fillWidth: true; label: "Username"; value: root.backend.diskUsername; placeholder: "unexus"; onAcceptedValue: function(v) { root.backend.diskUsername = v } }
-                    DiskField { Layout.fillWidth: true; label: "Hostname"; value: root.backend.diskHostname; placeholder: "unexus-os"; onAcceptedValue: function(v) { root.backend.diskHostname = v } }
-                    DiskField { Layout.fillWidth: true; label: "Timezone"; value: root.backend.diskTimezone; placeholder: "UTC"; onAcceptedValue: function(v) { root.backend.diskTimezone = v } }
-                    DiskField { Layout.fillWidth: true; label: "Locale"; value: root.backend.diskLocale; placeholder: "en_US.UTF-8"; onAcceptedValue: function(v) { root.backend.diskLocale = v } }
-                    DiskField { Layout.fillWidth: true; label: "Keymap"; value: root.backend.diskKeymap; placeholder: "us"; onAcceptedValue: function(v) { root.backend.diskKeymap = v } }
-
-                    Button {
+                    Rectangle {
                         Layout.fillWidth: true
-                        text: "FS: " + root.backend.diskFilesystem
-                        enabled: !root.backend.busy
-                        onClicked: root.backend.diskFilesystem = root.backend.diskFilesystem === "btrfs" ? "ext4" : "btrfs"
+                        Layout.fillHeight: true
+                        radius: 8
+                        color: "#09111c"
+                        border.color: root.border
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 10
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Disk selection"
+                                    color: root.textPrimary
+                                    font.family: root.uiFont
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                }
+
+                                Button {
+                                    text: "Rescan"
+                                    enabled: !root.backend.busy
+                                    onClicked: root.backend.refreshDiskDevices()
+                                }
+                            }
+
+                            ScrollView {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                clip: true
+
+                                ColumnLayout {
+                                    width: parent.width
+                                    spacing: 8
+
+                                    Repeater {
+                                        model: root.backend.diskDevices
+
+                                        DiskChoiceCard {
+                                            Layout.fillWidth: true
+                                            path: modelData.path
+                                            modelName: modelData.model
+                                            sizeText: modelData.size
+                                            transport: modelData.transport
+                                            selected: root.backend.diskTarget === modelData.path
+                                            onPicked: root.backend.diskTarget = path
+                                        }
+                                    }
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        visible: root.backend.diskDevices.length === 0
+                                        text: "No disks detected through lsblk. Enter a whole disk manually below."
+                                        color: root.textSecondary
+                                        wrapMode: Text.WordWrap
+                                        font.family: root.uiFont
+                                        font.pixelSize: 12
+                                    }
+                                }
+                            }
+
+                            DiskField {
+                                Layout.fillWidth: true
+                                label: "Manual target"
+                                value: root.backend.diskTarget
+                                placeholder: "/dev/sdX"
+                                onAcceptedValue: function(v) { root.backend.diskTarget = v }
+                            }
+                        }
                     }
 
-                    Button {
+                    Rectangle {
                         Layout.fillWidth: true
-                        text: "Net: " + root.backend.diskNetworkMode
-                        enabled: !root.backend.busy
-                        onClicked: {
-                            if (root.backend.diskNetworkMode === "auto")
-                                root.backend.diskNetworkMode = "offline"
-                            else if (root.backend.diskNetworkMode === "offline")
-                                root.backend.diskNetworkMode = "online"
-                            else
-                                root.backend.diskNetworkMode = "auto"
+                        Layout.fillHeight: true
+                        radius: 8
+                        color: "#09111c"
+                        border.color: root.border
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 10
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "User and system"
+                                color: root.textPrimary
+                                font.family: root.uiFont
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            GridLayout {
+                                Layout.fillWidth: true
+                                columns: 2
+                                columnSpacing: 8
+                                rowSpacing: 8
+
+                                DiskField { Layout.fillWidth: true; label: "Username"; value: root.backend.diskUsername; placeholder: "unexus"; onAcceptedValue: function(v) { root.backend.diskUsername = v } }
+                                DiskField { Layout.fillWidth: true; label: "Hostname"; value: root.backend.diskHostname; placeholder: "unexus-os"; onAcceptedValue: function(v) { root.backend.diskHostname = v } }
+                                DiskField { Layout.fillWidth: true; label: "Timezone"; value: root.backend.diskTimezone; placeholder: "UTC"; onAcceptedValue: function(v) { root.backend.diskTimezone = v } }
+                                DiskField { Layout.fillWidth: true; label: "Locale"; value: root.backend.diskLocale; placeholder: "en_US.UTF-8"; onAcceptedValue: function(v) { root.backend.diskLocale = v } }
+                                DiskField { Layout.fillWidth: true; label: "Keymap"; value: root.backend.diskKeymap; placeholder: "us"; onAcceptedValue: function(v) { root.backend.diskKeymap = v } }
+
+                                Button {
+                                    Layout.fillWidth: true
+                                    text: "FS: " + root.backend.diskFilesystem
+                                    enabled: !root.backend.busy
+                                    onClicked: root.backend.diskFilesystem = root.backend.diskFilesystem === "btrfs" ? "ext4" : "btrfs"
+                                }
+                            }
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: "Network: " + root.backend.diskNetworkMode
+                                enabled: !root.backend.busy
+                                onClicked: {
+                                    if (root.backend.diskNetworkMode === "auto")
+                                        root.backend.diskNetworkMode = "offline"
+                                    else if (root.backend.diskNetworkMode === "offline")
+                                        root.backend.diskNetworkMode = "online"
+                                    else
+                                        root.backend.diskNetworkMode = "auto"
+                                }
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: root.backend.diskTarget.length > 0 ? "Selected target: " + root.backend.diskTarget : "Select a disk before starting."
+                                color: root.backend.diskTarget.length > 0 ? root.warning : root.textSecondary
+                                wrapMode: Text.WordWrap
+                                font.family: root.uiFont
+                                font.pixelSize: 12
+                                font.bold: root.backend.diskTarget.length > 0
+                            }
                         }
                     }
                 }
@@ -508,11 +623,20 @@ ApplicationWindow {
 
         Text {
             Layout.fillWidth: true
-            text: "Installation progress"
+            text: root.backend.currentAction === "disk-install" ? "Disk installation progress" : "Installation progress"
             color: root.textPrimary
             font.family: root.uiFont
             font.pixelSize: 18
             font.bold: true
+        }
+
+        Text {
+            Layout.fillWidth: true
+            text: root.backend.currentAction.indexOf("disk-") === 0 ? "Target: " + root.backend.diskTarget + " | User: " + root.backend.diskUsername + " | Filesystem: " + root.backend.diskFilesystem : "Backend progress"
+            color: root.textSecondary
+            wrapMode: Text.WordWrap
+            font.family: root.uiFont
+            font.pixelSize: 12
         }
 
         ProgressBar {
@@ -638,6 +762,75 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+    }
+
+    component DiskChoiceCard: Rectangle {
+        id: diskCard
+        property string path: ""
+        property string modelName: ""
+        property string sizeText: ""
+        property string transport: ""
+        property bool selected: false
+        signal picked()
+
+        Layout.preferredHeight: 72
+        radius: 8
+        color: selected ? "#19304a" : root.raised
+        border.color: selected ? root.accent : root.border
+        border.width: selected ? 2 : 1
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 10
+
+            Rectangle {
+                Layout.preferredWidth: 22
+                Layout.preferredHeight: 22
+                radius: 11
+                color: diskCard.selected ? root.accent : "transparent"
+                border.color: diskCard.selected ? root.accent : root.border
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 8
+                    height: 8
+                    radius: 4
+                    color: "#06111a"
+                    visible: diskCard.selected
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 3
+
+                Text {
+                    Layout.fillWidth: true
+                    text: diskCard.path + "  " + diskCard.sizeText
+                    color: root.textPrimary
+                    elide: Text.ElideRight
+                    font.family: root.uiFont
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: diskCard.modelName + " | " + diskCard.transport
+                    color: root.textSecondary
+                    elide: Text.ElideRight
+                    font.family: root.uiFont
+                    font.pixelSize: 11
+                }
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: !root.backend.busy
+            onClicked: diskCard.picked()
         }
     }
 
