@@ -119,10 +119,12 @@ The selected installer experience is graphical and double-click friendly:
 - use `packaging/arch/PKGBUILD`, `makepkg` and `pacman` behind the installer;
 - use Flatpak behind the installer for user applications where appropriate;
 - keep `scripts/setup.sh` for development and local repair installs;
-- use the existing `ISO/0.0.1` Archiso profile as the live image foundation;
-- add Calamares or the native graphical installer later for disk installation.
+- use the existing `ISO/0.0.2` Archiso profile as the current live image foundation;
+- use `scripts/install-os.sh` as the guarded native disk installer backend while the graphical disk flow is built;
+- keep Calamares as a future option, not the current installer path.
 
 See [installer-technology.md](installer-technology.md) for the decision record.
+See [milestone-status.md](milestone-status.md) for the current install-roadmap audit.
 
 ---
 
@@ -176,7 +178,7 @@ cmake --build build
 
 ## Build the Live ISO
 
-The first bootable uNexus OS image profile lives in `ISO/0.0.1`.
+The current bootable uNexus OS image profile lives in `ISO/0.0.2`.
 
 Install Archiso tools on the build host:
 
@@ -188,13 +190,13 @@ Build the image:
 
 ```bash
 cd ~/uNexus-OS
-sudo sh ISO/0.0.1/build-iso.sh
+sudo sh ISO/0.0.2/build-iso.sh
 ```
 
 The generated image is written to:
 
 ```text
-ISO/0.0.1/out/
+ISO/0.0.2/out/
 ```
 
 During ISO creation, `build-iso.sh` packages the current checkout into a local `unexus-shell` Arch package, creates a temporary local pacman repository and adds that repository to the generated Archiso profile. This keeps the live image install path package-based instead of compiling uNexus inside `customize_airootfs.sh`.
@@ -219,7 +221,7 @@ Run the full release gate before publishing an ISO:
 sh scripts/validate-iso-release.sh --build
 ```
 
-The release gate runs static checks, builds the project, optionally rebuilds the ISO, writes `SHA256SUMS` and runs QEMU smoke tests when available. Use `--require-vm` for release builds that must fail if BIOS/UEFI VM validation cannot run. When `ISO/0.0.1/out/` is not writable, reports and fallback checksums are written to `/tmp/unexus-release-checks/`.
+The release gate runs static checks, builds the project, optionally rebuilds the ISO, writes `SHA256SUMS` and runs QEMU smoke tests when available. Use `--require-vm` for release builds that must fail if BIOS/UEFI VM validation cannot run. When `ISO/0.0.2/out/` is not writable, reports and fallback checksums are written to `/tmp/unexus-release-checks/`.
 
 The live profile includes Hyprland, the uNexus shell/session, Qt6, PipeWire, NetworkManager, Flatpak, GameMode, MangoHud, Vulkan tools, graphical Polkit authentication, Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts and recovery utilities.
 
@@ -231,7 +233,7 @@ Write it to a USB disk:
 
 ```bash
 lsblk -o NAME,SIZE,MODEL,TRAN,MOUNTPOINTS
-sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
+sudo sh ISO/0.0.2/write-usb.sh /dev/sdX
 ```
 
 Use the whole USB disk, not a partition. The writer shows the target and requires typing `WRITE` before erasing it.

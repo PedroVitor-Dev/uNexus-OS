@@ -39,9 +39,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - uNexus Driver Wizard for guided GPU driver switching with boot-confirmed rollback protection.
 - Startup loading screen with animated uNexus logo while shell backends finish initialization.
 - Actionable notification queue with Open, Dismiss, Silence 1h, clear controls and configurable timeout persistence.
+- Installation milestone status document covering packaging, ISO installer, sessions, VM/hardware validation and First Setup readiness.
 
 ### Changed
-- Documentation now treats the bootable ISO as an existing 0.0.1 foundation instead of a purely future path.
+- Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.
+- Documentation now points current ISO build, USB, VM and release validation flows at `ISO/0.0.2`.
+- ISO VM smoke and release validation scripts now default to the 0.0.2 image path.
+- Native disk install repository copy now excludes `ISO/0.0.2` build and output directories.
 - `unexus-session` starts the KDE Polkit authentication agent when it is installed.
 - `unexus-session` and `unexus-recovery-session` now export consistent Qt/GTK style, icon and cursor defaults.
 - uNexus Shell now sets a default Qt icon theme and hicolor fallback at startup.

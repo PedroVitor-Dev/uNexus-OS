@@ -1,6 +1,6 @@
 # uNexus OS ISO 0.0.2
 
-This is the first bootable ISO profile for uNexus OS.
+This is the current bootable ISO profile for uNexus OS.
 
 It is an Archiso-based live image that boots into a `unexus` live user, starts Hyprland, and launches the uNexus shell through `unexus-session`.
 

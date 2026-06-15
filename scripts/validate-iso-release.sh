@@ -2,8 +2,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-iso_path="$repo_root/ISO/0.0.1/out/unexus-os-0.0.1-x86_64.iso"
-default_report_dir="$repo_root/ISO/0.0.1/out/release-checks"
+iso_path="$repo_root/ISO/0.0.2/out/unexus-os-0.0.2-x86_64.iso"
+default_report_dir="$repo_root/ISO/0.0.2/out/release-checks"
 report_dir="${UNEXUS_RELEASE_REPORT_DIR:-$default_report_dir}"
 report_file=""
 build_iso=0
@@ -17,14 +17,14 @@ Usage: sh scripts/validate-iso-release.sh [options]
 
 Options:
   --build          Build the ISO before validating it
-  --iso PATH       ISO image to validate (default: ISO/0.0.1/out/unexus-os-0.0.1-x86_64.iso)
+  --iso PATH       ISO image to validate (default: ISO/0.0.2/out/unexus-os-0.0.2-x86_64.iso)
   --timeout SEC    VM smoke test timeout per boot mode (default: 300)
   --no-vm          Skip QEMU smoke tests
   --require-vm     Fail if QEMU/OVMF smoke tests cannot run
   -h, --help       Show this help
 
 The script performs release-gate checks, writes checksums and stores a report
-under ISO/0.0.1/out/release-checks/.
+under ISO/0.0.2/out/release-checks/.
 EOF
 }
 
@@ -92,12 +92,12 @@ find_ovmf_code() {
 
 static_checks() {
     git -C "$repo_root" diff --check
-    sh -n "$repo_root/ISO/0.0.1/build-iso.sh"
+    sh -n "$repo_root/ISO/0.0.2/build-iso.sh"
     sh -n "$repo_root/scripts/test-iso-vm.sh"
     sh -n "$repo_root/scripts/install-os.sh"
-    sh -n "$repo_root/ISO/0.0.1/profile/airootfs/root/customize_airootfs.sh"
-    sh -n "$repo_root/ISO/0.0.1/profile/airootfs/usr/local/bin/unexus-live-boot-mode"
-    sh -n "$repo_root/ISO/0.0.1/profile/airootfs/usr/local/bin/unexus-live-smoke-test"
+    sh -n "$repo_root/ISO/0.0.2/profile/airootfs/root/customize_airootfs.sh"
+    sh -n "$repo_root/ISO/0.0.2/profile/airootfs/usr/local/bin/unexus-live-boot-mode"
+    sh -n "$repo_root/ISO/0.0.2/profile/airootfs/usr/local/bin/unexus-live-smoke-test"
 }
 
 build_project() {
@@ -106,12 +106,12 @@ build_project() {
 
 build_image() {
     if [ "$(id -u)" -eq 0 ]; then
-        sh "$repo_root/ISO/0.0.1/build-iso.sh"
+        sh "$repo_root/ISO/0.0.2/build-iso.sh"
         return
     fi
 
     if command -v sudo >/dev/null 2>&1; then
-        sudo sh "$repo_root/ISO/0.0.1/build-iso.sh"
+        sudo sh "$repo_root/ISO/0.0.2/build-iso.sh"
         return
     fi
 

@@ -105,14 +105,14 @@ uNexus Shell is currently running natively on **Arch Linux + Hyprland** on real 
 The current prototype manages:
 
 - branded desktop wallpaper set, animated background layer and top bar;
-- first bootable `archiso` live image profile under `ISO/0.0.1`;
+- bootable `archiso` live image profiles under `ISO/0.0.1` and `ISO/0.0.2`, with 0.0.2 as the current validation target;
 - fullscreen login screen;
 - system and gaming side docks with real icon lookup and drawn fallbacks;
 - app launcher with search, categories and installed/running/missing status chips;
 - uNexus Files with navigation, breadcrumbs, sorting, multi-select, clipboard actions, keyboard shortcuts and previews;
 - right-click desktop and file-manager context menus;
-- notifications, persistent notification preference and stats overlay;
-- uNexus Settings control center with appearance, language, shortcuts, help and about sections;
+- actionable notifications with queue controls, persistent notification preferences and stats overlay;
+- uNexus Settings control center with system, hardware, appearance, language, shortcuts, help and about sections;
 - Game Settings dashboard with GameMode, MangoHud and real Flatpak launcher install actions;
 - first-run setup checklist;
 - PT-BR / English interface language selection;
@@ -120,12 +120,13 @@ The current prototype manages:
 - Windows-like global shortcuts for Launcher, Settings, Game Settings and stats overlay;
 - workspace indicators and compositor-ready window preview direction;
 - installable Hyprland session, recovery session and automatic TUI recovery menu after shell crashes;
-- `unexusctl` for doctor, logs, backup, rollback, update and state management.
+- `unexusctl` for doctor, logs, backup, rollback, driver switching, update and state management.
 - graphical Qt/QML installer wizard for local install, repair, diagnostics, removal and system provisioning flows.
+- native guarded disk installer backend for UEFI/systemd-boot installs through `scripts/install-os.sh`.
 - Settings > About update channel selection and a `Super+B` bug report generator for logs/specs/version capture.
 
 The shell can be installed as a Wayland session through `scripts/setup.sh`.
-The first live ISO profile can be built with `ISO/0.0.1/build-iso.sh`.
+The current live ISO profile can be built with `ISO/0.0.2/build-iso.sh`.
 
 ---
 
@@ -164,11 +165,12 @@ Recent shipping focus:
 | Game launcher installs | Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles |
 | uNexus Files polish | Context menu, copy/cut/paste hotkeys, sorting, previews and layout fixes are in place |
 | Visual language | Tokens now cover spacing, radius, typography, surfaces and motion |
-| Bootable ISO 0.0.1 | Archiso live profile with Hyprland, uNexus Shell, autologin, recovery tools and USB writer |
+| Bootable ISO 0.0.2 | Archiso live profile with Hyprland, uNexus Shell, autologin, recovery modes, native disk installer backend and USB writer |
 | Session authentication | The normal session starts the KDE Polkit agent when available for graphical privilege prompts |
 | Visual defaults | ISO/session now include icon themes, Qt SVG support, fonts, MIME metadata and Qt/GTK style defaults |
 
 For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
+For the current installation milestone audit, see [docs/milestone-status.md](docs/milestone-status.md).
 
 ---
 
@@ -198,7 +200,8 @@ For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 | `packages/unexus-shell/qml` | Shell UI, design tokens, docks, launcher, settings and overlays |
 | `packaging/linux` | Desktop entries, Wayland sessions and session launchers |
 | `packaging/arch` | Arch Linux PKGBUILD |
-| `ISO/0.0.1` | First bootable Archiso live image profile and USB writer |
+| `ISO/0.0.1` | First bootable Archiso live image profile retained for historical 0.0.1 work |
+| `ISO/0.0.2` | Current Archiso live image profile, release checks, VM smoke tests and USB writer |
 | `docs` | Architecture, build guide, roadmap and contribution docs |
 | `assets` | Logo, wallpaper and media assets |
 | `scripts` | Build, install, package, uninstall, doctor and control scripts |
@@ -209,12 +212,13 @@ For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 
 uNexus targets a graphical, double-click installer experience.
 
-- `uNexus Installer` is planned as a Qt/QML visual installer.
+- `uNexus Installer` exists as a Qt/QML visual installer for local install, repair, diagnostics and removal.
 - Arch packages and `pacman` remain the native backend.
 - Flatpak can power friendly user-app installs.
 - `scripts/setup.sh` remains the development/local repair installer.
-- `ISO/0.0.1` is the first `archiso` live image foundation.
-- Calamares or a native graphical installer remains the planned disk-install path.
+- `scripts/install-os.sh` is the current guarded native disk installer backend for UEFI/systemd-boot installs.
+- `ISO/0.0.2` is the current `archiso` live image foundation.
+- Calamares is not integrated yet; the current disk-install path is native script backend plus Qt/QML shell installer.
 
 See [docs/installer-technology.md](docs/installer-technology.md).
 
@@ -271,17 +275,17 @@ cmake --build build
 
 Default login password: `1234` or blank.
 
-Build the first live ISO profile on Arch Linux:
+Build the current live ISO profile on Arch Linux:
 
 ```bash
 cd ~/uNexus-OS
-sudo sh ISO/0.0.1/build-iso.sh
+sudo sh ISO/0.0.2/build-iso.sh
 ```
 
 Write the generated ISO to a USB disk:
 
 ```bash
-sudo sh ISO/0.0.1/write-usb.sh /dev/sdX
+sudo sh ISO/0.0.2/write-usb.sh /dev/sdX
 ```
 
 Replace `/dev/sdX` with the whole USB disk, not a partition.
@@ -301,7 +305,7 @@ Current near-term focus:
 - package Qt/QML dependencies and runtime assets correctly;
 - add Flathub setup/status and safer provisioning backends;
 - start the Game Library and per-game profile data model;
-- validate and iterate on the bootable ISO 0.0.1 live environment.
+- validate and iterate on the bootable ISO 0.0.2 live environment.
 
 ---
 

@@ -296,6 +296,7 @@ The installed OS-facing layer is intentionally simple and shell-script based for
 | `packaging/linux/unexus-recovery.desktop` | Display manager recovery session entry |
 | `scripts/unexus-doctor.sh` | Install and dependency validator |
 | `scripts/unexusctl.sh` | User control command for state, diagnostics, logs, backup, rollback and update |
+| `scripts/install-os.sh` | Guarded native UEFI/systemd-boot disk installer backend |
 
 The normal session generates a Hyprland config in:
 
@@ -329,10 +330,14 @@ Current commands:
 | `unexusctl logs` | Print log locations |
 | `unexusctl backup` | Snapshot user config controlled by uNexus |
 | `unexusctl rollback [backup]` | Restore a uNexus-created config backup |
+| `unexusctl driver-plan` | Detect the GPU through `lspci` and print the recommended driver plan |
+| `unexusctl driver-apply --yes` | Apply the recommended GPU driver package set with rollback guard |
+| `unexusctl driver-confirm [--boot]` | Confirm a staged driver switch after a successful boot |
+| `unexusctl driver-rollback [--boot]` | Roll back a staged driver switch when the next boot fails |
 | `unexusctl update --yes` | Pull, build and install from the Git repository |
 | `unexusctl version` | Show repo, branch, commit and shell binary status |
 
-The next architectural step is to add `unexusctl provision` so future provisioning UI can apply named profiles instead of copying individual commands.
+The next architectural step is to add more structured provisioning profiles so future UI can apply named system profiles instead of copying individual commands.
 
 ---
 
@@ -341,6 +346,7 @@ The next architectural step is to add `unexusctl provision` so future provisioni
 `SettingsPanel.qml` uses section navigation with persisted active section:
 
 - System;
+- Hardware;
 - Appearance;
 - Language;
 - Shortcuts;
@@ -349,7 +355,7 @@ The next architectural step is to add `unexusctl provision` so future provisioni
 
 The previous OS Provisioning checklist was removed from Settings to keep the control center cleaner. System-level provisioning should return later through a safer backend such as `unexusctl provision` with manifests, dry-run output and explicit privilege boundaries.
 
-Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
+Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The Hardware section shows GPU, VRAM, active driver, kernel, Mesa, recommended driver packages and the Driver Wizard controls. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
 
 ---
 
@@ -447,7 +453,7 @@ Near-term architecture work:
 - move repeated app metadata into a model or config file;
 - evolve Liquid Glass from a QML material into shader/compositor-backed blur and refraction;
 - build a graphical double-click installer while keeping `setup.sh` as the dev/recovery path;
-- harden the existing `ISO/0.0.1` Archiso profile with boot polish, hardware validation and installer integration;
+- harden the existing `ISO/0.0.2` Archiso profile with boot polish, hardware validation and installer integration;
 - eventually replace ad hoc command wrappers with stronger service APIs.
 
 Long term, uNexus may grow beyond a Hyprland-based shell toward a custom compositor/window manager tailored for gaming.

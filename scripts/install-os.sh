@@ -397,6 +397,9 @@ install_system() {
         --exclude 'ISO/0.0.1/.work' \
         --exclude 'ISO/0.0.1/work' \
         --exclude 'ISO/0.0.1/out' \
+        --exclude 'ISO/0.0.2/.work' \
+        --exclude 'ISO/0.0.2/work' \
+        --exclude 'ISO/0.0.2/out' \
         --exclude '**/build' \
         --exclude '**/.qt' \
         "$repo_root/" "$work_mount/opt/unexus-os/"
