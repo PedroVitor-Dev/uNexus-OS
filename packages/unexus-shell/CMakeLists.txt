@@ -45,6 +45,7 @@ qt_add_qml_module(unexus-shell
         qml/Main.qml
         qml/DesignTokens.qml
         qml/LiquidGlass.qml
+        qml/DesktopArea.qml
         qml/Launcher.qml
         qml/LoginScreen.qml
         qml/ContextMenu.qml

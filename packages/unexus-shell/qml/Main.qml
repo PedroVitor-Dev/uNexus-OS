@@ -832,6 +832,7 @@ Window {
         { icon: "bottles", fallbackIcon: "bottles", iconNames: ["com.usebottles.bottles", "bottles"], label: "Bottles", command: "bottles", args: [], flatpakId: "com.usebottles.bottles", windowClasses: ["bottles", "Bottles", "com.usebottles.bottles"], processNames: ["bottles"], gaming: true },
         { icon: "game-settings", fallbackIcon: "game-settings", iconNames: ["applications-games", "input-gaming", "preferences-desktop-gaming"], label: "Game Settings", internalAction: "gameSettings" }
     ]
+    property var desktopApps: systemDockApps.concat(gameDockApps)
     property int dockStateVersion: 0
     property int panelStateVersion: 0
     property int workspaceStateVersion: 0
@@ -1288,6 +1289,31 @@ Window {
                     ctx.stroke()
                 }
             }
+        }
+    }
+
+    DesktopArea {
+        id: desktopArea
+        anchors.fill: parent
+        anchors.topMargin: 42
+        anchors.leftMargin: 96
+        anchors.rightMargin: 96
+        anchors.bottomMargin: 26
+        apps: root.desktopApps
+        fontFamily: root.uiFont
+        accentColor: root.themeAccent
+        textColor: root.textPrimary
+        mutedTextColor: root.textMuted
+        iconProvider: appLauncher
+        z: 2
+        onLaunchRequested: function(app) {
+            dockActionMenu.hideMenu()
+            root.launchDesktopApp(app)
+        }
+        onContextRequested: function(x, y) {
+            dockActionMenu.hideMenu()
+            var point = desktopArea.mapToItem(root, x, y)
+            contextMenu.show(point.x, point.y)
         }
     }
 

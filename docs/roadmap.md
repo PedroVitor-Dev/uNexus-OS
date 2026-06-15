@@ -26,6 +26,7 @@ Project website: <https://unexus-os.vercel.app>
 
 - [x] Qt6/QML shell running on Hyprland on real hardware
 - [x] Login screen with password, avatar and clock
+- [x] Selectable desktop area with shortcut icons and rubber-band selection
 - [x] Animated geometric wallpaper with particles
 - [x] Top bar with clock, network, battery and GameMode
 - [x] System dock and gaming dock with visual states
