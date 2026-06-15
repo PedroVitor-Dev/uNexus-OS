@@ -95,7 +95,9 @@ Replace `/dev/sdX` with the correct USB disk. The script shows the target with `
 
 ## Install to Disk
 
-The first native disk installer backend is available as a guarded script. Preview the plan first:
+The native `uNexus Installer` includes a minimal graphical disk-install flow. Open `uNexus Installer`, choose `Install uNexus OS to disk`, enter the whole target disk, preview the plan, then run `Erase and install` only after confirming the target is correct.
+
+The same backend is available as a guarded script. Preview the plan first:
 
 ```sh
 sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza
@@ -141,6 +143,6 @@ Use `--online` to force repository downloads instead.
 
 ## Notes
 
-This is a bootable live ISO foundation, not the final graphical disk installer.
+This is a bootable live ISO foundation with a minimal native graphical disk installer. A richer disk picker, partitioning review and broader VM/hardware validation are still required before treating it as a final public installer.
 
 Brave remains the default browser target in the shell/session integration. The live ISO keeps the browser layer packageable, but bundling Brave directly requires a binary package source or an AUR build pipeline during ISO creation.

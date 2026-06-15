@@ -46,6 +46,10 @@ ApplicationWindow {
             backend.diagnose()
         else if (selectedAction === "remove")
             backend.uninstall()
+        else if (selectedAction === "disk-preview")
+            backend.previewDiskInstall()
+        else if (selectedAction === "disk-install")
+            backend.installDisk()
         else
             backend.install()
         pageIndex = 2
@@ -228,7 +232,10 @@ ApplicationWindow {
 
                     AccentButton {
                         text: root.pageIndex < 1 ? "Continue" : (root.pageIndex === 1 ? "Start" : (root.pageIndex === 2 ? "Finish" : "Done"))
-                        enabled: !root.backend.busy && (root.pageIndex !== 1 || root.selectedAction === "diagnose" || root.backend.canInstall)
+                        enabled: !root.backend.busy && (root.pageIndex !== 1 ||
+                                 root.selectedAction === "diagnose" ||
+                                 ((root.selectedAction === "disk-preview" || root.selectedAction === "disk-install") && root.backend.canDiskInstall) ||
+                                 (root.selectedAction !== "disk-preview" && root.selectedAction !== "disk-install" && root.backend.canInstall))
                         onClicked: {
                             if (root.pageIndex === 1)
                                 root.runSelectedAction()
@@ -310,8 +317,14 @@ ApplicationWindow {
         }
     }
 
-    component OptionsPage: ColumnLayout {
-        spacing: 12
+    component OptionsPage: Item {
+        ScrollView {
+            anchors.fill: parent
+            clip: true
+
+            ColumnLayout {
+                width: parent.width
+                spacing: 12
 
         Text {
             Layout.fillWidth: true
@@ -380,7 +393,114 @@ ApplicationWindow {
             onPicked: root.selectedAction = actionKey
         }
 
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 236
+            radius: 8
+            color: root.raised
+            border.color: root.selectedAction.indexOf("disk-") === 0 ? root.accent : root.border
+            border.width: root.selectedAction.indexOf("disk-") === 0 ? 2 : 1
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 14
+                spacing: 10
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 3
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Install uNexus OS to disk"
+                            color: root.textPrimary
+                            font.family: root.uiFont
+                            font.pixelSize: 15
+                            font.bold: true
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Calls scripts/install-os.sh. Preview is safe; execute erases the selected whole disk."
+                            color: root.textSecondary
+                            wrapMode: Text.WordWrap
+                            font.family: root.uiFont
+                            font.pixelSize: 12
+                        }
+                    }
+
+                    Badge {
+                        label: root.backend.diskInstallAvailable ? "backend ready" : "missing backend"
+                        colorValue: root.backend.diskInstallAvailable ? root.success : root.danger
+                    }
+                }
+
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 4
+                    columnSpacing: 8
+                    rowSpacing: 8
+
+                    DiskField { Layout.fillWidth: true; label: "Target disk"; value: root.backend.diskTarget; placeholder: "/dev/sdX"; onAcceptedValue: function(v) { root.backend.diskTarget = v } }
+                    DiskField { Layout.fillWidth: true; label: "Username"; value: root.backend.diskUsername; placeholder: "unexus"; onAcceptedValue: function(v) { root.backend.diskUsername = v } }
+                    DiskField { Layout.fillWidth: true; label: "Hostname"; value: root.backend.diskHostname; placeholder: "unexus-os"; onAcceptedValue: function(v) { root.backend.diskHostname = v } }
+                    DiskField { Layout.fillWidth: true; label: "Timezone"; value: root.backend.diskTimezone; placeholder: "UTC"; onAcceptedValue: function(v) { root.backend.diskTimezone = v } }
+                    DiskField { Layout.fillWidth: true; label: "Locale"; value: root.backend.diskLocale; placeholder: "en_US.UTF-8"; onAcceptedValue: function(v) { root.backend.diskLocale = v } }
+                    DiskField { Layout.fillWidth: true; label: "Keymap"; value: root.backend.diskKeymap; placeholder: "us"; onAcceptedValue: function(v) { root.backend.diskKeymap = v } }
+
+                    Button {
+                        Layout.fillWidth: true
+                        text: "FS: " + root.backend.diskFilesystem
+                        enabled: !root.backend.busy
+                        onClicked: root.backend.diskFilesystem = root.backend.diskFilesystem === "btrfs" ? "ext4" : "btrfs"
+                    }
+
+                    Button {
+                        Layout.fillWidth: true
+                        text: "Net: " + root.backend.diskNetworkMode
+                        enabled: !root.backend.busy
+                        onClicked: {
+                            if (root.backend.diskNetworkMode === "auto")
+                                root.backend.diskNetworkMode = "offline"
+                            else if (root.backend.diskNetworkMode === "offline")
+                                root.backend.diskNetworkMode = "online"
+                            else
+                                root.backend.diskNetworkMode = "auto"
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    OptionPill {
+                        Layout.fillWidth: true
+                        label: "Preview plan"
+                        selected: root.selectedAction === "disk-preview"
+                        enabled: root.backend.canDiskInstall
+                        onPicked: root.selectedAction = "disk-preview"
+                    }
+
+                    OptionPill {
+                        Layout.fillWidth: true
+                        label: "Erase and install"
+                        selected: root.selectedAction === "disk-install"
+                        enabled: root.backend.canDiskInstall
+                        danger: true
+                        onPicked: root.selectedAction = "disk-install"
+                    }
+                }
+            }
+        }
+
         Item { Layout.fillHeight: true }
+            }
+        }
     }
 
     component InstallPage: ColumnLayout {
@@ -518,6 +638,81 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+    }
+
+    component DiskField: ColumnLayout {
+        id: diskField
+        property string label: ""
+        property string value: ""
+        property string placeholder: ""
+        signal acceptedValue(string value)
+
+        spacing: 4
+
+        Text {
+            Layout.fillWidth: true
+            text: diskField.label
+            color: root.textSecondary
+            font.family: root.uiFont
+            font.pixelSize: 10
+            font.bold: true
+            elide: Text.ElideRight
+        }
+
+        TextField {
+            id: diskInput
+            Layout.fillWidth: true
+            implicitHeight: 34
+            text: diskField.value
+            placeholderText: diskField.placeholder
+            enabled: !root.backend.busy
+            color: root.textPrimary
+            placeholderTextColor: "#61738a"
+            font.family: root.uiFont
+            font.pixelSize: 12
+            selectByMouse: true
+            onEditingFinished: diskField.acceptedValue(text)
+            onAccepted: diskField.acceptedValue(text)
+            background: Rectangle {
+                radius: 7
+                color: "#09111c"
+                border.color: diskInput.activeFocus ? root.accent : root.border
+                border.width: 1
+            }
+        }
+    }
+
+    component OptionPill: Rectangle {
+        id: pill
+        property string label: ""
+        property bool selected: false
+        property bool enabled: true
+        property bool danger: false
+        signal picked()
+
+        Layout.preferredHeight: 34
+        radius: 8
+        color: selected ? (danger ? "#351922" : "#19304a") : "#09111c"
+        border.color: selected ? (danger ? root.danger : root.accent) : root.border
+        opacity: enabled ? 1.0 : 0.45
+
+        Text {
+            anchors.centerIn: parent
+            width: parent.width - 14
+            text: pill.label
+            color: pill.danger ? root.danger : root.textPrimary
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
+            font.family: root.uiFont
+            font.pixelSize: 12
+            font.bold: true
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: pill.enabled && !root.backend.busy
+            onClicked: pill.picked()
         }
     }
 

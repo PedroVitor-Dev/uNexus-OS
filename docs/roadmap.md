@@ -44,6 +44,7 @@ Project website: <https://unexus-os.vercel.app>
 - [x] Game Settings starts real Flatpak installs for supported launchers
 - [x] `unexusctl`, `unexus-doctor`, `PKGBUILD`, `.desktop` and session files exist
 - [x] Bootable `ISO/0.0.2` Archiso live profile exists with Hyprland, uNexus Shell, autologin, Flatpak, GameMode, MangoHud, Vulkan tools, Polkit agent, fonts, recovery utilities and a native disk installer backend
+- [x] Minimal native Qt/QML disk-install UI exists in `unexus-installer`, calling `scripts/install-os.sh` for preview and destructive install
 - [x] USB writer exists with target validation and explicit erase confirmation
 - [x] ISO visual baseline includes icon themes, Qt SVG/imageformats, desktop/MIME metadata, font fallbacks and Qt/GTK/cursor session defaults
 
@@ -264,7 +265,7 @@ Project website: <https://unexus-os.vercel.app>
 **Goal:** turn the bootable prototype into something testers can install and report on.
 
 - [x] **UI:** Create graphical installer in Qt6/QML or themed Calamares; Qt/QML shell installer exists, Calamares is not integrated
-- [~] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers; native disk backend handles UEFI/systemd-boot, while graphical disk partitioning is still pending
+- [~] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers; native disk backend handles UEFI/systemd-boot and the Qt/QML installer can call it, while graphical disk picking and partition review are still pending
 - [ ] **Innovation:** **uNexus Migration Tool:** detect existing Windows/Linux installs and import Steam saves, game lists and app settings where possible
 - [x] **UI:** Create post-install welcome flow with quick action cards
 - [x] **Feature:** Add stable/beta update channel selection in Settings > About
@@ -272,7 +273,7 @@ Project website: <https://unexus-os.vercel.app>
 
 ### Exit Criteria - Phase 10
 
-- [~] External testers can install through guarded scripts; a complete no-terminal graphical disk install is still pending
+- [~] External testers can install through the minimal native graphical installer or guarded scripts; disk picker, partition review and recorded VM install passes are still pending
 - [ ] At least one common game path works after clean install
 - [ ] Bugs can be reported and reproduced
 - [ ] Project has a repeatable release process

@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Startup loading screen with animated uNexus logo while shell backends finish initialization.
 - Actionable notification queue with Open, Dismiss, Silence 1h, clear controls and configurable timeout persistence.
 - Installation milestone status document covering packaging, ISO installer, sessions, VM/hardware validation and First Setup readiness.
+- Minimal native Qt/QML disk-install UI in `unexus-installer` that previews and executes `scripts/install-os.sh` through `pkexec`.
+- QEMU UEFI smoke-test result record under `docs/test-results/20260615-qemu.md`.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.

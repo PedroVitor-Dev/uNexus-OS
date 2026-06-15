@@ -120,7 +120,8 @@ The selected installer experience is graphical and double-click friendly:
 - use Flatpak behind the installer for user applications where appropriate;
 - keep `scripts/setup.sh` for development and local repair installs;
 - use the existing `ISO/0.0.2` Archiso profile as the current live image foundation;
-- use `scripts/install-os.sh` as the guarded native disk installer backend while the graphical disk flow is built;
+- use `unexus-installer` as the minimal Qt/QML disk-install UI for previewing and executing `scripts/install-os.sh`;
+- use `scripts/install-os.sh` as the guarded native disk installer backend;
 - keep Calamares as a future option, not the current installer path.
 
 See [installer-technology.md](installer-technology.md) for the decision record.
@@ -238,7 +239,9 @@ sudo sh ISO/0.0.2/write-usb.sh /dev/sdX
 
 Use the whole USB disk, not a partition. The writer shows the target and requires typing `WRITE` before erasing it.
 
-Install the live system to a disk by previewing the native installer plan:
+Install the live system to a disk from the graphical path by opening `uNexus Installer`, choosing `Install uNexus OS to disk`, entering the whole target disk and pressing `Preview plan`. The destructive action is `Erase and install`, which calls the same guarded backend through `pkexec`.
+
+The terminal backend remains available for direct testing. Preview the native installer plan:
 
 ```bash
 sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone America/Fortaleza

@@ -216,9 +216,10 @@ uNexus targets a graphical, double-click installer experience.
 - Arch packages and `pacman` remain the native backend.
 - Flatpak can power friendly user-app installs.
 - `scripts/setup.sh` remains the development/local repair installer.
-- `scripts/install-os.sh` is the current guarded native disk installer backend for UEFI/systemd-boot installs.
+- `unexus-installer` now exposes a minimal graphical disk-install flow that previews and executes `scripts/install-os.sh`.
+- `scripts/install-os.sh` remains the guarded native disk installer backend for UEFI/systemd-boot installs.
 - `ISO/0.0.2` is the current `archiso` live image foundation.
-- Calamares is not integrated yet; the current disk-install path is native script backend plus Qt/QML shell installer.
+- Calamares is not integrated yet; the current disk-install path is the uNexus Qt/QML installer calling the native script backend.
 
 See [docs/installer-technology.md](docs/installer-technology.md).
 

@@ -64,6 +64,11 @@ bool InstallerBackend::setupAvailable() const
            QFileInfo::exists(scriptPath(QStringLiteral("uninstall.sh")));
 }
 
+bool InstallerBackend::diskInstallAvailable() const
+{
+    return QFileInfo::exists(scriptPath(QStringLiteral("install-os.sh")));
+}
+
 bool InstallerBackend::diagnosticsAvailable() const
 {
     return !QStandardPaths::findExecutable(QStringLiteral("unexus-doctor")).isEmpty() ||
@@ -73,6 +78,11 @@ bool InstallerBackend::diagnosticsAvailable() const
 bool InstallerBackend::canInstall() const
 {
     return pkexecAvailable() && setupAvailable();
+}
+
+bool InstallerBackend::canDiskInstall() const
+{
+    return pkexecAvailable() && diskInstallAvailable() && !m_diskTarget.trimmed().isEmpty();
 }
 
 int InstallerBackend::progress() const
@@ -109,13 +119,19 @@ QVariantList InstallerBackend::readinessChecks() const
                         setupAvailable() ? QStringLiteral("user, bootloader, Hyprland, Flathub, GameMode and launchers available")
                                          : QStringLiteral("provisioning script missing"),
                         setupAvailable() ? QStringLiteral("ready") : QStringLiteral("blocked"));
+    checks << checkItem(QStringLiteral("Disk installer"),
+                        diskInstallAvailable() ? QStringLiteral("native install-os backend available")
+                                               : QStringLiteral("install-os.sh missing"),
+                        diskInstallAvailable() ? QStringLiteral("ready") : QStringLiteral("blocked"));
     return checks;
 }
 
 QVariantList InstallerBackend::installSteps() const
 {
     const bool installing = m_busy && (m_currentAction == QStringLiteral("install") ||
-                                      m_currentAction == QStringLiteral("repair"));
+                                      m_currentAction == QStringLiteral("repair") ||
+                                      m_currentAction == QStringLiteral("disk-preview") ||
+                                      m_currentAction == QStringLiteral("disk-install"));
 
     QVariantList steps;
     steps << stepItem(QStringLiteral("Authorize"),
@@ -133,6 +149,9 @@ QVariantList InstallerBackend::installSteps() const
     steps << stepItem(QStringLiteral("Bootloader"),
                       QStringLiteral("Prepare safe uNexus boot defaults and write a systemd-boot entry when detected."),
                       installing ? QStringLiteral("running") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
+    steps << stepItem(QStringLiteral("Disk backend"),
+                      QStringLiteral("Preview or execute install-os.sh for full OS installs."),
+                      m_currentAction == QStringLiteral("disk-preview") || m_currentAction == QStringLiteral("disk-install") ? QStringLiteral("running") : QStringLiteral("pending"));
     steps << stepItem(QStringLiteral("Validate"),
                       QStringLiteral("Run uNexus Doctor and initialize user state."),
                       m_busy ? QStringLiteral("pending") : (m_installed ? QStringLiteral("done") : QStringLiteral("pending")));
@@ -203,6 +222,32 @@ void InstallerBackend::uninstall()
               {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("uninstall.sh"))});
 }
 
+void InstallerBackend::previewDiskInstall()
+{
+    if (!canDiskInstall()) {
+        setStatus(QStringLiteral("Disk install unavailable"),
+                  QStringLiteral("Choose a target disk and make sure pkexec and install-os.sh are available."));
+        return;
+    }
+
+    QStringList command = {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("install-os.sh"))};
+    command << diskInstallArguments(false);
+    runAction(QStringLiteral("disk-preview"), QStringLiteral("Previewing disk install"), command);
+}
+
+void InstallerBackend::installDisk()
+{
+    if (!canDiskInstall()) {
+        setStatus(QStringLiteral("Disk install unavailable"),
+                  QStringLiteral("Choose a target disk and make sure pkexec and install-os.sh are available."));
+        return;
+    }
+
+    QStringList command = {QStringLiteral("pkexec"), QStringLiteral("sh"), scriptPath(QStringLiteral("install-os.sh"))};
+    command << diskInstallArguments(true);
+    runAction(QStringLiteral("disk-install"), QStringLiteral("Installing uNexus OS"), command);
+}
+
 void InstallerBackend::refresh()
 {
     const bool wasInstalled = m_installed;
@@ -213,6 +258,7 @@ void InstallerBackend::refresh()
         emit installedChanged();
 
     emit prerequisitesChanged();
+    emit diskOptionsChanged();
     emit progressChanged();
     emit installStepsChanged();
 }
@@ -251,6 +297,12 @@ void InstallerBackend::processFinished(int exitCode, QProcess::ExitStatus exitSt
         if (finishedAction == QStringLiteral("diagnose")) {
             setStatus(QStringLiteral("Diagnostics complete"),
                       QStringLiteral("Diagnostics finished without reported failures."));
+        } else if (finishedAction == QStringLiteral("disk-preview")) {
+            setStatus(QStringLiteral("Disk plan ready"),
+                      QStringLiteral("Review the plan and only execute when the target disk is correct."));
+        } else if (finishedAction == QStringLiteral("disk-install")) {
+            setStatus(QStringLiteral("Disk install complete"),
+                      QStringLiteral("uNexus OS was installed to the selected disk."));
         } else if (finishedAction == QStringLiteral("uninstall")) {
             setStatus(QStringLiteral("uNexus removed"),
                       QStringLiteral("The local shell session and launcher entries were removed."));
@@ -296,7 +348,9 @@ void InstallerBackend::runAction(const QString &action, const QString &title, co
         return;
     }
 
-    if (!setupAvailable() && action != QStringLiteral("diagnose")) {
+    const bool diskAction = action == QStringLiteral("disk-preview") || action == QStringLiteral("disk-install");
+
+    if (!setupAvailable() && action != QStringLiteral("diagnose") && !diskAction) {
         setStatus(QStringLiteral("Installer files missing"),
                   QStringLiteral("Run this installer from a complete uNexus repository checkout."));
         return;
@@ -304,7 +358,8 @@ void InstallerBackend::runAction(const QString &action, const QString &title, co
 
     if ((action == QStringLiteral("install") ||
          action == QStringLiteral("repair") ||
-         action == QStringLiteral("uninstall")) && !pkexecAvailable()) {
+         action == QStringLiteral("uninstall") ||
+         diskAction) && !pkexecAvailable()) {
         setStatus(QStringLiteral("pkexec unavailable"),
                   QStringLiteral("Install polkit or use sudo sh scripts/setup.sh from a terminal."));
         return;
@@ -400,6 +455,89 @@ void InstallerBackend::setConfigureBootloader(bool enabled)
     emit optionsChanged();
 }
 
+QString InstallerBackend::diskTarget() const { return m_diskTarget; }
+QString InstallerBackend::diskUsername() const { return m_diskUsername; }
+QString InstallerBackend::diskHostname() const { return m_diskHostname; }
+QString InstallerBackend::diskTimezone() const { return m_diskTimezone; }
+QString InstallerBackend::diskLocale() const { return m_diskLocale; }
+QString InstallerBackend::diskKeymap() const { return m_diskKeymap; }
+QString InstallerBackend::diskFilesystem() const { return m_diskFilesystem; }
+QString InstallerBackend::diskNetworkMode() const { return m_diskNetworkMode; }
+
+void InstallerBackend::setDiskTarget(const QString &target)
+{
+    const QString normalized = target.trimmed();
+    if (m_diskTarget == normalized)
+        return;
+    m_diskTarget = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskUsername(const QString &username)
+{
+    const QString normalized = username.trimmed().isEmpty() ? QStringLiteral("unexus") : username.trimmed();
+    if (m_diskUsername == normalized)
+        return;
+    m_diskUsername = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskHostname(const QString &hostname)
+{
+    const QString normalized = hostname.trimmed().isEmpty() ? QStringLiteral("unexus-os") : hostname.trimmed();
+    if (m_diskHostname == normalized)
+        return;
+    m_diskHostname = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskTimezone(const QString &timezone)
+{
+    const QString normalized = timezone.trimmed().isEmpty() ? QStringLiteral("UTC") : timezone.trimmed();
+    if (m_diskTimezone == normalized)
+        return;
+    m_diskTimezone = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskLocale(const QString &locale)
+{
+    const QString normalized = locale.trimmed().isEmpty() ? QStringLiteral("en_US.UTF-8") : locale.trimmed();
+    if (m_diskLocale == normalized)
+        return;
+    m_diskLocale = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskKeymap(const QString &keymap)
+{
+    const QString normalized = keymap.trimmed().isEmpty() ? QStringLiteral("us") : keymap.trimmed();
+    if (m_diskKeymap == normalized)
+        return;
+    m_diskKeymap = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskFilesystem(const QString &filesystem)
+{
+    const QString normalized = filesystem == QStringLiteral("ext4") ? QStringLiteral("ext4") : QStringLiteral("btrfs");
+    if (m_diskFilesystem == normalized)
+        return;
+    m_diskFilesystem = normalized;
+    emit diskOptionsChanged();
+}
+
+void InstallerBackend::setDiskNetworkMode(const QString &mode)
+{
+    QString normalized = mode;
+    if (normalized != QStringLiteral("offline") && normalized != QStringLiteral("online"))
+        normalized = QStringLiteral("auto");
+    if (m_diskNetworkMode == normalized)
+        return;
+    m_diskNetworkMode = normalized;
+    emit diskOptionsChanged();
+}
+
 QVariantMap InstallerBackend::checkItem(const QString &label, const QString &value, const QString &status) const
 {
     QVariantMap item;
@@ -416,6 +554,32 @@ QVariantMap InstallerBackend::stepItem(const QString &label, const QString &deta
     item.insert(QStringLiteral("detail"), detail);
     item.insert(QStringLiteral("status"), status);
     return item;
+}
+
+QStringList InstallerBackend::diskInstallArguments(bool execute) const
+{
+    QStringList args = {
+        QStringLiteral("--target"), m_diskTarget.trimmed(),
+        QStringLiteral("--username"), m_diskUsername,
+        QStringLiteral("--hostname"), m_diskHostname,
+        QStringLiteral("--timezone"), m_diskTimezone,
+        QStringLiteral("--locale"), m_diskLocale,
+        QStringLiteral("--keymap"), m_diskKeymap,
+        QStringLiteral("--filesystem"), m_diskFilesystem
+    };
+
+    if (m_installGamingLaunchers)
+        args << QStringLiteral("--gaming-launchers");
+
+    if (m_diskNetworkMode == QStringLiteral("offline"))
+        args << QStringLiteral("--offline");
+    else if (m_diskNetworkMode == QStringLiteral("online"))
+        args << QStringLiteral("--online");
+
+    if (execute)
+        args << QStringLiteral("--execute") << QStringLiteral("--confirm") << QStringLiteral("ERASE-AND-INSTALL");
+
+    return args;
 }
 
 bool InstallerBackend::commandExists(const QString &command)

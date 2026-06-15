@@ -13,9 +13,9 @@ Status legend:
 | Planned window | Milestone | Status | Current state |
 |---|---|---:|---|
 | Week 1-2 | Create `PKGBUILD` for `unexus-shell` and CMake install target | `[x]` | `packaging/arch/PKGBUILD` builds through CMake and `packages/unexus-shell/CMakeLists.txt` installs binaries, sessions, desktop entries, scripts, assets and systemd service files. |
-| Week 2-3 | Integrate Calamares in the ISO with partitioning, user creation and bootloader | `[~]` | Calamares is not integrated. A guarded native backend exists in `scripts/install-os.sh` for UEFI/systemd-boot installs with disk partitioning, user setup and provisioning. |
+| Week 2-3 | Integrate Calamares in the ISO with partitioning, user creation and bootloader | `[~]` | Calamares is not integrated. A guarded native backend exists in `scripts/install-os.sh`, and `unexus-installer` now has a minimal Qt/QML disk-install UI for previewing and executing that backend. |
 | Week 3-4 | Create `.desktop` entry and uNexus session file | `[x]` | Shell and installer desktop entries exist under `packaging/linux`; `uNexus` and `uNexus Recovery` session files are installed to `wayland-sessions`. |
-| Week 4-5 | Test install in VM first, then real hardware | `[~]` | QEMU smoke-test scripts and release validation exist. A checked-in record of current VM/hardware pass results is still missing. |
+| Week 4-5 | Test install in VM first, then real hardware | `[~]` | QEMU smoke-test scripts and release validation exist. `docs/test-results/20260615-qemu.md` records the current attempted UEFI run, blocked on Windows before VM startup because `sh` is unavailable. |
 | Week 5-6 | First Setup Panel appears on first login after install | `[x]` | `Main.qml` opens `FirstSetupPanel` after login when `userSettings.firstSetupCompleted` is false; provisioning seeds first-setup defaults. |
 
 ## Detailed Notes
@@ -62,7 +62,8 @@ Implemented:
 Not implemented:
 
 - Calamares is not integrated in the ISO.
-- No graphical disk partitioning flow yet.
+- Minimal graphical disk-install controls exist in `unexus-installer` and call `scripts/install-os.sh` through `pkexec`.
+- No graphical disk picker or advanced partitioning review yet.
 - No GRUB path yet; current supported bootloader path is systemd-boot.
 - No checked-in automated destructive install test result yet.
 
@@ -108,7 +109,7 @@ Implemented:
 
 Still needed:
 
-- Run and record a successful QEMU BIOS/UEFI pass for the current commit.
+- Run and record a successful QEMU BIOS/UEFI pass for the current commit on an Arch host.
 - Run and record a full install test in a disposable VM.
 - Run and record hardware validation on at least one AMD/Intel and one NVIDIA path before calling the ISO safe for testers.
 
@@ -134,4 +135,3 @@ Still needed:
 
 - Add a pre-desktop readiness gate if the desired UX is to block the desktop until essential post-install checks complete.
 - Add automated UI coverage for the first-login path.
-
