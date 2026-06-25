@@ -26,6 +26,7 @@
 #include "filemanager.h"
 #include "globalshortcuts.h"
 #include "gpudrivermanager.h"
+#include "commandrunner.h"
 
 namespace {
 
@@ -247,7 +248,7 @@ void runAssetCapture(QGuiApplication &app, QObject *root, QQuickWindow *window, 
     auto captureNext = std::make_shared<std::function<void()>>();
     *captureNext = [=, &app]() mutable {
         if (*index >= scenes.size()) {
-            captureVideo(root, window, { "desktop", "launcher", "files", "settings", "game-settings" },
+            captureVideo(root, window, { "desktop", "launcher", "files", "terminal", "settings", "game-settings" },
                          QDir(outputDir).filePath("videos/unexus-shell-tour.avi"), 12, 12, [=, &app]() {
                 captureVideo(root, window, { "desktop", "files", "settings", "first-setup" },
                              QDir(outputDir).filePath("videos/unexus-panels.avi"), 12, 14, [&app]() {
@@ -291,6 +292,7 @@ int main(int argc, char *argv[]) {
     FileManager fileManager;
     GlobalShortcuts globalShortcuts;
     GpuDriverManager gpuDriverManager;
+    CommandRunner commandRunner;
 
     engine.rootContext()->setContextProperty("systemInfo", &systemInfo);
     engine.rootContext()->setContextProperty("gameMode", &gameMode);
@@ -300,6 +302,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("fileManager", &fileManager);
     engine.rootContext()->setContextProperty("globalShortcuts", &globalShortcuts);
     engine.rootContext()->setContextProperty("gpuDriverManager", &gpuDriverManager);
+    engine.rootContext()->setContextProperty("commandRunner", &commandRunner);
 
     engine.load(QUrl(QStringLiteral("qrc:/UNexusShell/qml/Main.qml")));
 

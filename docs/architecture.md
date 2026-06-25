@@ -8,7 +8,7 @@ This document describes the current technical architecture of uNexus.
 
 uNexus is a Linux gaming desktop shell built on top of Wayland and Hyprland.
 
-The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats, file actions, global shortcut commands and persistent user settings.
+The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats, file actions, command execution, global shortcut commands and persistent user settings.
 
 Around the shell there is a small OS support layer:
 
@@ -62,6 +62,7 @@ Around the shell there is a small OS support layer:
 | `userSettings` | `UserSettings` | Persistent shell preferences |
 | shortcut command bridge | `GlobalShortcuts` | Hyprland-triggered command bridge for global shortcuts |
 | `fileManager` | `FileManager` | Local file navigation and file actions |
+| `commandRunner` | `CommandRunner` | Internal uNexus CMD command execution backend |
 
 The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `SettingsPanel.qml`, `GameSettingsPanel.qml`, `FirstSetupPanel.qml`, `FilesPanel.qml` and `FpsOverlay.qml`.
 
@@ -87,12 +88,15 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - Game Settings;
 - First Setup;
 - uNexus Files;
+- uNexus CMD;
 - shared brand logo resource;
 - global shortcut command dispatch.
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
-Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus Settings and Game Settings report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
+Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus CMD, uNexus Settings and Game Settings report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
+
+The desktop surface is intentionally clean by default. `DesktopArea.qml` still provides click selection, context-menu handling and rubber-band selection, but `Main.qml` does not pin desktop shortcut icons unless that metadata is reintroduced later.
 
 Dock icon behavior:
 

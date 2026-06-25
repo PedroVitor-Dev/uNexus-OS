@@ -20,6 +20,7 @@ qt_add_executable(unexus-shell
     src/filemanager.cpp
     src/globalshortcuts.cpp
     src/gpudrivermanager.cpp
+    src/commandrunner.cpp
     include/systeminfo.h
     include/gamemode.h
     include/applauncher.h
@@ -28,6 +29,7 @@ qt_add_executable(unexus-shell
     include/filemanager.h
     include/globalshortcuts.h
     include/gpudrivermanager.h
+    include/commandrunner.h
 )
 
 qt_add_executable(unexus-installer
@@ -60,6 +62,7 @@ qt_add_qml_module(unexus-shell
         qml/FirstSetupPanel.qml
         qml/GpuDriverPanel.qml
         qml/FilesPanel.qml
+        qml/TerminalPanel.qml
         qml/PanelStateView.qml
         qml/StatusChip.qml
         qml/ControlButton.qml

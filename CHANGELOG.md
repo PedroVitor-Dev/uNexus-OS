@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Minimal native Qt/QML disk-install UI in `unexus-installer` that previews and executes `scripts/install-os.sh` through `pkexec`.
 - Disk install screen with detected disk selection, first-user configuration and visible install progress.
 - QEMU UEFI smoke-test result record under `docs/test-results/20260615-qemu.md`.
+- Internal `uNexus CMD` terminal panel with command output, history, `cd`, `clear`, stop control and dock integration.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.
@@ -67,11 +68,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Shell session packaging now includes stronger logging/recovery behavior.
 - `uNexus Recovery` now starts the recovery TUI instead of a plain terminal-only fallback.
 - Visual language is now documented through tokenized spacing, typography, surfaces and motion.
+- Desktop shortcuts are no longer shown by default, keeping the desktop surface clean while preserving wallpaper, context menu and selection behavior.
+- The system dock terminal entry now opens the internal `uNexus CMD` panel instead of depending on an external terminal app.
 
 ### Removed
 - Old tracked screenshots and demo GIFs with previous branding.
 - OS Provisioning checklist from uNexus Settings.
 - First Setup dock item from the system dock.
+- Default desktop shortcut icons.
 
 ### Planned
 - `unexusctl provision` profiles with dry-run support.

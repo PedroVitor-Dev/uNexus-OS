@@ -4,7 +4,7 @@ Main Qt6/QML desktop interface of uNexus.
 
 ## Current Scope
 
-`unexus-shell` owns the desktop wallpaper, top bar, side docks, launcher, Settings, Game Settings, uNexus Files, notifications, login flow, stats overlay and Hyprland-facing window controls.
+`unexus-shell` owns the desktop wallpaper, top bar, side docks, launcher, Settings, Game Settings, uNexus Files, uNexus CMD, notifications, login flow, stats overlay and Hyprland-facing window controls.
 
 Recent shell work includes:
 
@@ -13,6 +13,7 @@ Recent shell work includes:
 - Liquid Glass surfaces and spring motion;
 - Windows-style global shortcuts through `unexus-shell --shortcut`;
 - real Flatpak install actions for supported gaming launchers;
+- internal `uNexus CMD` terminal panel for shell commands;
 - richer uNexus Files actions, context menu and keyboard shortcuts;
 - installable `uNexus` and `uNexus Recovery` Wayland sessions.
 

@@ -121,6 +121,9 @@ Window {
         "Browser": "Navegador",
         "uNexus Settings": "Configurações uNexus",
         "Terminal": "Terminal",
+        "uNexus CMD": "uNexus CMD",
+        "uNexus CMD ready.": "uNexus CMD pronto.",
+        "Type commands below.": "Digite comandos abaixo.",
         "First Setup": "Configuração Inicial",
         "Steam": "Steam",
         "Lutris": "Lutris",
@@ -220,6 +223,9 @@ Window {
         "Prepare bug report": "Preparar relatorio de bug",
         "Reset": "Redefinir",
         "Apply": "Aplicar",
+        "Run": "Executar",
+        "Running": "Executando",
+        "Stop": "Parar",
         "Launcher": "Launcher",
         "Visible on desktop": "Visível na área de trabalho",
         "Hidden": "Oculto",
@@ -731,6 +737,9 @@ Window {
         firstSetup.visible = false
         firstSetup.opacity = 0.0
         firstSetup.dockActive = false
+        unexusTerminal.visible = false
+        unexusTerminal.opacity = 0.0
+        unexusTerminal.dockActive = false
 
         if (scene === "launcher") {
             unexusLauncher.show()
@@ -745,6 +754,8 @@ Window {
             gameSettings.show()
         } else if (scene === "first-setup") {
             firstSetup.show()
+        } else if (scene === "terminal") {
+            unexusTerminal.show()
         } else if (scene === "desktop-particle-drift") {
             setWallpaper("particle-drift", false)
         } else if (scene === "desktop-aurora-ice") {
@@ -822,7 +833,7 @@ Window {
         { icon: "files", fallbackIcon: "files", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
         { icon: "browser", fallbackIcon: "browser", iconNames: ["brave-browser", "brave", "com.brave.Browser"], label: "Browser", command: "brave-browser", args: [], flatpakId: "com.brave.Browser", windowClasses: ["brave-browser", "Brave-browser", "brave", "Brave", "com.brave.Browser"], processNames: ["brave", "brave-browser"] },
         { icon: "settings", fallbackIcon: "settings", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "uNexus Settings", internalAction: "settings" },
-        { icon: "terminal", fallbackIcon: "terminal", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "Terminal", command: "gnome-terminal", args: [], windowClasses: ["gnome-terminal", "Gnome-terminal"], processNames: ["gnome-terminal-server", "gnome-terminal"] }
+        { icon: "terminal", fallbackIcon: "terminal", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "uNexus CMD", internalAction: "terminal" }
     ]
 
     property var gameDockApps: [
@@ -832,7 +843,7 @@ Window {
         { icon: "bottles", fallbackIcon: "bottles", iconNames: ["com.usebottles.bottles", "bottles"], label: "Bottles", command: "bottles", args: [], flatpakId: "com.usebottles.bottles", windowClasses: ["bottles", "Bottles", "com.usebottles.bottles"], processNames: ["bottles"], gaming: true },
         { icon: "game-settings", fallbackIcon: "game-settings", iconNames: ["applications-games", "input-gaming", "preferences-desktop-gaming"], label: "Game Settings", internalAction: "gameSettings" }
     ]
-    property var desktopApps: systemDockApps.concat(gameDockApps)
+    property var desktopApps: []
     property int dockStateVersion: 0
     property int panelStateVersion: 0
     property int workspaceStateVersion: 0
@@ -980,6 +991,9 @@ Window {
         if (app.internalAction === "firstSetup")
             return panelDockState(firstSetup, stateVersion)
 
+        if (app.internalAction === "terminal")
+            return panelDockState(unexusTerminal, stateVersion)
+
         return ""
     }
 
@@ -1001,6 +1015,11 @@ Window {
 
     if (app.internalAction === "firstSetup") {
         firstSetup.show()
+        return
+    }
+
+    if (app.internalAction === "terminal") {
+        unexusTerminal.show()
         return
     }
 
@@ -1076,6 +1095,13 @@ Window {
             return
         }
 
+        if (app.internalAction === "terminal") {
+            unexusTerminal.hide()
+            root.panelStateVersion++
+            root.dockStateVersion++
+            return
+        }
+
         appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
         root.workspaceStateVersion++
         root.dockStateVersion++
@@ -1135,6 +1161,8 @@ Window {
                 gameSettings.visible ? gameSettings.hide() : gameSettings.show()
             else if (app.internalAction === "firstSetup")
                 firstSetup.visible ? firstSetup.hide() : firstSetup.show()
+            else if (app.internalAction === "terminal")
+                unexusTerminal.visible ? unexusTerminal.hide() : unexusTerminal.show()
 
             root.panelStateVersion++
             root.dockStateVersion++
@@ -2191,12 +2219,7 @@ Window {
         onOpenFilesRequested: unexusFiles.show()
         onOpenSettingsRequested: unexusSettings.show()
         onOpenGameSettingsRequested: gameSettings.show()
-        onOpenTerminalRequested: {
-            if (!appLauncher.launchFirstAvailable(["kitty", "alacritty", "gnome-terminal", "xterm"]))
-                notifCenter.send(root.tr("App not found"), root.trAppMessage("{app} is not installed.", "Terminal"), "TERM", root.tr("Open First Setup"), function() {
-                    firstSetup.show()
-                })
-        }
+        onOpenTerminalRequested: unexusTerminal.show()
         onRefreshShellRequested: root.refreshDesktopState()
     }
 
@@ -2266,6 +2289,16 @@ MouseArea {
         id: unexusFiles
         anchors.fill: parent
         z: 192
+        onDockActiveChanged: {
+            root.panelStateVersion++
+            root.dockStateVersion++
+        }
+    }
+
+    TerminalPanel {
+        id: unexusTerminal
+        anchors.fill: parent
+        z: 193
         onDockActiveChanged: {
             root.panelStateVersion++
             root.dockStateVersion++

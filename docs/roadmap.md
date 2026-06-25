@@ -26,10 +26,11 @@ Project website: <https://unexus-os.vercel.app>
 
 - [x] Qt6/QML shell running on Hyprland on real hardware
 - [x] Login screen with password, avatar and clock
-- [x] Selectable desktop area with shortcut icons and rubber-band selection
+- [x] Selectable desktop area with rubber-band selection; default shortcut icons are intentionally disabled
 - [x] Animated geometric wallpaper with particles
 - [x] Top bar with clock, network, battery and GameMode
 - [x] System dock and gaming dock with visual states
+- [x] Internal `uNexus CMD` terminal panel for shell commands without relying on an external terminal app
 - [x] Launcher with search, categories and Steam/Lutris/Heroic/Bottles detection
 - [x] CPU/GPU/RAM/TEMP overlay
 - [x] uNexus Settings and Game Settings prototypes
@@ -142,6 +143,7 @@ Project website: <https://unexus-os.vercel.app>
 - [ ] **Feature:** Add dock pin/unpin with persistence
 - [ ] **Innovation:** **Native Picture-in-Picture:** turn any window into a floating PiP through `Super+P`
 - [~] **UI:** Basic multi-monitor layout rules exist; full per-monitor configuration is still pending
+- [x] **Feature:** Add internal `uNexus CMD` terminal panel with dock and desktop context-menu integration
 - [ ] **Feature:** Detect monitors through `hyprctl monitors` and expose resolution, refresh rate, HDR status and primary-monitor settings
 - [ ] **Innovation:** **uNexus GameScreen:** dedicate a full monitor to a game and move the shell to another monitor automatically
 - [ ] **UI:** Add recent apps in Launcher, separated from search results
