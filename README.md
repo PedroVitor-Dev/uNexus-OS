@@ -300,6 +300,14 @@ Replace `/dev/sdX` with the whole USB disk, not a partition.
 
 The live image is expected to boot with the uNexus visual baseline already present: Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts, GTK dark defaults, Adwaita cursor settings and the First Setup checklist on first login.
 
+Regenerate README screenshots and preview videos in English:
+
+```bash
+sh scripts/capture-assets.sh
+```
+
+This builds `unexus-shell` and runs `unexus-shell --capture-assets assets`. Capture mode forces English UI text so the public screenshots stay consistent regardless of the saved local language.
+
 Prepare an optional local AI model:
 
 ```bash

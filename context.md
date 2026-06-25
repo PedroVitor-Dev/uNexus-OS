@@ -404,6 +404,12 @@ sudo sh ISO/0.0.2/build-iso.sh
 sh scripts/test-iso-vm.sh
 ```
 
+Regenerate public screenshots/videos in English:
+
+```bash
+sh scripts/capture-assets.sh
+```
+
 Steam launch option:
 
 ```bash

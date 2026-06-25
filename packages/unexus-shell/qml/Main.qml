@@ -743,6 +743,8 @@ Window {
     function captureSetScene(scene) {
         captureMode = true
         captureScene = scene
+        languageCode = "en"
+        localeVersion++
         startupLoading = false
         setWallpaper("unexus-core", false)
 

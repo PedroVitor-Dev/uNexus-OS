@@ -157,6 +157,32 @@ Default password: `1234` or blank.
 
 ---
 
+## Capture Screenshots
+
+Regenerate public screenshots and preview videos from the live shell UI:
+
+```bash
+cd ~/uNexus-OS
+sh scripts/capture-assets.sh
+```
+
+The helper builds `packages/unexus-shell` and runs:
+
+```bash
+packages/unexus-shell/build/unexus-shell --capture-assets assets
+```
+
+Capture mode forces English UI text, independent of the saved `QSettings` language. Generated files are written under:
+
+```text
+assets/screenshots/
+assets/videos/
+```
+
+Run this on Arch + Hyprland or another Linux desktop with Qt6 available. The Windows editing environment used in this workflow usually cannot regenerate these assets.
+
+---
+
 ## Rebuild After Updates
 
 For installed systems, use:

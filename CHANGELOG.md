@@ -54,6 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - AI privacy controls in Settings for opt-in local system context and opt-in disk history.
 - Explicit `setup-ai-model.sh` helper for local GGUF model installation and checksum-gated curated downloads.
 - First Setup controls for refreshing installed GGUF models and starting/stopping the local uNexus AI engine.
+- Screenshot/video capture helper that regenerates public assets in English.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.
@@ -76,6 +77,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The system dock terminal entry now opens the internal `uNexus CMD` panel instead of depending on an external terminal app.
 - Documentation now defines the uNexus AI threat model, local-only architecture and model lifecycle.
 - Optional uNexus AI history persistence now uses structured local JSON instead of plain text.
+- Asset capture mode now forces English UI text instead of using the saved local language.
 
 ### Removed
 - Old tracked screenshots and demo GIFs with previous branding.
