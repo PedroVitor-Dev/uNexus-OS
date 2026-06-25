@@ -31,7 +31,7 @@ llama-server on 127.0.0.1 + local .gguf model
 | Automatic model downloads | Models are never downloaded automatically. |
 | Unverified model downloads | `scripts/setup-ai-model.sh` refuses curated downloads without a pinned SHA-256. |
 | Silent system inspection | Hardware/system context is opt-in and defaults to disabled. |
-| Persistent chat logs | History is memory-only by default; disk persistence is opt-in. |
+| Persistent chat logs | History is memory-only by default; JSON disk persistence is opt-in. |
 
 ## Runtime Behavior
 
@@ -53,14 +53,20 @@ Settings > uNexus AI exposes:
 
 - `Let AI read system stats`: default off. When enabled, the prompt can include
   local CPU/RAM/GPU usage, GPU temperature availability and Game Mode state.
-- `Save AI chat history`: default off. When enabled, history is stored under
-  `~/.local/share/unexus/ai/history.txt` with owner-only permissions.
+- `Save AI chat history`: default off. When enabled, history is stored as
+  JSON under `~/.local/share/unexus/ai/history.json` with owner-only
+  permissions.
 - `Wipe AI history now`: clears in-memory history and removes the local history
   file.
 
+First Setup also includes a compact uNexus AI block. It refreshes the installed
+`.gguf` model list from `~/.local/share/unexus/ai/models`, cycles between
+installed models and starts or stops the local engine.
+
 ## Model Lifecycle
 
-No model is bundled by default in this MVP.
+No model is bundled by default in this MVP. First Setup only starts models that
+already exist locally.
 
 The user can either:
 

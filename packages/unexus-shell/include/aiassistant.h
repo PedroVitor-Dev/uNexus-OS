@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE void sendMessage(const QString &userText);
     Q_INVOKABLE void clearHistory();
     Q_INVOKABLE QString defaultModelDirectory() const;
+    Q_INVOKABLE QStringList installedModelPaths() const;
 
 signals:
     void readyChanged();
@@ -46,8 +47,10 @@ private:
     QString buildSystemPrompt() const;
     QString gatherLocalSystemContext() const;
     void processSseChunk(const QByteArray &chunk);
+    void loadHistoryIfEnabled();
     void persistHistoryIfEnabled() const;
     void removePersistedHistory() const;
+    QString historyFilePath() const;
 
     AIEngine *m_engine = nullptr;
     QNetworkAccessManager *m_net = nullptr;

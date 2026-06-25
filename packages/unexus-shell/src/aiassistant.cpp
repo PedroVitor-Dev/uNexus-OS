@@ -11,6 +11,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QStandardPaths>
@@ -33,6 +34,19 @@ AIAssistant::AIAssistant(SystemInfo *systemInfo, SystemStats *stats, GameMode *g
         setBusy(false);
     });
     connect(m_engine, &AIEngine::engineError, this, &AIAssistant::errorOccurred);
+    if (m_settings) {
+        connect(m_settings, &UserSettings::aiHistoryPersistenceEnabledChanged, this, [this]() {
+            if (m_settings->aiHistoryPersistenceEnabled()) {
+                if (m_history.isEmpty())
+                    loadHistoryIfEnabled();
+                else
+                    persistHistoryIfEnabled();
+            } else {
+                removePersistedHistory();
+            }
+        });
+    }
+    loadHistoryIfEnabled();
 }
 
 void AIAssistant::startEngine(const QString &modelPath)
@@ -114,6 +128,17 @@ void AIAssistant::clearHistory()
 QString AIAssistant::defaultModelDirectory() const
 {
     return QDir::home().absoluteFilePath(QStringLiteral(".local/share/unexus/ai/models"));
+}
+
+QStringList AIAssistant::installedModelPaths() const
+{
+    QDir dir(defaultModelDirectory());
+    const QStringList fileNames = dir.entryList(QStringList{QStringLiteral("*.gguf")}, QDir::Files, QDir::Name);
+    QStringList paths;
+    paths.reserve(fileNames.size());
+    for (const QString &fileName : fileNames)
+        paths << dir.absoluteFilePath(fileName);
+    return paths;
 }
 
 void AIAssistant::setReady(bool ready)
@@ -220,15 +245,64 @@ void AIAssistant::persistHistoryIfEnabled() const
 
     const QString dirPath = QDir::home().absoluteFilePath(QStringLiteral(".local/share/unexus/ai"));
     QDir().mkpath(dirPath);
-    QFile file(QDir(dirPath).absoluteFilePath(QStringLiteral("history.txt")));
+    QFile file(historyFilePath());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
         return;
 
+    QJsonArray items;
+    for (const QString &line : m_history) {
+        const bool assistant = line.startsWith(QStringLiteral("assistant: "));
+        const bool user = line.startsWith(QStringLiteral("user: "));
+        if (!assistant && !user)
+            continue;
+
+        items.append(QJsonObject{
+            {QStringLiteral("role"), assistant ? QStringLiteral("assistant") : QStringLiteral("user")},
+            {QStringLiteral("content"), assistant ? line.mid(11) : line.mid(6)}
+        });
+    }
+
     file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
-    file.write(m_history.join(QStringLiteral("\n")).toUtf8());
+    file.write(QJsonDocument(items).toJson(QJsonDocument::Indented));
 }
 
 void AIAssistant::removePersistedHistory() const
 {
+    QFile::remove(historyFilePath());
     QFile::remove(QDir::home().absoluteFilePath(QStringLiteral(".local/share/unexus/ai/history.txt")));
+}
+
+void AIAssistant::loadHistoryIfEnabled()
+{
+    if (!m_settings || !m_settings->aiHistoryPersistenceEnabled())
+        return;
+
+    QFile file(historyFilePath());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QJsonParseError parseError;
+    const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isArray())
+        return;
+
+    m_history.clear();
+    const QJsonArray items = document.array();
+    for (const QJsonValue &value : items) {
+        const QJsonObject item = value.toObject();
+        const QString role = item.value(QStringLiteral("role")).toString();
+        const QString content = item.value(QStringLiteral("content")).toString().trimmed();
+        if (content.isEmpty())
+            continue;
+
+        if (role == QStringLiteral("assistant"))
+            m_history.append(QStringLiteral("assistant: ") + content);
+        else if (role == QStringLiteral("user"))
+            m_history.append(QStringLiteral("user: ") + content);
+    }
+}
+
+QString AIAssistant::historyFilePath() const
+{
+    return QDir::home().absoluteFilePath(QStringLiteral(".local/share/unexus/ai/history.json"));
 }

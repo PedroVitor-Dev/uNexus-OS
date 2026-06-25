@@ -31,7 +31,7 @@ Project website: <https://unexus-os.vercel.app>
 - [x] Top bar with clock, network, battery and GameMode
 - [x] System dock and gaming dock with visual states
 - [x] Internal `uNexus CMD` terminal panel for shell commands without relying on an external terminal app
-- [x] Privacy-first `uNexus AI` assistant MVP with local-only engine wrapper, streaming chat UI and opt-in context/history controls
+- [x] Privacy-first `uNexus AI` assistant MVP with local-only engine wrapper, streaming chat UI, JSON history opt-in and First Setup engine controls
 - [x] Launcher with search, categories and Steam/Lutris/Heroic/Bottles detection
 - [x] CPU/GPU/RAM/TEMP overlay
 - [x] uNexus Settings and Game Settings prototypes

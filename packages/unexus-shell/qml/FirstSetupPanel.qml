@@ -10,6 +10,8 @@ Item {
     property string errorMessage: ""
     property string unavailableMessage: ""
     property bool finishConfirming: false
+    property var aiModelPaths: []
+    property int aiModelIndex: 0
 
     function show() {
         hideAnim.stop()
@@ -20,6 +22,7 @@ Item {
         loading = false
         errorMessage = ""
         unavailableMessage = appLauncher.isInstalled("flatpak") ? "" : root.tr("Flatpak is unavailable, so launcher installs may not work yet.")
+        refreshAiModels()
         opacity = 0.0
         panel.scale = 0.985
         panelSlide.y = 14
@@ -82,6 +85,41 @@ Item {
         hide()
         settingsPanel.setSection("about")
         settingsPanel.show()
+    }
+
+    function refreshAiModels() {
+        aiModelPaths = AIAssistantBackend.installedModelPaths()
+        if (aiModelIndex >= aiModelPaths.length)
+            aiModelIndex = 0
+    }
+
+    function selectedAiModelPath() {
+        return aiModelPaths.length > 0 ? aiModelPaths[aiModelIndex] : ""
+    }
+
+    function selectedAiModelLabel() {
+        var path = selectedAiModelPath()
+        if (path.length === 0)
+            return root.tr("No local model found")
+        var parts = path.split("/")
+        return parts.length > 0 ? parts[parts.length - 1] : path
+    }
+
+    function cycleAiModel() {
+        refreshAiModels()
+        if (aiModelPaths.length === 0)
+            return
+        aiModelIndex = (aiModelIndex + 1) % aiModelPaths.length
+    }
+
+    function startSelectedAiModel() {
+        refreshAiModels()
+        var modelPath = selectedAiModelPath()
+        if (modelPath.length === 0) {
+            notifCenter.send(root.tr("uNexus AI"), root.tr("No local model found"), "AI")
+            return
+        }
+        AIAssistantBackend.startEngine(modelPath)
     }
 
     ParallelAnimation {
@@ -293,6 +331,72 @@ Item {
 
                     GpuDriverPanel {
                         width: parent.width
+                    }
+
+                    SetupSection {
+                        width: parent.width
+                        title: root.tr("uNexus AI")
+
+                        SetupHint {
+                            width: parent.width
+                            text: root.tr("Install a GGUF model with setup-ai-model.sh, then start the local engine here.")
+                        }
+
+                        SetupInfoRow {
+                            width: parent.width
+                            label: root.tr("AI model")
+                            value: firstSetup.selectedAiModelLabel()
+                        }
+
+                        Row {
+                            width: parent.width
+                            spacing: 8
+
+                            ControlButton {
+                                width: Math.floor((parent.width - 16) / 3)
+                                height: 34
+                                label: root.tr("Refresh models")
+                                variant: "subtle"
+                                fontFamily: root.uiFont
+                                accentColor: root.themeAccent
+                                motionDuration: root.motionQuick
+                                onClicked: firstSetup.refreshAiModels()
+                            }
+
+                            ControlButton {
+                                width: Math.floor((parent.width - 16) / 3)
+                                height: 34
+                                label: root.tr("Change model")
+                                variant: "subtle"
+                                fontFamily: root.uiFont
+                                accentColor: root.themeAccent
+                                motionDuration: root.motionQuick
+                                enabled: firstSetup.aiModelPaths.length > 1
+                                onClicked: firstSetup.cycleAiModel()
+                            }
+
+                            ControlButton {
+                                width: parent.width - Math.floor((parent.width - 16) / 3) * 2 - 16
+                                height: 34
+                                label: AIAssistantBackend.ready ? root.tr("Stop AI") : root.tr("Start AI")
+                                variant: AIAssistantBackend.ready ? "danger" : "primary"
+                                fontFamily: root.uiFont
+                                accentColor: root.themeAccent
+                                motionDuration: root.motionQuick
+                                onClicked: {
+                                    if (AIAssistantBackend.ready)
+                                        AIAssistantBackend.stopEngine()
+                                    else
+                                        firstSetup.startSelectedAiModel()
+                                }
+                            }
+                        }
+
+                        SetupCommandButton {
+                            width: parent.width
+                            label: root.tr("Open uNexus AI")
+                            action: "ai"
+                        }
                     }
 
                     SetupSection {
@@ -520,6 +624,10 @@ Item {
             }
             if (commandButton.action === "updates") {
                 firstSetup.openUpdateSettings()
+                return
+            }
+            if (commandButton.action === "ai") {
+                unexusAI.show()
                 return
             }
             if (commandButton.command.length === 0)

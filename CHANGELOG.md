@@ -53,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Privacy-first `uNexus AI` assistant MVP with local llama-server engine wrapper, streaming chat UI and no remote fallback.
 - AI privacy controls in Settings for opt-in local system context and opt-in disk history.
 - Explicit `setup-ai-model.sh` helper for local GGUF model installation and checksum-gated curated downloads.
+- First Setup controls for refreshing installed GGUF models and starting/stopping the local uNexus AI engine.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.
@@ -74,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Desktop shortcuts are no longer shown by default, keeping the desktop surface clean while preserving wallpaper, context menu and selection behavior.
 - The system dock terminal entry now opens the internal `uNexus CMD` panel instead of depending on an external terminal app.
 - Documentation now defines the uNexus AI threat model, local-only architecture and model lifecycle.
+- Optional uNexus AI history persistence now uses structured local JSON instead of plain text.
 
 ### Removed
 - Old tracked screenshots and demo GIFs with previous branding.

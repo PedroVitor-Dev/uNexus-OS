@@ -365,7 +365,7 @@ The previous OS Provisioning checklist was removed from Settings to keep the con
 
 Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The Hardware section shows GPU, VRAM, active driver, kernel, Mesa, recommended driver packages and the Driver Wizard controls. First Setup also embeds `GpuDriverPanel.qml`, backed by `GpuDriverManager`, to detect NVIDIA/AMD/Intel hardware during first login and offer the privileged driver action through `unexusctl` instead of raw terminal commands. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
 
-The uNexus AI Settings section exposes privacy defaults for the assistant. Reading local system stats is opt-in, disk history is opt-in, and wiping history removes both in-memory conversation state and the local history file.
+The uNexus AI Settings section exposes privacy defaults for the assistant. Reading local system stats is opt-in, disk history is opt-in, and wiping history removes both in-memory conversation state and the local JSON history file. First Setup can refresh installed GGUF models, select one from the local model directory and start or stop the local engine.
 
 ---
 
