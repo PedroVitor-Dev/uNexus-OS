@@ -265,6 +265,25 @@ Rectangle {
                     ctx.moveTo(width * 0.48, height * 0.7)
                     ctx.lineTo(width * 0.78, height * 0.7)
                     ctx.stroke()
+                } else if (dockButton.fallbackIcon === "ai") {
+                    ctx.beginPath()
+                    ctx.arc(width * 0.5, height * 0.5, width * 0.28, 0, Math.PI * 2)
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.arc(width * 0.4, height * 0.44, width * 0.035, 0, Math.PI * 2)
+                    ctx.arc(width * 0.6, height * 0.44, width * 0.035, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.beginPath()
+                    ctx.moveTo(width * 0.36, height * 0.6)
+                    ctx.quadraticCurveTo(width * 0.5, height * 0.68, width * 0.64, height * 0.6)
+                    ctx.stroke()
+                    for (var j = 0; j < 4; j++) {
+                        var b = Math.PI * 0.25 + j * Math.PI * 0.5
+                        ctx.beginPath()
+                        ctx.moveTo(width * 0.5 + Math.cos(b) * width * 0.34, height * 0.5 + Math.sin(b) * width * 0.34)
+                        ctx.lineTo(width * 0.5 + Math.cos(b) * width * 0.43, height * 0.5 + Math.sin(b) * width * 0.43)
+                        ctx.stroke()
+                    }
                 } else {
                     ctx.beginPath()
                     ctx.arc(width * 0.5, height * 0.5, width * 0.3, 0, Math.PI * 2)

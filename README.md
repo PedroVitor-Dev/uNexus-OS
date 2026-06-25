@@ -110,6 +110,7 @@ The current prototype manages:
 - system and gaming side docks with real icon lookup and drawn fallbacks;
 - app launcher with search, categories and installed/running/missing status chips;
 - uNexus Files with navigation, breadcrumbs, sorting, multi-select, clipboard actions, keyboard shortcuts and previews;
+- privacy-first uNexus AI assistant MVP that runs against a local model through loopback-only `llama-server`;
 - right-click desktop and file-manager context menus;
 - actionable notifications with queue controls, persistent notification preferences and stats overlay;
 - uNexus Settings control center with system, hardware, appearance, language, shortcuts, help and about sections;
@@ -164,6 +165,7 @@ Recent shipping focus:
 | Settings shortcuts/help | Shortcut customization, apply buttons, restore defaults and help panel are available |
 | Game launcher installs | Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles |
 | uNexus Files polish | Context menu, copy/cut/paste hotkeys, sorting, previews and layout fixes are in place |
+| uNexus AI | Local-only assistant MVP exists; model manager and sandboxed runtime are planned |
 | Visual language | Tokens now cover spacing, radius, typography, surfaces and motion |
 | Bootable ISO 0.0.2 | Archiso live profile with Hyprland, uNexus Shell, autologin, recovery modes, native disk installer backend and USB writer |
 | Session authentication | The normal session starts the KDE Polkit agent when available for graphical privilege prompts |
@@ -242,6 +244,7 @@ See [docs/installer-technology.md](docs/installer-technology.md).
 | Game Settings | `qml/GameSettingsPanel.qml` | Dashboard, MangoHud, GameMode and gaming launcher installs |
 | First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and dependency guidance |
 | uNexus Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, multi-select, copy/cut/paste, open, create folder, rename, previews and trash |
+| uNexus AI | `qml/AIAssistantPanel.qml`, `aiassistant.cpp`, `aiengine.cpp` | Local-only assistant UI, llama-server lifecycle and streaming chat |
 | Global shortcuts | `globalshortcuts.cpp`, `main.cpp` | Hyprland-triggered shortcut command bridge |
 | Session control | `packaging/linux/unexus-session`, `unexus-recovery-session`, `unexus-recovery-menu` | Normal session, recovery session and automatic TUI crash fallback |
 | Installer | `packages/unexus-installer` | Graphical Qt/QML installer wizard backed by setup, doctor and uninstall scripts |

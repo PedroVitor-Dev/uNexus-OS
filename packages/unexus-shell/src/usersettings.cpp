@@ -62,10 +62,14 @@ UserSettings::UserSettings(QObject *parent)
     m_notificationSilencedUntil = m_settings.value("notifications/silencedUntil", 0.0).toDouble();
     if (m_notificationSilencedUntil < 0.0)
         m_notificationSilencedUntil = 0.0;
+    m_aiSystemContextEnabled = m_settings.value("ai/systemContextEnabled", false).toBool();
+    m_aiHistoryPersistenceEnabled = m_settings.value("ai/historyPersistenceEnabled", false).toBool();
     if (m_controlCenterSection != "system" && m_controlCenterSection != "shortcuts" && m_controlCenterSection != "help" &&
         m_controlCenterSection != "hardware" &&
         m_controlCenterSection != "appearance" &&
-        m_controlCenterSection != "language" && m_controlCenterSection != "about")
+        m_controlCenterSection != "language" &&
+        m_controlCenterSection != "ai" &&
+        m_controlCenterSection != "about")
         m_controlCenterSection = "system";
 }
 
@@ -235,7 +239,9 @@ void UserSettings::setControlCenterSection(const QString &section)
     if (normalizedSection != "system" && normalizedSection != "shortcuts" && normalizedSection != "help" &&
         normalizedSection != "hardware" &&
         normalizedSection != "appearance" &&
-        normalizedSection != "language" && normalizedSection != "about")
+        normalizedSection != "language" &&
+        normalizedSection != "ai" &&
+        normalizedSection != "about")
         normalizedSection = "system";
 
     if (m_controlCenterSection == normalizedSection)
@@ -273,4 +279,24 @@ void UserSettings::setNotificationSilencedUntil(double silencedUntil)
     m_notificationSilencedUntil = silencedUntil;
     m_settings.setValue("notifications/silencedUntil", m_notificationSilencedUntil);
     emit notificationSilencedUntilChanged();
+}
+
+void UserSettings::setAiSystemContextEnabled(bool enabled)
+{
+    if (m_aiSystemContextEnabled == enabled)
+        return;
+
+    m_aiSystemContextEnabled = enabled;
+    m_settings.setValue("ai/systemContextEnabled", m_aiSystemContextEnabled);
+    emit aiSystemContextEnabledChanged();
+}
+
+void UserSettings::setAiHistoryPersistenceEnabled(bool enabled)
+{
+    if (m_aiHistoryPersistenceEnabled == enabled)
+        return;
+
+    m_aiHistoryPersistenceEnabled = enabled;
+    m_settings.setValue("ai/historyPersistenceEnabled", m_aiHistoryPersistenceEnabled);
+    emit aiHistoryPersistenceEnabledChanged();
 }

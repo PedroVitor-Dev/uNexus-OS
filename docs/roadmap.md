@@ -31,6 +31,7 @@ Project website: <https://unexus-os.vercel.app>
 - [x] Top bar with clock, network, battery and GameMode
 - [x] System dock and gaming dock with visual states
 - [x] Internal `uNexus CMD` terminal panel for shell commands without relying on an external terminal app
+- [x] Privacy-first `uNexus AI` assistant MVP with local-only engine wrapper, streaming chat UI and opt-in context/history controls
 - [x] Launcher with search, categories and Steam/Lutris/Heroic/Bottles detection
 - [x] CPU/GPU/RAM/TEMP overlay
 - [x] uNexus Settings and Game Settings prototypes
@@ -95,7 +96,7 @@ Project website: <https://unexus-os.vercel.app>
 - [ ] **Innovation:** **Settings Sync via Git:** export/import `.unexus-config.json` and optionally sync with a private Git repository
 - [ ] **UI:** Redesign First Setup as full product onboarding with step progress and persistent checklist state
 - [~] **Feature:** Add safe reset settings flow; `unexusctl reset-settings` exists, but Settings still needs the full visual flow and automatic backup
-- [ ] **Innovation:** **uNexus Copilot:** fully optional local AI assistant for shell settings, troubleshooting, localization help and guided configuration, using a local model when available and keeping prompts/files on-device by default
+- [~] **Innovation:** **uNexus Copilot:** fully optional local AI assistant for shell settings, troubleshooting, localization help and guided configuration; local engine/chat MVP exists, while sandboxing, model manager and tool calling are still planned
 
 ### Exit Criteria - Phase 2
 
@@ -103,6 +104,7 @@ Project website: <https://unexus-os.vercel.app>
 - [~] Game Settings prepares a gaming environment without guessing
 - [~] First Setup guides a clean machine toward a usable gaming setup
 - [~] Themes persist across restarts; profiles are still planned
+- [~] Local AI assistant keeps data on-device; sandboxed runtime and model manager are still planned
 
 ---
 

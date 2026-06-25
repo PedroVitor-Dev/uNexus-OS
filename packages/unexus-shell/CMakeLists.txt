@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 
 include(GNUInstallDirs)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Network)
 
 qt_add_executable(unexus-shell
     src/main.cpp
@@ -21,6 +21,8 @@ qt_add_executable(unexus-shell
     src/globalshortcuts.cpp
     src/gpudrivermanager.cpp
     src/commandrunner.cpp
+    src/aiengine.cpp
+    src/aiassistant.cpp
     include/systeminfo.h
     include/gamemode.h
     include/applauncher.h
@@ -30,6 +32,8 @@ qt_add_executable(unexus-shell
     include/globalshortcuts.h
     include/gpudrivermanager.h
     include/commandrunner.h
+    include/aiengine.h
+    include/aiassistant.h
 )
 
 qt_add_executable(unexus-installer
@@ -63,6 +67,8 @@ qt_add_qml_module(unexus-shell
         qml/GpuDriverPanel.qml
         qml/FilesPanel.qml
         qml/TerminalPanel.qml
+        qml/AIAssistantPanel.qml
+        qml/AIChatBubble.qml
         qml/PanelStateView.qml
         qml/StatusChip.qml
         qml/ControlButton.qml
@@ -115,6 +121,7 @@ target_link_libraries(unexus-shell PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
+    Qt6::Network
 )
 
 target_link_libraries(unexus-installer PRIVATE
@@ -155,6 +162,11 @@ install(PROGRAMS
     "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/unexusctl.sh"
     DESTINATION ${CMAKE_INSTALL_BINDIR}
     RENAME unexusctl
+)
+
+install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/setup-ai-model.sh"
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(FILES

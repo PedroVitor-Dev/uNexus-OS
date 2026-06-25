@@ -225,6 +225,7 @@ Item {
                         ControlNavButton { width: parent.width; label: root.tr("Hardware"); value: "hardware"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("Appearance"); value: "appearance"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("Language"); value: "language"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
+                        ControlNavButton { width: parent.width; label: root.tr("uNexus AI"); value: "ai"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                         ControlNavButton { width: parent.width; label: root.tr("About"); value: "about"; active: settingsPanel.activeSection === value; onClicked: settingsPanel.setSection(value) }
                     }
                 }
@@ -479,6 +480,30 @@ Item {
                             LanguageButton { label: "English"; active: root.languageCode === "en"; onClicked: root.setLanguage("en") }
                             LanguageButton { label: "Portugues"; active: root.languageCode === "pt-BR"; onClicked: root.setLanguage("pt-BR") }
                         }
+                    }
+
+                    SettingsSection {
+                        width: parent.width
+                        collapsed: settingsPanel.activeSection !== "ai"
+                        title: root.tr("AI Assistant")
+
+                        SettingsHint { width: parent.width; text: root.tr("Runs 100% locally. Nothing is sent to cloud services.") }
+                        SettingsToggle {
+                            width: parent.width
+                            label: root.tr("Let AI read system stats")
+                            detail: userSettings.aiSystemContextEnabled ? root.tr("GPU, driver and Game Mode context stay local.") : root.tr("AI system context disabled")
+                            checked: userSettings.aiSystemContextEnabled
+                            onClicked: userSettings.aiSystemContextEnabled = !userSettings.aiSystemContextEnabled
+                        }
+                        SettingsToggle {
+                            width: parent.width
+                            label: root.tr("Save AI chat history")
+                            detail: userSettings.aiHistoryPersistenceEnabled ? root.tr("Stored locally under your user profile.") : root.tr("History stays memory-only")
+                            checked: userSettings.aiHistoryPersistenceEnabled
+                            onClicked: userSettings.aiHistoryPersistenceEnabled = !userSettings.aiHistoryPersistenceEnabled
+                        }
+                        SettingsActionButton { width: parent.width; label: root.tr("Wipe AI history now"); onClicked: AIAssistantBackend.clearHistory() }
+                        SettingsActionButton { width: parent.width; label: root.tr("Open uNexus AI"); onClicked: unexusAI.show() }
                     }
 
                     SettingsSection {

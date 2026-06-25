@@ -124,6 +124,25 @@ Window {
         "uNexus CMD": "uNexus CMD",
         "uNexus CMD ready.": "uNexus CMD pronto.",
         "Type commands below.": "Digite comandos abaixo.",
+        "uNexus AI": "IA uNexus",
+        "100% local - no cloud, no telemetry": "100% local - sem nuvem, sem telemetria",
+        "Privacy status unavailable": "Status de privacidade indisponivel",
+        "Local GGUF model path": "Caminho do modelo GGUF local",
+        "Thinking locally...": "Pensando localmente...",
+        "Ask for driver help, gaming setup, recovery steps or shell guidance.": "Pergunte sobre drivers, setup gamer, recuperacao ou uso do shell.",
+        "Send": "Enviar",
+        "Start": "Iniciar",
+        "Ready": "Pronto",
+        "AI Assistant": "Assistente IA",
+        "Runs 100% locally. Nothing is sent to cloud services.": "Roda 100% localmente. Nada e enviado para servicos de nuvem.",
+        "Let AI read system stats": "Permitir que a IA leia stats do sistema",
+        "GPU, driver and Game Mode context stay local.": "Contexto de GPU, driver e Game Mode fica local.",
+        "AI system context disabled": "Contexto do sistema para IA desativado",
+        "Save AI chat history": "Salvar historico do chat IA",
+        "Stored locally under your user profile.": "Salvo localmente no seu perfil de usuario.",
+        "History stays memory-only": "Historico fica apenas em memoria",
+        "Wipe AI history now": "Apagar historico da IA agora",
+        "Open uNexus AI": "Abrir IA uNexus",
         "First Setup": "Configuração Inicial",
         "Steam": "Steam",
         "Lutris": "Lutris",
@@ -740,6 +759,9 @@ Window {
         unexusTerminal.visible = false
         unexusTerminal.opacity = 0.0
         unexusTerminal.dockActive = false
+        unexusAI.visible = false
+        unexusAI.opacity = 0.0
+        unexusAI.dockActive = false
 
         if (scene === "launcher") {
             unexusLauncher.show()
@@ -756,6 +778,8 @@ Window {
             firstSetup.show()
         } else if (scene === "terminal") {
             unexusTerminal.show()
+        } else if (scene === "ai") {
+            unexusAI.show()
         } else if (scene === "desktop-particle-drift") {
             setWallpaper("particle-drift", false)
         } else if (scene === "desktop-aurora-ice") {
@@ -833,6 +857,7 @@ Window {
         { icon: "files", fallbackIcon: "files", iconNames: ["system-file-manager", "org.gnome.Nautilus", "nautilus"], label: "uNexus Files", internalAction: "files" },
         { icon: "browser", fallbackIcon: "browser", iconNames: ["brave-browser", "brave", "com.brave.Browser"], label: "Browser", command: "brave-browser", args: [], flatpakId: "com.brave.Browser", windowClasses: ["brave-browser", "Brave-browser", "brave", "Brave", "com.brave.Browser"], processNames: ["brave", "brave-browser"] },
         { icon: "settings", fallbackIcon: "settings", iconNames: ["preferences-system", "org.gnome.Settings", "gnome-control-center"], label: "uNexus Settings", internalAction: "settings" },
+        { icon: "ai", fallbackIcon: "ai", iconNames: ["assistant", "applications-science", "help-about"], label: "uNexus AI", internalAction: "ai" },
         { icon: "terminal", fallbackIcon: "terminal", iconNames: ["utilities-terminal", "org.gnome.Terminal", "gnome-terminal"], label: "uNexus CMD", internalAction: "terminal" }
     ]
 
@@ -994,6 +1019,9 @@ Window {
         if (app.internalAction === "terminal")
             return panelDockState(unexusTerminal, stateVersion)
 
+        if (app.internalAction === "ai")
+            return panelDockState(unexusAI, stateVersion)
+
         return ""
     }
 
@@ -1020,6 +1048,11 @@ Window {
 
     if (app.internalAction === "terminal") {
         unexusTerminal.show()
+        return
+    }
+
+    if (app.internalAction === "ai") {
+        unexusAI.show()
         return
     }
 
@@ -1102,6 +1135,13 @@ Window {
             return
         }
 
+        if (app.internalAction === "ai") {
+            unexusAI.hide()
+            root.panelStateVersion++
+            root.dockStateVersion++
+            return
+        }
+
         appLauncher.closeApp(app.windowClasses || [], app.processNames || [])
         root.workspaceStateVersion++
         root.dockStateVersion++
@@ -1163,6 +1203,8 @@ Window {
                 firstSetup.visible ? firstSetup.hide() : firstSetup.show()
             else if (app.internalAction === "terminal")
                 unexusTerminal.visible ? unexusTerminal.hide() : unexusTerminal.show()
+            else if (app.internalAction === "ai")
+                unexusAI.visible ? unexusAI.hide() : unexusAI.show()
 
             root.panelStateVersion++
             root.dockStateVersion++
@@ -2299,6 +2341,16 @@ MouseArea {
         id: unexusTerminal
         anchors.fill: parent
         z: 193
+        onDockActiveChanged: {
+            root.panelStateVersion++
+            root.dockStateVersion++
+        }
+    }
+
+    AIAssistantPanel {
+        id: unexusAI
+        anchors.fill: parent
+        z: 194
         onDockActiveChanged: {
             root.panelStateVersion++
             root.dockStateVersion++

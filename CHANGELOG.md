@@ -50,6 +50,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Disk install screen with detected disk selection, first-user configuration and visible install progress.
 - QEMU UEFI smoke-test result record under `docs/test-results/20260615-qemu.md`.
 - Internal `uNexus CMD` terminal panel with command output, history, `cd`, `clear`, stop control and dock integration.
+- Privacy-first `uNexus AI` assistant MVP with local llama-server engine wrapper, streaming chat UI and no remote fallback.
+- AI privacy controls in Settings for opt-in local system context and opt-in disk history.
+- Explicit `setup-ai-model.sh` helper for local GGUF model installation and checksum-gated curated downloads.
 
 ### Changed
 - Documentation now treats the bootable ISO as an existing 0.0.2 foundation instead of a purely future path.
@@ -70,6 +73,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Visual language is now documented through tokenized spacing, typography, surfaces and motion.
 - Desktop shortcuts are no longer shown by default, keeping the desktop surface clean while preserving wallpaper, context menu and selection behavior.
 - The system dock terminal entry now opens the internal `uNexus CMD` panel instead of depending on an external terminal app.
+- Documentation now defines the uNexus AI threat model, local-only architecture and model lifecycle.
 
 ### Removed
 - Old tracked screenshots and demo GIFs with previous branding.

@@ -24,6 +24,8 @@ class UserSettings : public QObject
     Q_PROPERTY(QString controlCenterSection READ controlCenterSection WRITE setControlCenterSection NOTIFY controlCenterSectionChanged)
     Q_PROPERTY(int notificationTimeoutSeconds READ notificationTimeoutSeconds WRITE setNotificationTimeoutSeconds NOTIFY notificationTimeoutSecondsChanged)
     Q_PROPERTY(double notificationSilencedUntil READ notificationSilencedUntil WRITE setNotificationSilencedUntil NOTIFY notificationSilencedUntilChanged)
+    Q_PROPERTY(bool aiSystemContextEnabled READ aiSystemContextEnabled WRITE setAiSystemContextEnabled NOTIFY aiSystemContextEnabledChanged)
+    Q_PROPERTY(bool aiHistoryPersistenceEnabled READ aiHistoryPersistenceEnabled WRITE setAiHistoryPersistenceEnabled NOTIFY aiHistoryPersistenceEnabledChanged)
 
 public:
     explicit UserSettings(QObject *parent = nullptr);
@@ -45,6 +47,8 @@ public:
     QString controlCenterSection() const { return m_controlCenterSection; }
     int notificationTimeoutSeconds() const { return m_notificationTimeoutSeconds; }
     double notificationSilencedUntil() const { return m_notificationSilencedUntil; }
+    bool aiSystemContextEnabled() const { return m_aiSystemContextEnabled; }
+    bool aiHistoryPersistenceEnabled() const { return m_aiHistoryPersistenceEnabled; }
 
 public slots:
     void setThemeIndex(int themeIndex);
@@ -64,6 +68,8 @@ public slots:
     void setControlCenterSection(const QString &section);
     void setNotificationTimeoutSeconds(int seconds);
     void setNotificationSilencedUntil(double silencedUntil);
+    void setAiSystemContextEnabled(bool enabled);
+    void setAiHistoryPersistenceEnabled(bool enabled);
 
 signals:
     void themeIndexChanged();
@@ -83,6 +89,8 @@ signals:
     void controlCenterSectionChanged();
     void notificationTimeoutSecondsChanged();
     void notificationSilencedUntilChanged();
+    void aiSystemContextEnabledChanged();
+    void aiHistoryPersistenceEnabledChanged();
 
 private:
     QSettings m_settings;
@@ -103,4 +111,6 @@ private:
     QString m_controlCenterSection = "system";
     int m_notificationTimeoutSeconds = 7;
     double m_notificationSilencedUntil = 0.0;
+    bool m_aiSystemContextEnabled = false;
+    bool m_aiHistoryPersistenceEnabled = false;
 };

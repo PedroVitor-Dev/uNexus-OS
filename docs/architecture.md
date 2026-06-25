@@ -8,7 +8,7 @@ This document describes the current technical architecture of uNexus.
 
 uNexus is a Linux gaming desktop shell built on top of Wayland and Hyprland.
 
-The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats, file actions, command execution, global shortcut commands and persistent user settings.
+The current prototype is `unexus-shell`, a Qt6/QML application with C++ backends for system information, app launching, window control, Game Mode, stats, file actions, command execution, local AI assistance, global shortcut commands and persistent user settings.
 
 Around the shell there is a small OS support layer:
 
@@ -63,6 +63,7 @@ Around the shell there is a small OS support layer:
 | shortcut command bridge | `GlobalShortcuts` | Hyprland-triggered command bridge for global shortcuts |
 | `fileManager` | `FileManager` | Local file navigation and file actions |
 | `commandRunner` | `CommandRunner` | Internal uNexus CMD command execution backend |
+| `AIAssistantBackend` | `AIAssistant` | Local-only AI chat orchestration and streaming |
 
 The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `SettingsPanel.qml`, `GameSettingsPanel.qml`, `FirstSetupPanel.qml`, `FilesPanel.qml` and `FpsOverlay.qml`.
 
@@ -89,12 +90,15 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 - First Setup;
 - uNexus Files;
 - uNexus CMD;
+- uNexus AI;
 - shared brand logo resource;
 - global shortcut command dispatch.
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
 Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus CMD, uNexus Settings and Game Settings report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
+
+`uNexus AI` is also an internal dock app. It uses `AIAssistantPanel.qml` and the `AIAssistant`/`AIEngine` C++ backends to talk to a local `llama-server` process bound to `127.0.0.1` only. There is no remote AI fallback path.
 
 The desktop surface is intentionally clean by default. `DesktopArea.qml` still provides click selection, context-menu handling and rubber-band selection, but `Main.qml` does not pin desktop shortcut icons unless that metadata is reintroduced later.
 
@@ -360,6 +364,8 @@ The next architectural step is to add more structured provisioning profiles so f
 The previous OS Provisioning checklist was removed from Settings to keep the control center cleaner. System-level provisioning should return later through a safer backend such as `unexusctl provision` with manifests, dry-run output and explicit privilege boundaries.
 
 Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The Hardware section shows GPU, VRAM, active driver, kernel, Mesa, recommended driver packages and the Driver Wizard controls. First Setup also embeds `GpuDriverPanel.qml`, backed by `GpuDriverManager`, to detect NVIDIA/AMD/Intel hardware during first login and offer the privileged driver action through `unexusctl` instead of raw terminal commands. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
+
+The uNexus AI Settings section exposes privacy defaults for the assistant. Reading local system stats is opt-in, disk history is opt-in, and wiping history removes both in-memory conversation state and the local history file.
 
 ---
 
