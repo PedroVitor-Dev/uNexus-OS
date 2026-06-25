@@ -39,7 +39,7 @@ Implemented:
 Still needed:
 
 - Run a clean `makepkg` validation on a fresh Arch VM and record the result.
-- Add a release packaging helper that emits a final `.pkg.tar.zst` artifact for publishing.
+- Publish package artifacts from an Arch build host using `scripts/package-arch.sh` and record the result.
 
 ### Week 2-3: Calamares or Disk Installer
 

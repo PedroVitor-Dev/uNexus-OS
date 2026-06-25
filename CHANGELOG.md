@@ -36,6 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Windows-style rubber-band selection in uNexus Files list and grid views.
 - Selectable desktop area with shortcut icons, click selection, double-click launch and rubber-band selection.
 - uNexus Files preview engine for image, text, PDF and video previews without opening external apps.
+- Arch package release helper that emits package artifacts and a local pacman repository under `dist/arch`.
+- Distro implementation status document mapping the shell-to-ISO guide to repository state.
 - Hardware section in Settings showing GPU, VRAM, active driver, kernel and Mesa versions.
 - GPU detection through `lspci` with NVIDIA, AMD, Intel and virtual-driver recommendations.
 - uNexus Driver Wizard for guided GPU driver switching with boot-confirmed rollback protection.

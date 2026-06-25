@@ -181,10 +181,19 @@ cmake --build build
 
 The current bootable uNexus OS image profile lives in `ISO/0.0.2`.
 
+Build a publishable Arch package and local pacman repository:
+
+```bash
+cd ~/uNexus-OS
+sh scripts/package-arch.sh
+```
+
+The package helper writes packages to `dist/arch/packages/` and a local repository database to `dist/arch/repo/unexus.db.tar.gz`.
+
 Install Archiso tools on the build host:
 
 ```bash
-sudo pacman -S archiso base-devel rsync
+sudo pacman -S archiso base-devel rsync pacman-contrib
 ```
 
 Build the image:

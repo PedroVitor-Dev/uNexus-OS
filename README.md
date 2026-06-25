@@ -171,6 +171,7 @@ Recent shipping focus:
 
 For the full staged roadmap, see [docs/roadmap.md](docs/roadmap.md).
 For the current installation milestone audit, see [docs/milestone-status.md](docs/milestone-status.md).
+For the shell-to-distro implementation checklist, see [docs/distro-implementation-status.md](docs/distro-implementation-status.md).
 
 ---
 
