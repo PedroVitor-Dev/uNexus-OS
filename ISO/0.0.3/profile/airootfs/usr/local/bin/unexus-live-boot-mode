@@ -1,0 +1,79 @@
+#!/usr/bin/env sh
+set -eu
+
+cmdline="${UNEXUS_CMDLINE:-$(cat /proc/cmdline 2>/dev/null || true)}"
+state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+log_dir="${state_home}/unexus/logs"
+doctor_log="${log_dir}/live-doctor.log"
+
+has_flag() {
+    case " $cmdline " in
+        *" $1 "*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+log() {
+    printf '[uNexus live boot] %s\n' "$*"
+}
+
+run_doctor() {
+    mkdir -p "$log_dir"
+    log "running uNexus Doctor"
+
+    if command -v unexusctl >/dev/null 2>&1; then
+        unexusctl doctor > "$doctor_log" 2>&1 || true
+    elif command -v unexus-doctor >/dev/null 2>&1; then
+        unexus-doctor > "$doctor_log" 2>&1 || true
+    else
+        printf 'unexus-doctor was not found in PATH.\n' > "$doctor_log"
+    fi
+
+    cat "$doctor_log" || true
+    log "doctor log: $doctor_log"
+}
+
+rollback_settings() {
+    mkdir -p "$log_dir"
+
+    if command -v unexusctl >/dev/null 2>&1; then
+        log "rolling back latest settings backup"
+        unexusctl rollback >> "$doctor_log" 2>&1 || {
+            log "rollback unavailable; resetting settings"
+            unexusctl reset-settings >> "$doctor_log" 2>&1 || true
+        }
+    fi
+}
+
+enable_safe_graphics() {
+    log "enabling safe graphics environment"
+    export WLR_RENDERER_ALLOW_SOFTWARE=1
+    export LIBGL_ALWAYS_SOFTWARE=1
+    export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
+    export AQ_NO_MODIFIERS=1
+    export WLR_DRM_NO_ATOMIC=1
+    export QT_QUICK_BACKEND=software
+}
+
+if has_flag "unexus.rollback=1"; then
+    rollback_settings
+fi
+
+if has_flag "unexus.safe=1"; then
+    enable_safe_graphics
+fi
+
+if has_flag "unexus.doctor=1"; then
+    run_doctor
+    if [ -t 0 ]; then
+        printf '\nPress Enter to open recovery shell... '
+        read -r _answer || true
+    fi
+    exec unexus-recovery-menu
+fi
+
+if has_flag "unexus.recovery=1"; then
+    exec unexus-recovery-menu
+fi
+
+exec unexus-session

@@ -1,0 +1,63 @@
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.glow = Sprite(logo.image);
+
+brand.image = Image.Text("uNexus OS", 1, 1, 1);
+brand.sprite = Sprite(brand.image);
+
+status.image = Image.Text("Starting live system", 0.58, 0.64, 0.72);
+status.sprite = Sprite(status.image);
+
+progress.back.image = Image("progress-back.png");
+progress.back.sprite = Sprite(progress.back.image);
+progress.fill.image = Image("progress-fill.png");
+progress.fill.sprite = Sprite(progress.fill.image);
+
+fun remap(value, in_min, in_max, out_min, out_max) {
+    return out_min + ((value - in_min) * (out_max - out_min) / (in_max - in_min));
+}
+
+fun center_sprite(sprite, image, x, y) {
+    sprite.SetX(x - image.GetWidth() / 2);
+    sprite.SetY(y - image.GetHeight() / 2);
+}
+
+fun refresh_callback() {
+    screen.w = Window.GetWidth();
+    screen.h = Window.GetHeight();
+    center.x = screen.w / 2;
+    center.y = screen.h / 2;
+
+    logo.y = center.y - 46;
+    brand.y = logo.y + 142;
+    status.y = brand.y + 42;
+    progress.y = status.y + 48;
+
+    pulse = Math.Sin(logo.tick / 18);
+    glow.opacity = remap(pulse, -1, 1, 0.08, 0.26);
+    logo.opacity = remap(pulse, -1, 1, 0.82, 1);
+    logo.offset = remap(pulse, -1, 1, 3, -3);
+
+    Window.SetBackgroundTopColor(0.015, 0.018, 0.028);
+    Window.SetBackgroundBottomColor(0.03, 0.04, 0.07);
+
+    logo.glow.SetScale(1.12, 1.12);
+    logo.glow.SetOpacity(glow.opacity);
+    center_sprite(logo.glow, logo.image, center.x, logo.y + logo.offset);
+
+    logo.sprite.SetOpacity(logo.opacity);
+    center_sprite(logo.sprite, logo.image, center.x, logo.y + logo.offset);
+
+    center_sprite(brand.sprite, brand.image, center.x, brand.y);
+    center_sprite(status.sprite, status.image, center.x, status.y);
+
+    progress.width = progress.back.image.GetWidth();
+    progress.value = Plymouth.GetBootProgress();
+    progress.fill.sprite.SetClip(0, 0, progress.width * progress.value, progress.fill.image.GetHeight());
+    center_sprite(progress.back.sprite, progress.back.image, center.x, progress.y);
+    center_sprite(progress.fill.sprite, progress.fill.image, center.x, progress.y);
+
+    logo.tick++;
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);

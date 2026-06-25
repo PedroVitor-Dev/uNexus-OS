@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+set -eu
+
+marker_prefix="UNEXUS_SMOKE"
+serial_device="/dev/ttyS0"
+
+has_kernel_flag() {
+    [ -r /proc/cmdline ] && grep -qw "unexus.smoke=1" /proc/cmdline
+}
+
+emit() {
+    printf '%s\n' "$*"
+    if [ -w "$serial_device" ]; then
+        printf '%s\n' "$*" > "$serial_device" || true
+    fi
+}
+
+fail() {
+    emit "${marker_prefix}_FAIL: $*"
+    exit 1
+}
+
+need_command() {
+    command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"
+}
+
+need_file() {
+    [ -f "$1" ] || fail "missing file: $1"
+}
+
+need_executable() {
+    [ -x "$1" ] || fail "missing executable: $1"
+}
+
+if [ ! -e "$serial_device" ] && ! has_kernel_flag; then
+    exit 0
+fi
+
+emit "${marker_prefix}_START"
+
+need_command Hyprland
+need_command unexus-shell
+need_command unexus-installer
+need_command unexusctl
+need_command unexus-doctor
+need_command unexus-session
+need_command unexus-live-boot-mode
+need_command NetworkManager
+
+need_file /usr/share/wayland-sessions/unexus.desktop
+need_file /usr/share/wayland-sessions/unexus-recovery.desktop
+need_executable /usr/bin/unexus-recovery-session
+need_executable /usr/bin/unexus-recovery-menu
+
+id unexus >/dev/null 2>&1 || fail "live user does not exist"
+systemctl is-enabled NetworkManager.service >/dev/null 2>&1 || fail "NetworkManager is not enabled"
+
+if command -v runuser >/dev/null 2>&1; then
+    runuser -u unexus -- env PREFIX=/usr unexus-doctor >/tmp/unexus-smoke-doctor.log 2>&1 ||
+        fail "unexus-doctor failed; see /tmp/unexus-smoke-doctor.log"
+else
+    su - unexus -c 'env PREFIX=/usr unexus-doctor' >/tmp/unexus-smoke-doctor.log 2>&1 ||
+        fail "unexus-doctor failed; see /tmp/unexus-smoke-doctor.log"
+fi
+
+emit "${marker_prefix}_OK"

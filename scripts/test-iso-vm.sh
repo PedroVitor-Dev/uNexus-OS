@@ -2,7 +2,7 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-default_iso="$repo_root/ISO/0.0.2/out/unexus-os-0.0.2-x86_64.iso"
+default_iso="$repo_root/ISO/0.0.3/out/unexus-os-0.0.3-x86_64.iso"
 iso_path="$default_iso"
 timeout_seconds="${UNEXUS_ISO_TEST_TIMEOUT:-300}"
 run_bios=1
@@ -14,7 +14,7 @@ usage() {
 Usage: sh scripts/test-iso-vm.sh [options]
 
 Options:
-  --iso PATH       ISO image to boot (default: ISO/0.0.2/out/unexus-os-0.0.2-x86_64.iso)
+  --iso PATH       ISO image to boot (default: ISO/0.0.3/out/unexus-os-0.0.3-x86_64.iso)
   --timeout SEC   Seconds to wait for each VM smoke marker (default: 300)
   --bios-only     Test only legacy BIOS boot
   --uefi-only     Test only UEFI boot

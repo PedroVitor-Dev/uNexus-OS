@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=uNexus
+Description=Animated uNexus OS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/unexus
+ScriptFile=/usr/share/plymouth/themes/unexus/unexus.script
