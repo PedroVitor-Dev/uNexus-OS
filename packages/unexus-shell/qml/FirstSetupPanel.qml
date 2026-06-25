@@ -109,8 +109,8 @@ Item {
 
     Rectangle {
         id: panel
-        width: Math.min(860, parent.width - root.panelMargin * 2)
-        height: Math.min(root.compactLayout ? 620 : 590, parent.height - root.panelMargin * 2)
+        width: Math.min(940, parent.width - root.panelMargin * 2)
+        height: Math.min(root.compactLayout ? 660 : 650, parent.height - root.panelMargin * 2)
         anchors.centerIn: parent
         radius: 14
         color: "#0e1520"
@@ -289,6 +289,10 @@ Item {
                             label: root.tr("Open update settings")
                             action: "updates"
                         }
+                    }
+
+                    GpuDriverPanel {
+                        width: parent.width
                     }
 
                     SetupSection {

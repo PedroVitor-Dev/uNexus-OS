@@ -41,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Hardware section in Settings showing GPU, VRAM, active driver, kernel and Mesa versions.
 - GPU detection through `lspci` with NVIDIA, AMD, Intel and virtual-driver recommendations.
 - uNexus Driver Wizard for guided GPU driver switching with boot-confirmed rollback protection.
+- First Setup GPU Driver Manager panel with NVIDIA driver install action, hybrid-GPU messaging and Secure Boot warning.
+- Polkit policy metadata for privileged uNexus GPU driver installation.
 - Startup loading screen with animated uNexus logo while shell backends finish initialization.
 - Actionable notification queue with Open, Dismiss, Silence 1h, clear controls and configurable timeout persistence.
 - Installation milestone status document covering packaging, ISO installer, sessions, VM/hardware validation and First Setup readiness.

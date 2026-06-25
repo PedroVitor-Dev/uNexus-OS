@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QUrl>
 #include <QVariant>
 #include <functional>
@@ -24,6 +25,7 @@
 #include "usersettings.h"
 #include "filemanager.h"
 #include "globalshortcuts.h"
+#include "gpudrivermanager.h"
 
 namespace {
 
@@ -278,6 +280,8 @@ int main(int argc, char *argv[]) {
     const bool captureAssets = captureIndex >= 0 && captureIndex + 1 < args.size();
 
     QQmlApplicationEngine engine;
+    qmlRegisterUncreatableType<GpuDriverManager>(
+        "UNexus.System", 1, 0, "GpuDriverManager", "Enum only");
 
     SystemInfo systemInfo;
     GameMode gameMode;
@@ -286,6 +290,7 @@ int main(int argc, char *argv[]) {
     UserSettings userSettings;
     FileManager fileManager;
     GlobalShortcuts globalShortcuts;
+    GpuDriverManager gpuDriverManager;
 
     engine.rootContext()->setContextProperty("systemInfo", &systemInfo);
     engine.rootContext()->setContextProperty("gameMode", &gameMode);
@@ -294,6 +299,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("userSettings", &userSettings);
     engine.rootContext()->setContextProperty("fileManager", &fileManager);
     engine.rootContext()->setContextProperty("globalShortcuts", &globalShortcuts);
+    engine.rootContext()->setContextProperty("gpuDriverManager", &gpuDriverManager);
 
     engine.load(QUrl(QStringLiteral("qrc:/UNexusShell/qml/Main.qml")));
 

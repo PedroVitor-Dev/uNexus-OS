@@ -15,6 +15,7 @@ depends=(
   'hyprland'
   'mangohud'
   'mesa-utils'
+  'mokutil'
   'pciutils'
   'polkit'
   'poppler'

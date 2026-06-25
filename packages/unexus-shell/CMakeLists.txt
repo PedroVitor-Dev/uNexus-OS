@@ -19,6 +19,7 @@ qt_add_executable(unexus-shell
     src/usersettings.cpp
     src/filemanager.cpp
     src/globalshortcuts.cpp
+    src/gpudrivermanager.cpp
     include/systeminfo.h
     include/gamemode.h
     include/applauncher.h
@@ -26,6 +27,7 @@ qt_add_executable(unexus-shell
     include/usersettings.h
     include/filemanager.h
     include/globalshortcuts.h
+    include/gpudrivermanager.h
 )
 
 qt_add_executable(unexus-installer
@@ -56,6 +58,7 @@ qt_add_qml_module(unexus-shell
         qml/SettingsPanel.qml
         qml/GameSettingsPanel.qml
         qml/FirstSetupPanel.qml
+        qml/GpuDriverPanel.qml
         qml/FilesPanel.qml
         qml/PanelStateView.qml
         qml/StatusChip.qml
@@ -166,6 +169,11 @@ install(FILES
 install(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/unexus-driver-rollback.service"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/systemd/system
+)
+
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../packaging/linux/io.github.PedroVitorDev.uNexusDriverManager.policy"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions
 )
 
 install(FILES

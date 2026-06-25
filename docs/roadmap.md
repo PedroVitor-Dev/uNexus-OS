@@ -210,14 +210,15 @@ Project website: <https://unexus-os.vercel.app>
 - [x] **UI:** Add Hardware section in Settings with GPU, VRAM, active driver, kernel and Mesa versions
 - [x] **Feature:** Detect GPU through `lspci` and map it to recommended drivers
 - [x] **Innovation:** **uNexus Driver Wizard:** guided GPU driver switching with rollback if the next boot fails
+- [x] **Feature:** Add GPU Driver Manager to First Setup for NVIDIA install guidance, hybrid GPU messaging and Secure Boot warnings
 - [ ] **UI:** Add exportable Hardware Report as PDF or JSON
 - [ ] **Feature:** Verify 32-bit gaming libraries and offer safe install paths
 - [ ] **Innovation:** **uNexus Benchmark Mode:** run `glmark2` or `vkmark` from Settings and show visual results
 
 ### Exit Criteria - Phase 7
 
-- [ ] GPU driver is detected correctly on NVIDIA, AMD and Intel
-- [ ] Driver Wizard completes driver changes without manual terminal work
+- [~] GPU driver is detected correctly on NVIDIA, AMD and Intel; checked-in hardware-specific test results are still pending
+- [~] Driver Wizard completes driver changes without manual terminal work; real NVIDIA `nouveau -> nvidia-dkms` validation is still pending
 - [ ] Gaming library checks work and can install missing components
 
 ---

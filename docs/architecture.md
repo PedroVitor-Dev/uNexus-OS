@@ -355,7 +355,7 @@ The next architectural step is to add more structured provisioning profiles so f
 
 The previous OS Provisioning checklist was removed from Settings to keep the control center cleaner. System-level provisioning should return later through a safer backend such as `unexusctl provision` with manifests, dry-run output and explicit privilege boundaries.
 
-Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The Hardware section shows GPU, VRAM, active driver, kernel, Mesa, recommended driver packages and the Driver Wizard controls. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
+Settings currently controls shell preferences such as theme, language, stats overlay visibility, notification behavior and shortcut strings. The Hardware section shows GPU, VRAM, active driver, kernel, Mesa, recommended driver packages and the Driver Wizard controls. First Setup also embeds `GpuDriverPanel.qml`, backed by `GpuDriverManager`, to detect NVIDIA/AMD/Intel hardware during first login and offer the privileged driver action through `unexusctl` instead of raw terminal commands. The shortcut section includes explicit apply buttons, default shortcut restore and a help panel that lists global shell and uNexus Files keyboard shortcuts.
 
 ---
 

@@ -236,10 +236,30 @@ gpu_lspci_line() {
 
     lspci -mm -nn 2>/dev/null | awk '
         /VGA compatible controller|3D controller|Display controller/ {
-            print
-            exit
+            line=tolower($0)
+            if (line ~ /nvidia/) {
+                print
+                found=1
+                exit
+            }
+            if (!first) {
+                first=$0
+            }
+        }
+        END {
+            if (!found && first) {
+                print first
+            }
         }
     '
+}
+
+gpu_lspci_all() {
+    if ! command -v lspci >/dev/null 2>&1; then
+        return 1
+    fi
+
+    lspci -mm -nn 2>/dev/null | awk '/VGA compatible controller|3D controller|Display controller/ { print }'
 }
 
 gpu_vendor_id() {
@@ -254,7 +274,7 @@ recommended_driver_packages() {
 
     case "$vendor_id:$probe" in
         10de:*|*:nvidia*)
-            printf '%s\n' "nvidia-open nvidia-utils lib32-nvidia-utils"
+            printf '%s\n' "nvidia-dkms nvidia-utils lib32-nvidia-utils"
             ;;
         1002:*|1022:*|*:amd*|*:"advanced micro devices"*)
             printf '%s\n' "mesa vulkan-radeon lib32-mesa lib32-vulkan-radeon"
@@ -279,10 +299,19 @@ installed_packages() {
 
 driver_plan() {
     gpu_line="$(gpu_lspci_line || true)"
+    gpu_all="$(gpu_lspci_all || true)"
     packages="$(recommended_driver_packages || true)"
 
     printf 'GPU: %s\n' "${gpu_line:-unknown}"
     printf 'Vendor ID: %s\n' "$(gpu_vendor_id || printf unknown)"
+    if [ "$(printf '%s\n' "$gpu_all" | sed '/^$/d' | wc -l)" -gt 1 ]; then
+        printf 'Hybrid GPU: detected; discrete GPU is prioritized when NVIDIA is present\n'
+    fi
+    if command -v mokutil >/dev/null 2>&1 && mokutil --sb-state 2>/dev/null | grep -qi enabled; then
+        printf 'Secure Boot: enabled; DKMS modules may require signing\n'
+    else
+        printf 'Secure Boot: not detected or disabled\n'
+    fi
     if [ -n "$packages" ]; then
         printf 'Recommended packages: %s\n' "$packages"
         printf 'Rollback: enabled through %s\n' "$driver_rollback_service"
