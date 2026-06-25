@@ -76,6 +76,15 @@ The user can either:
 
 Curated downloads intentionally fail while their checksum is a placeholder.
 
+The default model directory is:
+
+```text
+~/.local/share/unexus/ai/models
+```
+
+The C++ backend also removes legacy `history.txt` when the user wipes history,
+so older development snapshots do not leave stale local chat content behind.
+
 ## Next Hardening Steps
 
 - Run `llama-server` under `bwrap` or `firejail` with no network namespace.

@@ -94,7 +94,7 @@ Project website: <https://unexus-os.vercel.app>
 - [ ] **UI:** Add theme preview before applying: dock, top bar and sample window rendered in QML
 - [ ] **Feature:** Add Flathub remote detection, setup action and synchronization status
 - [ ] **Innovation:** **Settings Sync via Git:** export/import `.unexus-config.json` and optionally sync with a private Git repository
-- [ ] **UI:** Redesign First Setup as full product onboarding with step progress and persistent checklist state
+- [~] **UI:** Redesign First Setup as full product onboarding with step progress and persistent checklist state; readiness, GPU and local AI controls exist, while guided product onboarding polish is still planned
 - [~] **Feature:** Add safe reset settings flow; `unexusctl reset-settings` exists, but Settings still needs the full visual flow and automatic backup
 - [~] **Innovation:** **uNexus Copilot:** fully optional local AI assistant for shell settings, troubleshooting, localization help and guided configuration; local engine/chat MVP exists, while sandboxing, model manager and tool calling are still planned
 
@@ -271,7 +271,7 @@ Project website: <https://unexus-os.vercel.app>
 **Goal:** turn the bootable prototype into something testers can install and report on.
 
 - [x] **UI:** Create graphical installer in Qt6/QML or themed Calamares; Qt/QML shell installer exists, Calamares is not integrated
-- [~] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers; native disk backend handles UEFI/systemd-boot and the Qt/QML installer can call it, while graphical disk picking and partition review are still pending
+- [~] **Feature:** Installer configures user, bootloader, Hyprland session, Flatpak/Flathub, GameMode/MangoHud and default gaming launchers; native disk backend handles UEFI/systemd-boot and the Qt/QML installer includes disk selection, first-user configuration and progress, while partition review and dual-boot safety are still pending
 - [ ] **Innovation:** **uNexus Migration Tool:** detect existing Windows/Linux installs and import Steam saves, game lists and app settings where possible
 - [x] **UI:** Create post-install welcome flow with quick action cards
 - [x] **Feature:** Add stable/beta update channel selection in Settings > About
@@ -279,7 +279,7 @@ Project website: <https://unexus-os.vercel.app>
 
 ### Exit Criteria - Phase 10
 
-- [~] External testers can install through the minimal native graphical installer or guarded scripts; disk picker, partition review and recorded VM install passes are still pending
+- [~] External testers can install through the minimal native graphical installer or guarded scripts; partition review, dual-boot safety and recorded VM install passes are still pending
 - [ ] At least one common game path works after clean install
 - [ ] Bugs can be reported and reproduced
 - [ ] Project has a repeatable release process

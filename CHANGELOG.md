@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Integrated bug report generator available through `Super+B`.
 - Redesigned uNexus Files with stronger sidebar, grid/list controls, operation queue and bottom status bar.
 - Windows-style rubber-band selection in uNexus Files list and grid views.
-- Selectable desktop area with shortcut icons, click selection, double-click launch and rubber-band selection.
+- Selectable desktop area with click selection and rubber-band selection; default shortcut icons are now intentionally disabled.
 - uNexus Files preview engine for image, text, PDF and video previews without opening external apps.
 - Arch package release helper that emits package artifacts and a local pacman repository under `dist/arch`.
 - Distro implementation status document mapping the shell-to-ISO guide to repository state.
@@ -85,11 +85,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 - `unexusctl provision` profiles with dry-run support.
-- GPU driver manager.
 - Controller support out of the box.
 - Per-game performance profiles.
-- Graphical installer MVP.
-- ISO hardware validation, boot polish and disk installer integration.
+- AI model manager, sandboxed local runtime and read-only tool-calling.
+- ISO hardware validation, destructive VM install pass and boot polish.
 
 ---
 

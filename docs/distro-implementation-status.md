@@ -20,10 +20,11 @@ Status legend:
 | Start the uNexus session automatically in the live ISO | `[x]` | The live image installs `uNexus` session files and uses the session wrapper/recovery flow instead of a plain Hyprland-only desktop. |
 | Plug the installer from the live ISO | `[x]` | `scripts/install-os.sh` is installed as `unexus-install-os`; `unexus-installer` has a minimal Qt/QML disk install UI that calls the guarded backend through `pkexec`. |
 | Build ISO | `[x]` | `sudo sh ISO/0.0.2/build-iso.sh` builds the package, creates a local repo and runs `mkarchiso`. |
-| Test ISO in VM | `[~]` | `scripts/test-iso-vm.sh` and `scripts/validate-iso-release.sh` exist. Current checked-in test result is blocked on Windows because `sh`/QEMU are unavailable. A passing Arch/QEMU result is still needed. |
+| Test ISO in VM | `[~]` | `scripts/test-iso-vm.sh` and `scripts/validate-iso-release.sh` exist. Current checked-in test result is blocked on Windows because `sh`/QEMU are unavailable. A passing Arch/QEMU BIOS and UEFI result is still needed. |
 | Test installed system in VM | `[~]` | Disk installer backend exists, but a destructive install/reboot VM result is not checked in yet. |
 | Test hardware | `[ ]` | Hardware validation reports are not checked in yet. |
-| GPU driver manager | `[x]` | Settings has a Hardware section, GPU detection, recommended-driver mapping and a rollback-aware Driver Wizard. |
+| GPU driver manager | `[x]` | Settings has a Hardware section, GPU detection, recommended-driver mapping and a rollback-aware Driver Wizard. First Setup embeds the GPU driver panel for first-login guidance. |
+| Local AI assistant | `[x]` | uNexus AI is an optional local-only assistant with loopback llama-server integration, opt-in JSON history and First Setup engine controls. |
 
 ## Current Next Required Runs
 

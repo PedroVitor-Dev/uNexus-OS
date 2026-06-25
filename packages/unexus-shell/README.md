@@ -14,7 +14,7 @@ Recent shell work includes:
 - Windows-style global shortcuts through `unexus-shell --shortcut`;
 - real Flatpak install actions for supported gaming launchers;
 - internal `uNexus CMD` terminal panel for shell commands;
-- local-only `uNexus AI` assistant panel backed by llama-server on loopback;
+- local-only `uNexus AI` assistant panel backed by llama-server on loopback, with opt-in JSON history;
 - richer uNexus Files actions, context menu and keyboard shortcuts;
 - installable `uNexus` and `uNexus Recovery` Wayland sessions.
 
@@ -37,5 +37,6 @@ Use the root [building guide](../../docs/building.md) for Arch/Hyprland dependen
 
 - C++20
 - Qt6 / QML
+- Qt6 Network
 - CMake
 - Hyprland / Wayland integration

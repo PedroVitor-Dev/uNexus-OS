@@ -13,7 +13,7 @@ Status legend:
 | Planned window | Milestone | Status | Current state |
 |---|---|---:|---|
 | Week 1-2 | Create `PKGBUILD` for `unexus-shell` and CMake install target | `[x]` | `packaging/arch/PKGBUILD` builds through CMake and `packages/unexus-shell/CMakeLists.txt` installs binaries, sessions, desktop entries, scripts, assets and systemd service files. |
-| Week 2-3 | Integrate Calamares in the ISO with partitioning, user creation and bootloader | `[~]` | Calamares is not integrated. A guarded native backend exists in `scripts/install-os.sh`, and `unexus-installer` now has a minimal Qt/QML disk-install UI for previewing and executing that backend. |
+| Week 2-3 | Integrate Calamares or a native installer in the ISO with disk selection, user creation and bootloader | `[~]` | Calamares is not integrated. The chosen current path is native: `scripts/install-os.sh` provides the guarded backend, and `unexus-installer` has a minimal Qt/QML disk-install UI with disk selection, first-user configuration, progress and `pkexec` execution. |
 | Week 3-4 | Create `.desktop` entry and uNexus session file | `[x]` | Shell and installer desktop entries exist under `packaging/linux`; `uNexus` and `uNexus Recovery` session files are installed to `wayland-sessions`. |
 | Week 4-5 | Test install in VM first, then real hardware | `[~]` | QEMU smoke-test scripts and release validation exist. `docs/test-results/20260615-qemu.md` records the current attempted UEFI run, blocked on Windows before VM startup because `sh` is unavailable. |
 | Week 5-6 | First Setup Panel appears on first login after install | `[x]` | `Main.qml` opens `FirstSetupPanel` after login when `userSettings.firstSetupCompleted` is false; provisioning seeds first-setup defaults. |
@@ -41,7 +41,7 @@ Still needed:
 - Run a clean `makepkg` validation on a fresh Arch VM and record the result.
 - Publish package artifacts from an Arch build host using `scripts/package-arch.sh` and record the result.
 
-### Week 2-3: Calamares or Disk Installer
+### Week 2-3: Native Disk Installer
 
 Status: `[~]`
 
@@ -58,12 +58,12 @@ Implemented:
 - Whole-disk UEFI install path with GPT, EFI partition, root partition, `pacstrap`, `fstab`, locale/timezone/keymap/hostname/user setup and systemd-boot.
 - Optional offline package-cache install from the live ISO.
 - System provisioning for Hyprland session, Flatpak/Flathub, GameMode/MangoHud and gaming launchers.
+- Minimal graphical disk-install controls in `unexus-installer`, including disk selection, first-user configuration, progress display and `scripts/install-os.sh` execution through `pkexec`.
 
 Not implemented:
 
 - Calamares is not integrated in the ISO.
-- Minimal graphical disk-install controls exist in `unexus-installer`, including disk selection, first-user configuration, progress display and `scripts/install-os.sh` execution through `pkexec`.
-- No graphical disk picker or advanced partitioning review yet.
+- No advanced partitioning review or dual-boot protection UI yet.
 - No GRUB path yet; current supported bootloader path is systemd-boot.
 - No checked-in automated destructive install test result yet.
 
@@ -128,6 +128,7 @@ Implemented:
 
 - First Setup opens after login when `firstSetupCompleted` is false.
 - The panel checks network/defaults, Flatpak, MangoHud, GameMode and common launchers.
+- The panel embeds GPU driver guidance and local uNexus AI model/engine controls.
 - Settings can reopen First Setup later.
 - Provisioning writes first-setup defaults from installer options.
 

@@ -43,6 +43,14 @@ Optional test utilities:
 sudo pacman -S mesa-utils
 ```
 
+Optional local AI runtime:
+
+```bash
+sudo pacman -S llama.cpp
+```
+
+The shell looks for `llama-server` in the packaged app directory, `/usr/lib/unexus/ai/`, `/usr/bin/` and `PATH`. uNexus AI is optional; the shell still runs when no AI runtime or model is installed.
+
 Optional developer/system tools that may be useful while testing uNexus:
 
 ```bash
@@ -273,6 +281,28 @@ sudo sh scripts/install-os.sh --target /dev/sdX --username pedro --timezone Amer
 `--online` forces pacman repository downloads. Without either flag, the installer uses the local cache when package files are present and falls back to online repositories otherwise.
 
 The installed user's first setup state is seeded from installer options such as `--locale`, `--timezone` and `--keymap`. The shell's First Setup panel then shows system defaults, network status, update channel access, runtime tools and optional game launchers.
+
+---
+
+## Local AI Assistant
+
+uNexus AI is local-only. It talks to `llama-server` on `127.0.0.1` and has no remote fallback.
+
+Install or copy a GGUF model into the default model directory:
+
+```bash
+setup-ai-model.sh --local /path/to/model.gguf
+```
+
+Curated downloads are present as a locked-down future path, but they intentionally fail until their SHA-256 hashes are pinned in `scripts/setup-ai-model.sh`.
+
+Start the engine from First Setup by refreshing installed models and pressing `Start AI`, or open the `uNexus AI` dock panel and enter the local model path manually.
+
+Privacy defaults:
+
+- system context is opt-in in Settings > uNexus AI;
+- disk history is opt-in and stored as `~/.local/share/unexus/ai/history.json`;
+- `Wipe AI history now` clears memory and removes the local history file.
 
 ---
 

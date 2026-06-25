@@ -36,7 +36,7 @@ In short: graphical shell installer first, native package/backend scripts undern
 | Live OS image | `ISO/0.0.2` / Archiso | Current bootable uNexus OS live image |
 | Full OS installer backend | `scripts/install-os.sh` | Guarded UEFI/systemd-boot disk installation from the live environment |
 | Graphical disk installer MVP | Qt/QML disk flow | Minimal user-facing disk selection, first-user configuration and install progress controls that preview and execute `scripts/install-os.sh` |
-| Future advanced disk installer | Expanded Qt/QML partitioning UX or Calamares | Guided disk selection, partitioning review, dual-boot safety and richer recovery paths |
+| Future advanced disk installer | Expanded Qt/QML partitioning UX or Calamares | Partitioning review, dual-boot safety and richer recovery paths |
 
 ## Non-goals For Now
 
@@ -53,5 +53,5 @@ In short: graphical shell installer first, native package/backend scripts undern
 5. Maintain `.desktop` entries for shell and installer launch.
 6. Keep `sudo sh scripts/setup.sh` documented for development and repair.
 7. Harden `ISO/0.0.2` with boot polish, hardware validation, hosted downloads and clearer recovery behavior.
-8. Extend the current minimal disk-install UI with a real disk picker, partitioning review, stronger destructive confirmation and checked-in VM install results.
+8. Extend the current minimal disk-install UI with partitioning review, dual-boot safety, stronger destructive confirmation and checked-in VM install results.
 9. Keep Calamares as an optional future replacement only if the native Qt/QML installer stops matching the desired uNexus experience.

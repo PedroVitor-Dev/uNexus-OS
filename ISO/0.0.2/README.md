@@ -129,6 +129,7 @@ Use `--online` to force repository downloads instead.
 - Normal, safe graphics, recovery, doctor and rollback boot modes
 - Pacman package cache retained for offline disk installs
 - First setup defaults for language, timezone, keyboard, updates and gaming essentials
+- First Setup GPU driver guidance and optional local AI engine controls
 - NetworkManager, PipeWire, Polkit and XDG portals
 - Qt6 runtime/build stack
 - GameMode, MangoHud and Vulkan tools
@@ -140,9 +141,10 @@ Use `--online` to force repository downloads instead.
 - GTK/Qt session defaults for dark styling and cursor consistency
 - Fonts and disk maintenance tools for live recovery work
 - Kitty, Neovim, btop and common recovery tools
+- `setup-ai-model.sh` for explicit local GGUF model installation
 
 ## Notes
 
-This is a bootable live ISO foundation with a minimal native graphical disk installer. A richer disk picker, partitioning review and broader VM/hardware validation are still required before treating it as a final public installer.
+This is a bootable live ISO foundation with a minimal native graphical disk installer. Partitioning review, dual-boot safety and broader VM/hardware validation are still required before treating it as a final public installer.
 
 Brave remains the default browser target in the shell/session integration. The live ISO keeps the browser layer packageable, but bundling Brave directly requires a binary package source or an AUR build pipeline during ISO creation.

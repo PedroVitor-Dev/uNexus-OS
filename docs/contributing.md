@@ -59,6 +59,13 @@ unexusctl backup
 
 If the normal shell session fails, use the `uNexus Recovery` session from the display manager.
 
+For uNexus AI changes:
+
+- keep cloud/network providers out of the default path;
+- keep system context and disk history opt-in;
+- document any new local file, model or runtime path;
+- prefer local-only tests with a user-supplied `.gguf` model.
+
 ---
 
 ## Commit Convention

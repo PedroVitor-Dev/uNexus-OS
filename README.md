@@ -110,7 +110,8 @@ The current prototype manages:
 - system and gaming side docks with real icon lookup and drawn fallbacks;
 - app launcher with search, categories and installed/running/missing status chips;
 - uNexus Files with navigation, breadcrumbs, sorting, multi-select, clipboard actions, keyboard shortcuts and previews;
-- privacy-first uNexus AI assistant MVP that runs against a local model through loopback-only `llama-server`;
+- privacy-first uNexus AI assistant MVP that runs against a local model through loopback-only `llama-server`, with opt-in JSON history and First Setup engine controls;
+- internal uNexus CMD panel for shell commands without relying on external terminal apps;
 - right-click desktop and file-manager context menus;
 - actionable notifications with queue controls, persistent notification preferences and stats overlay;
 - uNexus Settings control center with system, hardware, appearance, language, shortcuts, help and about sections;
@@ -165,7 +166,8 @@ Recent shipping focus:
 | Settings shortcuts/help | Shortcut customization, apply buttons, restore defaults and help panel are available |
 | Game launcher installs | Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles |
 | uNexus Files polish | Context menu, copy/cut/paste hotkeys, sorting, previews and layout fixes are in place |
-| uNexus AI | Local-only assistant MVP exists; model manager and sandboxed runtime are planned |
+| uNexus AI | Local-only assistant MVP exists with streaming chat, opt-in JSON history and First Setup engine controls; model manager and sandboxed runtime are planned |
+| uNexus CMD | Internal command panel is available from the dock and desktop context menu |
 | Visual language | Tokens now cover spacing, radius, typography, surfaces and motion |
 | Bootable ISO 0.0.2 | Archiso live profile with Hyprland, uNexus Shell, autologin, recovery modes, native disk installer backend and USB writer |
 | Session authentication | The normal session starts the KDE Polkit agent when available for graphical privilege prompts |
@@ -244,7 +246,8 @@ See [docs/installer-technology.md](docs/installer-technology.md).
 | Game Settings | `qml/GameSettingsPanel.qml` | Dashboard, MangoHud, GameMode and gaming launcher installs |
 | First Setup | `qml/FirstSetupPanel.qml` | First-run checklist and dependency guidance |
 | uNexus Files | `qml/FilesPanel.qml`, `filemanager.cpp` | Local file navigation, multi-select, copy/cut/paste, open, create folder, rename, previews and trash |
-| uNexus AI | `qml/AIAssistantPanel.qml`, `aiassistant.cpp`, `aiengine.cpp` | Local-only assistant UI, llama-server lifecycle and streaming chat |
+| uNexus CMD | `qml/TerminalPanel.qml`, `commandrunner.cpp` | Internal shell command panel with output, history, `cd`, `clear` and stop control |
+| uNexus AI | `qml/AIAssistantPanel.qml`, `qml/AIChatBubble.qml`, `aiassistant.cpp`, `aiengine.cpp` | Local-only assistant UI, llama-server lifecycle, streaming chat, optional JSON history and First Setup controls |
 | Global shortcuts | `globalshortcuts.cpp`, `main.cpp` | Hyprland-triggered shortcut command bridge |
 | Session control | `packaging/linux/unexus-session`, `unexus-recovery-session`, `unexus-recovery-menu` | Normal session, recovery session and automatic TUI crash fallback |
 | Installer | `packages/unexus-installer` | Graphical Qt/QML installer wizard backed by setup, doctor and uninstall scripts |
@@ -297,6 +300,14 @@ Replace `/dev/sdX` with the whole USB disk, not a partition.
 
 The live image is expected to boot with the uNexus visual baseline already present: Papirus/Breeze/Adwaita/hicolor icons, Qt SVG/imageformat plugins, Noto/DejaVu/Liberation fallback fonts, GTK dark defaults, Adwaita cursor settings and the First Setup checklist on first login.
 
+Prepare an optional local AI model:
+
+```bash
+setup-ai-model.sh --local /path/to/model.gguf
+```
+
+Curated model downloads intentionally refuse to run until their SHA-256 hashes are pinned in `scripts/setup-ai-model.sh`. First Setup can refresh installed `.gguf` models and start or stop the local AI engine.
+
 ---
 
 ## Roadmap
@@ -306,8 +317,7 @@ See [docs/roadmap.md](docs/roadmap.md).
 Current near-term focus:
 
 - validate the current Stage 1 shell polish on Arch + Hyprland;
-- build the first graphical double-click uNexus Installer MVP;
-- package Qt/QML dependencies and runtime assets correctly;
+- record clean Arch package and ISO validation results;
 - add Flathub setup/status and safer provisioning backends;
 - start the Game Library and per-game profile data model;
 - validate and iterate on the bootable ISO 0.0.2 live environment.

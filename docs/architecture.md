@@ -96,7 +96,7 @@ The QML layer calls these objects directly from `Main.qml`, `Launcher.qml`, `Set
 
 The current dock is composed from `SideDock.qml` and `DockButton.qml`, with `Main.qml` owning app metadata and high-level actions.
 
-Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus CMD, uNexus Settings and Game Settings report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
+Dock state is a mix of external app state from `AppLauncher` and internal panel state from `Main.qml`. Internal apps such as uNexus Files, uNexus CMD, uNexus AI, uNexus Settings and Game Settings report `active` only while their panel is open, so the dock can return to a closed visual state after the panel closes. Dock buttons also expose a minimized/hidden visual state for external windows when the compositor reports them that way.
 
 `uNexus AI` is also an internal dock app. It uses `AIAssistantPanel.qml` and the `AIAssistant`/`AIEngine` C++ backends to talk to a local `llama-server` process bound to `127.0.0.1` only. There is no remote AI fallback path.
 
@@ -207,6 +207,7 @@ Default shortcuts:
 | `Super+I` | Settings |
 | `Super+G` | Stats overlay |
 | `Super+Alt+G` | Game Settings |
+| `Super+B` | Prepare bug report |
 
 Settings includes a shortcut editor, explicit apply buttons, default restore and a help panel.
 
@@ -283,9 +284,13 @@ Current settings:
 - selected interface language (`en` or `pt-BR`);
 - stats overlay visibility;
 - persistent notification preference;
-- global shortcut strings for Launcher, Settings, Game Settings and stats overlay;
+- notification timeout and silence window;
+- update channel (`stable` or `beta`);
+- global shortcut strings for Launcher, Settings, Game Settings, bug report and stats overlay;
 - first setup completion state;
-- active Settings control center section.
+- setup timezone/keymap defaults;
+- active Settings control center section;
+- AI system-context and history-persistence opt-ins.
 
 These values are restored when `unexus-shell` starts.
 
@@ -305,6 +310,7 @@ The installed OS-facing layer is intentionally simple and shell-script based for
 | `scripts/unexus-doctor.sh` | Install and dependency validator |
 | `scripts/unexusctl.sh` | User control command for state, diagnostics, logs, backup, rollback and update |
 | `scripts/install-os.sh` | Guarded native UEFI/systemd-boot disk installer backend |
+| `scripts/setup-ai-model.sh` | Explicit local GGUF model installer for uNexus AI |
 
 The normal session generates a Hyprland config in:
 
@@ -354,11 +360,12 @@ The next architectural step is to add more structured provisioning profiles so f
 `SettingsPanel.qml` uses section navigation with persisted active section:
 
 - System;
+- Shortcuts;
+- Help;
 - Hardware;
 - Appearance;
 - Language;
-- Shortcuts;
-- Help;
+- uNexus AI;
 - About.
 
 The previous OS Provisioning checklist was removed from Settings to keep the control center cleaner. System-level provisioning should return later through a safer backend such as `unexusctl provision` with manifests, dry-run output and explicit privilege boundaries.
@@ -410,17 +417,23 @@ uNexus Files is currently an embedded panel, not a standalone process. Its dock 
 
 ## First Setup
 
-`FirstSetupPanel.qml` gives the user a checklist for core gaming dependencies:
+`FirstSetupPanel.qml` gives the user a checklist for core system, driver, gaming and local-AI readiness:
 
+- NetworkManager availability;
+- language, timezone and keyboard defaults;
 - Flatpak;
 - MangoHud;
 - GameMode;
+- GPU Driver Manager state;
+- installed GGUF model discovery and local AI engine start/stop;
 - Steam;
 - Lutris;
 - Heroic;
 - Bottles.
 
 It shows install status and still copies manual commands for dependencies that are not safe to install automatically yet. Game Settings separately starts real Flatpak installs for the supported gaming launchers.
+
+The uNexus AI block reads only local model files from `~/.local/share/unexus/ai/models`, cycles between installed `.gguf` files and starts/stops the loopback-only engine. It does not download models automatically.
 
 ---
 
@@ -434,6 +447,8 @@ It shows install status and still copies manual commands for dependencies that a
 | `unexus-settings` | Implemented as `SettingsPanel.qml` and `GameSettingsPanel.qml` |
 | `unexus-store` | Planned |
 | `unexus-files` | Rich embedded file manager panel backed by `FileManager` |
+| `unexus-cmd` | Internal command panel backed by `CommandRunner` |
+| `unexus-ai` | Local-only assistant backed by `AIAssistant` and `AIEngine` |
 | `unexusctl` | Implemented as the current OS control CLI |
 | `unexus-recovery-session` | Implemented as the safe session fallback |
 

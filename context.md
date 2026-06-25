@@ -1,6 +1,6 @@
 # uNexus Project Context
 
-Last updated: 2026-06-05
+Last updated: 2026-06-25
 
 This file is the main handoff note for another AI/chat/dev session. Read it before changing code. It captures the current technical context, user workflow, completed work, recent commits, known gaps and recommended next steps.
 
@@ -55,6 +55,7 @@ Important preferences from the project owner:
 | App launch | `QProcess`, native command detection and Flatpak helpers |
 | Game helpers | GameMode, MangoHud |
 | File actions | `FileManager`, `QDesktopServices`, `gio trash` |
+| Local AI | `AIAssistant`, `AIEngine`, `llama-server`, local `.gguf` models |
 | Assets | Qt resources loaded from `assets/logo` and `assets/wallpapers` |
 | UI font | Exo 2 |
 
@@ -73,6 +74,7 @@ Important preferences from the project owner:
 | `assets/wallpapers` | Official wallpaper set |
 | `packaging/linux` | `.desktop`, Wayland session and launch wrapper files |
 | `packaging/arch` | Arch package files |
+| `ISO/0.0.2` | Current Archiso live image profile, VM smoke scripts and USB writer |
 | `scripts` | Helper scripts, setup, doctor, package and unexusctl |
 
 Important QML files:
@@ -81,10 +83,12 @@ Important QML files:
 - `SideDock.qml`: left/right side dock container.
 - `DockButton.qml`: dock item visuals, tooltip, active/minimized/closed state.
 - `Launcher.qml`: app launcher with search, categories and install status.
-- `SettingsPanel.qml`: uNexus Settings, including language selector, shortcuts, help, theme/stats settings and About logo block.
+- `SettingsPanel.qml`: uNexus Settings, including System, Shortcuts, Help, Hardware, Appearance, Language, uNexus AI and About.
 - `GameSettingsPanel.qml`: GameMode, MangoHud and gaming launcher checks/Flatpak install actions.
 - `FilesPanel.qml`: uNexus Files with places, breadcrumbs, sorting, multi-select, clipboard actions, context menu, keyboard shortcuts, previews and file actions.
-- `FirstSetupPanel.qml`: first-run checklist and dependency guidance; still copies some manual install commands where privileged actions are not automated.
+- `FirstSetupPanel.qml`: first-run checklist, GPU driver guidance, local AI model/engine controls and dependency guidance; still copies some manual install commands where privileged actions are not automated.
+- `TerminalPanel.qml`: internal uNexus CMD panel.
+- `AIAssistantPanel.qml` / `AIChatBubble.qml`: local-only AI assistant chat UI.
 - `ContextMenu.qml`: desktop right-click menu.
 - `LoginScreen.qml`: login flow using the official logo.
 - `FpsOverlay.qml`: shell stats overlay.
@@ -97,9 +101,13 @@ Important C++ backends:
 - `GameMode`: Game Mode state/toggle.
 - `SystemInfo`: battery and network state.
 - `SystemStats`: CPU/GPU/RAM/TEMP metrics.
-- `UserSettings`: persistent theme, language, stats overlay, notification, shortcut and first setup preferences.
+- `UserSettings`: persistent theme, language, stats overlay, notification, shortcut, update channel, AI privacy and first setup preferences.
 - `FileManager`: directory listing, common places, open, create folder, rename, copy, move, paste, preview metadata and trash.
 - `GlobalShortcuts`: file-based shortcut command bridge used by Hyprland binds and `unexus-shell --shortcut`.
+- `CommandRunner`: internal CMD command execution backend.
+- `AIAssistant`: local-only chat orchestration, SSE streaming and optional JSON history.
+- `AIEngine`: starts/stops loopback-only `llama-server` for local `.gguf` models.
+- `GpuDriverManager`: First Setup GPU detection and driver action backend.
 
 ---
 
@@ -111,22 +119,25 @@ Core shell:
 - Official wallpaper image layer plus animated geometric/particle lines.
 - Shell starts in fullscreen through `Window.FullScreen` for Hyprland testing.
 - Top bar clock/date/network/battery/Game Mode toggle.
-- Notification center with a persistent setting to disable persistent notifications.
+- Notification center with actionable queue controls, configurable timeout and silence behavior.
 - Desktop context menu.
-- Persistent theme, language, stats overlay, notification, shortcut and first setup preferences.
+- Persistent theme, language, stats overlay, notification, shortcut, update channel, AI privacy and first setup preferences.
 - Official uNexus logo integrated into desktop, login, Settings About and README.
 - Official wallpaper set integrated into Qt resources and installed as runtime assets.
 - Shared design tokens define spacing, borders, shadows, typography, motion and surfaces.
 - Liquid Glass QML material is applied to docks, menus and notifications.
 - Spring physics drive panel and dock interactions.
-- Windows-like global shortcuts are bridged through Hyprland binds and `unexus-shell --shortcut`: `Super+S` launcher, `Super+I` Settings, `Super+G` Stats and `Super+Alt+G` Game Settings.
+- Windows-like global shortcuts are bridged through Hyprland binds and `unexus-shell --shortcut`: `Super+S` launcher, `Super+I` Settings, `Super+G` Stats, `Super+Alt+G` Game Settings and `Super+B` bug report.
 - Settings includes a shortcut editor, explicit apply buttons, restore defaults and a visible shortcut help panel.
 - Current slogan: `Open Source. Linux Powered. Gamer Focused.`
+- Bootable ISO foundation exists under `ISO/0.0.2`.
+- Native Qt/QML disk installer flow exists in `unexus-installer` and calls `scripts/install-os.sh`.
+- Automatic recovery TUI opens after shell crashes.
 
 Dock:
 
 - Separate left system dock and right gaming dock.
-- System side: uNexus Files, Browser, uNexus Settings, Terminal, First Setup.
+- System side: uNexus Files, Browser, uNexus Settings, uNexus AI and uNexus CMD.
 - Gaming side: Steam, Lutris, Heroic, Bottles, Game Settings.
 - Auto-hide side dock behavior.
 - Original application icons are resolved when possible through icon names.
@@ -134,6 +145,8 @@ Dock:
 - App states for closed/open/minimized or hidden.
 - Internal panels no longer remain visually active after closing.
 - Hover/active visual residue was reduced so closed apps stop looking stuck.
+- First Setup is no longer a dock item; it opens on first login and can be reopened from Settings.
+- Desktop shortcut icons are disabled by default; the selectable desktop surface and rubber-band selection remain.
 
 Launcher:
 
@@ -148,8 +161,24 @@ Game/Setup:
 
 - Game Settings panel checks MangoHud, GameModeRun and gaming launchers.
 - Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles through `AppLauncher.installFlatpak()`.
-- First Setup checklist covers Flatpak, MangoHud, GameMode and gaming launchers.
+- First Setup checklist covers system defaults, Flatpak, MangoHud, GameMode, GPU driver guidance, local AI model controls and gaming launchers.
 - Pacman/tool installs still need manual/system-level handling.
+
+uNexus AI:
+
+- Internal dock app and Settings section.
+- Runs only through a local `llama-server` endpoint bound to `127.0.0.1`.
+- No cloud API or remote fallback exists.
+- System context is opt-in.
+- Chat history is memory-only by default; optional disk persistence uses `~/.local/share/unexus/ai/history.json`.
+- First Setup can refresh installed `.gguf` models from `~/.local/share/unexus/ai/models` and start/stop the local engine.
+- `scripts/setup-ai-model.sh --local /path/to/model.gguf` installs a local model; curated downloads refuse to run until SHA-256 hashes are pinned.
+
+uNexus CMD:
+
+- Internal command panel backed by `CommandRunner`.
+- Supports command output, history, `cd`, `cd ~`, `clear` and stop control.
+- Dock terminal entry and desktop context menu open this internal panel instead of relying on an external terminal.
 
 Stats:
 
@@ -200,9 +229,9 @@ Assets:
 
 ---
 
-## Recent Commits
+## Recent Repository Milestones
 
-Latest known commits:
+Earlier known commits:
 
 - `ba69d36 feat(assets): add unexus wallpaper set`
 - `b2d71c9 feat(settings): add shortcut help panel`
@@ -221,7 +250,7 @@ Latest known commits:
 
 ## Latest Updates To Remember
 
-The most recent work focused on Stage 1 maturity: packaging/session reproducibility, visual language, real launcher installs, keyboard shortcuts, file-manager usability and first-screen identity.
+Recent work expanded the project from shell polish into an installable live OS foundation: package/ISO flow, native graphical disk install, recovery shell, GPU driver manager, internal CMD, local AI assistant and updated documentation.
 
 - Project name is `uNexus`; old PED OS references should not return.
 - Package/module naming uses `unexus-shell` and `UNexusShell`.
@@ -229,7 +258,7 @@ The most recent work focused on Stage 1 maturity: packaging/session reproducibil
 - `Main.qml` exposes `brandLogoSource`, currently pointing to `qrc:/UNexusShell/assets/logo/SF%20White.png`, and uses it on the desktop/login/settings.
 - `Main.qml` exposes `desktopWallpaperSource`, currently pointing to `qrc:/UNexusShell/assets/wallpapers/unexus-core.png`.
 - Login and Settings About use the official logo. First Setup intentionally no longer shows a tiny logo badge.
-- README uses `assets/logo/SF%20White.png` and no old screenshots.
+- README uses `assets/logo/SF%20White.png` and current screenshots.
 - The first official wallpaper set exists and is packaged as both Qt resources and installed files.
 - uNexus Files gained breadcrumbs, sorting, multi-select, copy/cut/paste, previews, delete confirmations, keyboard shortcuts, blank-space context-menu behavior and layout fixes.
 - uNexus Files title is now `File Manager` / `Gerenciador de Arquivos`.
@@ -242,7 +271,12 @@ The most recent work focused on Stage 1 maturity: packaging/session reproducibil
 - Panel and dock transitions use spring physics for tactile motion; opacity/color stay on timed animations.
 - Dock action menus include Open, Focus, Close, Maximize, Move and Minimize/Restore.
 - The shell exposes workspace indicators and a future-facing window preview direction.
-- Installer direction is a graphical Qt/QML double-click installer backed by native Arch packaging, with `setup.sh` kept for development/recovery.
+- Installer direction is a graphical Qt/QML double-click installer backed by native Arch packaging and `scripts/install-os.sh`, with `setup.sh` kept for development/recovery.
+- `unexus-installer` includes minimal disk selection, first-user configuration, plan preview and install progress for the guarded native backend.
+- GPU driver manager exists in Settings/First Setup with NVIDIA install guidance, hybrid GPU messaging, Secure Boot warning and rollback guard.
+- uNexus AI exists as a local-only MVP with opt-in JSON history and First Setup engine controls.
+- uNexus CMD exists as an internal command panel.
+- Desktop shortcut icons are disabled by default.
 - Game Settings starts real Flatpak installs for Steam, Lutris, Heroic and Bottles. Flathub setup/status still needs a better first-class flow.
 
 ---
@@ -260,7 +294,9 @@ The most recent work focused on Stage 1 maturity: packaging/session reproducibil
 - GameMode/MangoHud integration needs more real-game validation.
 - Game Settings starts real Flatpak installs for known launcher IDs, but privileged pacman/tool installs are still not automated.
 - The shell still relies heavily on Hyprland behavior through `hyprctl`.
-- A graphical installer and bootable ISO do not exist yet.
+- A bootable ISO profile exists, but a passing current Arch/QEMU BIOS+UEFI result and destructive install/reboot VM result still need to be recorded.
+- Native disk install currently targets UEFI/systemd-boot whole-disk installs; partition review, dual-boot safety and GRUB are still pending.
+- uNexus AI still needs sandboxing, a model manager UI, encrypted optional history and read-only tool-calling.
 
 ---
 
@@ -278,11 +314,11 @@ Recommended next priorities:
    - Confirm global shortcuts open Launcher, Settings, Game Settings and stats overlay.
    - Confirm uNexus Files multi-select, copy/cut/paste, previews, context menu and trash confirmations on real Arch.
 
-2. Build the first graphical `uNexus Installer` MVP:
-   - Double-click friendly Qt/QML UI.
-   - Use package/setup backends rather than asking users to run build commands.
-   - Keep `setup.sh` as the local development/recovery installer.
-   - Start with shell install/repair before full OS install.
+2. Validate packaging, ISO and installer on Arch:
+   - Clean `makepkg` or `scripts/package-arch.sh` run.
+   - `sudo sh ISO/0.0.2/build-iso.sh`.
+   - QEMU BIOS and UEFI smoke pass.
+   - Destructive install/reboot test in a disposable VM.
 
 3. Continue uNexus Files toward a real `unexus-files`:
    - Standalone window/app direction.
@@ -306,9 +342,10 @@ Recommended next priorities:
    - Start the Game Library/per-game profile model.
 
 6. Packaging and ISO foundation:
-   - Package Qt/QML dependencies correctly.
-   - Package runtime assets correctly.
-   - Eventually create an `archiso` profile.
+   - Keep Qt/QML dependencies and runtime assets validated.
+   - Harden the existing `ISO/0.0.2` profile.
+   - Record hardware validation across AMD/Intel and NVIDIA paths.
+   - Improve partition review and destructive install safety.
 
 ---
 
@@ -354,6 +391,19 @@ command -v mangohud
 command -v gamemoderun
 ```
 
+Install a local AI model:
+
+```bash
+setup-ai-model.sh --local /path/to/model.gguf
+```
+
+Build and smoke-test the ISO:
+
+```bash
+sudo sh ISO/0.0.2/build-iso.sh
+sh scripts/test-iso-vm.sh
+```
+
 Steam launch option:
 
 ```bash
@@ -372,6 +422,10 @@ mangohud gamemoderun %command%
 - `docs/design-tokens.md`: formal visual language for spacing, typography, surfaces, radius, motion and component sizing.
 - `docs/liquid-glass.md`: current QML glass material and future compositor direction.
 - `docs/installer-technology.md`: chosen graphical installer direction.
+- `docs/ai-assistant.md`: local-only AI assistant architecture, privacy model and model lifecycle.
+- `docs/gpu-driver-manager.md`: GPU driver detection, install flow and rollback model.
+- `docs/distro-implementation-status.md`: shell-to-distro checklist.
+- `docs/milestone-status.md`: packaging/installer/VM/First Setup milestone audit.
 - `docs/contributing.md`: contribution guidance.
 - `docs/issue-dock-active-hover-state.md`: issue writeup for the dock active/hover residue problem.
 
